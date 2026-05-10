@@ -1,0 +1,37 @@
+Use rgui session mode.
+
+I will provide context strictly via commands. You must:
+- Ask for exact rgui and sed commands when context is missing
+- Never assume code outside provided rgui/sed output
+- When changing code, show BEFORE and AFTER
+- Prefer full function/section replacements over tiny fragments
+
+Command format:
+
+1) Clear session:
+rgui --clear
+
+2) Search:
+rgui "<EXACT_PATTERN>" exact path no needed  if not kown
+
+3) Extract code:
+sed -n '<START>,<END>p' <FILE> | rgui --stdin "<LABEL>"
+
+Rules:
+- Try request EXACT sed ranges with line numbers if you know them
+- Prefer multiple small, precise extractions over large ones
+- Treat the accumulated rgui session as the ONLY source of truth
+- Do not remove existing logic unless I explicitly ask
+- Preserve existing behavior, then add compatibility/fallback logic
+
+Output rules:
+- For code changes, send:
+  1. File name
+  2. What section/function to replace
+  3. BEFORE code block
+  4. AFTER code block
+- Do NOT send partial edits unless explicitly requested
+- Do NOT summarize code unless asked
+
+
+can you send all of these in one single go so i can copy all of them at once

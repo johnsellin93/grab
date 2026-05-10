@@ -1,0 +1,284 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+
+usage() {
+  cat <<'EOF'
+ Usage:
+   rgui [--all|--docs|--config] <pattern> [path...]
+   rgui --stdin <label>
+   rgui --clear
+
+ Examples:
+   rgui "TakeProfitEur" /root/proj78
+   sed -n '500,635p' SampleLinesTrader.UI.cs | rgui --stdin "HandleSetupHotkeys"
+   rgui --clear
+
+Notes:
+  - Output is printed with color
+  - Clean output is saved to ~/.cache/rgui/buffer.txt
+  - Clean output is copied to clipboard/tmux buffer when available
+EOF
+}
+
+
+if [[ $# -lt 1 ]]; then
+  usage
+  exit 1
+fi
+
+if [[ "${1:-}" == "--clear" ]]; then
+  buffer_dir="${RGUI_BUFFER_DIR:-$HOME/.cache/rgui}"
+  buffer_file="${RGUI_BUFFER_FILE:-$buffer_dir/buffer.txt}"
+  session_file="${RGUI_SESSION_FILE:-$buffer_dir/session.txt}"
+  counter_file="${RGUI_COUNTER_FILE:-$buffer_dir/counter.txt}"
+
+  mkdir -p "$buffer_dir"
+  : > "$buffer_file"
+  : > "$session_file"
+  print -r -- "0" > "$counter_file"
+
+  print -r -- "[rgui] cleared latest buffer and session buffer"
+  exit 0
+fi
+
+
+if [[ "${1:-}" == "--stdin" ]]; then
+  label="${2:-stdin}"
+
+  buffer_dir="${RGUI_BUFFER_DIR:-$HOME/.cache/rgui}"
+  buffer_file="${RGUI_BUFFER_FILE:-$buffer_dir/buffer.txt}"
+  session_file="${RGUI_SESSION_FILE:-$buffer_dir/session.txt}"
+  counter_file="${RGUI_COUNTER_FILE:-$buffer_dir/counter.txt}"
+
+  mkdir -p "$buffer_dir"
+  : > "$buffer_file"
+
+  cat > "$buffer_file"
+
+  if [[ ! -f "$session_file" ]]; then
+    : > "$session_file"
+  fi
+
+  if [[ ! -f "$counter_file" ]]; then
+    print -r -- "0" > "$counter_file"
+  fi
+
+  run_no="$(cat "$counter_file" 2>/dev/null || print -r -- 0)"
+  run_no=$((run_no + 1))
+  print -r -- "$run_no" > "$counter_file"
+
+  {
+    print -r -- ""
+    print -r -- "==================== rgui copy ${run_no} ===================="
+    print -r -- "source: stdin"
+    print -r -- "label: $label"
+    print -r -- "============================================================="
+    cat "$buffer_file"
+  } >> "$session_file"
+
+  copy_target="none"
+
+  if [[ -n "${TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
+    tmux load-buffer "$session_file"
+    copy_target="tmux buffer"
+  elif command -v wl-copy >/dev/null 2>&1 && [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+    wl-copy < "$session_file"
+    copy_target="Wayland clipboard"
+  elif command -v xclip >/dev/null 2>&1 && [[ -n "${DISPLAY:-}" ]]; then
+    xclip -selection clipboard -in < "$session_file"
+    copy_target="X clipboard via xclip"
+  elif command -v pbcopy >/dev/null 2>&1; then
+    pbcopy < "$session_file"
+    copy_target="macOS clipboard"
+  fi
+
+  line_count=$(wc -l < "$buffer_file" | tr -d ' ')
+  session_lines=$(wc -l < "$session_file" | tr -d ' ')
+
+  print -r -- "[rgui] copy ${run_no}: stdin ${line_count} lines; session ${session_lines} lines copied to ${copy_target}" >&2
+  exit 0
+fi
+
+
+mode="code"
+
+if [[ "${1:-}" == "--all" ]]; then
+  mode="all"
+  shift
+elif [[ "${1:-}" == "--docs" ]]; then
+  mode="docs"
+  shift
+elif [[ "${1:-}" == "--config" ]]; then
+  mode="config"
+  shift
+fi
+
+if [[ $# -lt 1 ]]; then
+  usage
+  exit 1
+fi
+
+pattern="$1"
+shift || true
+
+
+if [[ $# -gt 0 ]]; then
+  paths=("$@")
+else
+  paths=(.)
+fi
+
+buffer_dir="${RGUI_BUFFER_DIR:-$HOME/.cache/rgui}"
+buffer_file="${RGUI_BUFFER_FILE:-$buffer_dir/buffer.txt}"          # latest result
+session_file="${RGUI_SESSION_FILE:-$buffer_dir/session.txt}"       # accumulated results
+counter_file="${RGUI_COUNTER_FILE:-$buffer_dir/counter.txt}"
+tmp_color_file="${buffer_file}.color.tmp"
+
+mkdir -p "$buffer_dir"
+
+
+cleanup() {
+  rm -f "$tmp_color_file"
+}
+trap cleanup EXIT
+
+
+: > "$buffer_file"
+: > "$tmp_color_file"
+
+if [[ ! -f "$session_file" ]]; then
+  : > "$session_file"
+fi
+
+if [[ ! -f "$counter_file" ]]; then
+  print -r -- "0" > "$counter_file"
+fi
+
+
+type_filters=()
+
+if [[ "$mode" == "code" ]]; then
+  type_filters=(
+    --glob '**/*.cs'
+    --glob '**/*.js'
+    --glob '**/*.jsx'
+    --glob '**/*.ts'
+    --glob '**/*.tsx'
+    --glob '**/*.py'
+    --glob '**/*.sh'
+  )
+elif [[ "$mode" == "docs" ]]; then
+  type_filters=(
+    --glob '**/*.md'
+    --glob '**/*.txt'
+    --glob '**/*.rst'
+  )
+elif [[ "$mode" == "config" ]]; then
+  type_filters=(
+    --glob '**/*.json'
+    --glob '**/*.yaml'
+    --glob '**/*.yml'
+    --glob '**/*.toml'
+    --glob '**/*.ini'
+    --glob '**/*.conf'
+    --glob '**/*.env'
+    --glob '**/*.sql'
+  )
+fi
+
+common_args=(
+  -n
+  --color always
+  --max-columns 300
+  --max-columns-preview
+  --max-filesize 2M
+
+  # selected mode file types
+  "${type_filters[@]}"
+
+  # dirs
+  --glob '!**/node_modules/**'
+  --glob '!**/.git/**'
+  --glob '!**/dist/**'
+  --glob '!**/build/**'
+  --glob '!**/coverage/**'
+  --glob '!**/tmp/**'
+  --glob '!**/vendor/**'
+  --glob '!**/__pycache__/**'
+  --glob '!**/.venv/**'
+  --glob '!**/venv/**'
+  --glob '!**/bin/**'
+  --glob '!**/obj/**'
+
+  # files
+  --glob '!**/*.min.js'
+  --glob '!**/*.min.css'
+  --glob '!**/*.map'
+  --glob '!**/*.bundle.js'
+  --glob '!**/*.chunk.js'
+  --glob '!**/*.generated.*'
+  --glob '!**/*bak*'
+  --glob '!**/deoplete.log'
+  --glob '!**/state.json'
+  --glob '!**/state.json.bak'
+  --glob '!**/*.lock'
+)
+
+set +e
+rg "${common_args[@]}" "$pattern" "${paths[@]}" | tee "$tmp_color_file"
+pipe_status=("${pipestatus[@]}")
+set -e
+
+rg_status="${pipe_status[1]:-${pipe_status[0]:-0}}"
+# Strip ANSI color codes before saving/copying.
+perl -pe 's/\e\[[0-9;]*m//g' "$tmp_color_file" > "$buffer_file"
+
+run_no="$(cat "$counter_file" 2>/dev/null || print -r -- 0)"
+run_no=$((run_no + 1))
+print -r -- "$run_no" > "$counter_file"
+
+{
+  print -r -- ""
+  print -r -- "==================== rgui copy ${run_no} ===================="
+  print -r -- "pattern: $pattern"
+  print -r -- "mode: $mode"
+  print -r -- "path: ${paths[*]}"
+  print -r -- "============================================================="
+  cat "$buffer_file"
+} >> "$session_file"
+
+line_count=$(wc -l < "$buffer_file" | tr -d ' ')
+byte_count=$(wc -c < "$buffer_file" | tr -d ' ')
+
+if [[ "$rg_status" -eq 1 ]]; then
+  print -r -- "[rgui] no matches. clean buffer saved: $buffer_file" >&2
+  exit 1
+elif [[ "$rg_status" -ne 0 ]]; then
+  print -r -- "[rgui] rg failed with status $rg_status. clean buffer saved: $buffer_file" >&2
+  exit "$rg_status"
+fi
+
+copy_target="none"
+
+if [[ -n "${TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
+  tmux load-buffer "$session_file"
+  copy_target="tmux buffer"
+elif command -v wl-copy >/dev/null 2>&1 && [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+  wl-copy < "$session_file"
+  copy_target="Wayland clipboard"
+elif command -v xclip >/dev/null 2>&1 && [[ -n "${DISPLAY:-}" ]]; then
+  xclip -selection clipboard -in < "$session_file"
+  copy_target="X clipboard via xclip"
+elif command -v pbcopy >/dev/null 2>&1; then
+  pbcopy < "$session_file"
+  copy_target="macOS clipboard"
+fi
+
+if [[ "$copy_target" == "none" ]]; then
+  print -r -- "[rgui] copied 0 lines; saved clean ${line_count} lines / ${byte_count} bytes to $buffer_file" >&2
+else
+  session_lines=$(wc -l < "$session_file" | tr -d ' ')
+  session_bytes=$(wc -c < "$session_file" | tr -d ' ')
+  print -r -- "[rgui] copy ${run_no}: latest ${line_count} lines / ${byte_count} bytes; session ${session_lines} lines / ${session_bytes} bytes copied to ${copy_target}" >&2
+fi
