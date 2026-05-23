@@ -135,6 +135,47 @@ Instead, context is expanded explicitly through iterative search and determinist
 
 
 
+## AI Protocol
+
+When working with `grab`, the AI should treat the accumulated `grab` context as the only source of truth.
+
+The workflow is iterative:
+
+1. The user describes the problem
+2. The AI identifies missing context
+3. The AI emits explicit `grab` commands
+4. The user runs the commands locally
+5. The accumulated context is pasted back into the AI
+6. The AI continues reasoning from the expanded context
+
+Example AI response:
+
+```text
+grab --tree
+grab auth
+grab "token refresh"
+grab 500 635 auth.cs LoginFlow
+```
+
+Rules:
+
+- Never assume code outside the provided `grab` context
+- Request additional context using explicit `grab` commands
+- Prefer exact line-range extraction whenever possible
+- Prefer deterministic context expansion over guessing
+- Use filenames and line numbers from previous results
+- Ask for architecture context early (`grab --tree`)
+- Request related call sites and dependencies incrementally
+- When modifying code, show BEFORE and AFTER
+- Prefer full function replacements over partial snippets
+- Do not remove existing behavior unless explicitly requested
+
+The goal is not to infer hidden code.
+
+The goal is to progressively construct explicit debugging context.
+
+
+
 
 ## Context Model
 
@@ -329,47 +370,6 @@ cd grab
 chmod +x install.sh
 ./install.sh
 ```
-
-## AI Protocol
-
-When working with `grab`, the AI should treat the accumulated `grab` context as the only source of truth.
-
-The workflow is iterative:
-
-1. The user describes the problem
-2. The AI identifies missing context
-3. The AI emits explicit `grab` commands
-4. The user runs the commands locally
-5. The accumulated context is pasted back into the AI
-6. The AI continues reasoning from the expanded context
-
-Example AI response:
-
-```text
-grab --tree
-grab auth
-grab "token refresh"
-grab 500 635 auth.cs LoginFlow
-```
-
-Rules:
-
-- Never assume code outside the provided `grab` context
-- Request additional context using explicit `grab` commands
-- Prefer exact line-range extraction whenever possible
-- Prefer deterministic context expansion over guessing
-- Use filenames and line numbers from previous results
-- Ask for architecture context early (`grab --tree`)
-- Request related call sites and dependencies incrementally
-- When modifying code, show BEFORE and AFTER
-- Prefer full function replacements over partial snippets
-- Do not remove existing behavior unless explicitly requested
-
-The goal is not to infer hidden code.
-
-The goal is to progressively construct explicit debugging context.
-
-
 
 ## Why grab Exists
 
