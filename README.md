@@ -30,6 +30,23 @@ grab 500 635 file.cs # extract exact implementation range from line number and f
 ```
 
 
+## AI Workflow Example
+
+```
+grab --functions server.py
+```
+
+## Example output:
+
+server.py:167-211 [45L] def _log_request_end(resp: Response):
+server.py:212-227 [16L] def _log_unhandled_exception(e: Exception):
+
+
+The AI can request exact implementations directly from function indexes:
+
+grab 167 211 server.py _log_request_end
+
+
 ## Demo
 <video src="simpledemo-cut.mp4" controls autoplay loop muted width="100%"></video>
 
