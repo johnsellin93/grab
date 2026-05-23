@@ -120,17 +120,20 @@ Instead of guessing missing architecture, dependencies, or variable call flow, t
 
 Search results include exact filenames, symbols, and line numbers.
 
-This allows the AI to progressively refine context acquisition by emitting deterministic range extraction commands based on previous search output.
 
-Typical flow:
+This allows the AI to progressively refine context acquisition by emitting exact range extraction commands directly from previous search output.
 
-```
+Because search results include precise line numbers, the AI can request surrounding implementation ranges without missing nearby logic, dependencies, or variable flow.
+
+Typical workflow:
+
+```text
 AI searches symbol
 → grab returns exact file + line numbers
-→ AI emits precise range extraction commands
-→ User executes deterministic extraction
+→ AI emits exact extraction ranges
+→ surrounding implementation context is preserved
 → Context expands incrementally
-```
+
 
 cat ~/.cache/grab/context.txt
 
