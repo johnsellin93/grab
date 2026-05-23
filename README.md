@@ -119,26 +119,36 @@ AI identifies missing context
 → AI receives explicit inputs
 → Hallucination decreases
 ```
+AI assistants should use function index output and deterministic extraction ranges to request exact implementations instead of guessing surrounding code.
 
 Instead of guessing missing architecture, dependencies, or variable call flow, the AI works from progressively expanded explicit context.
 
-Search results include exact filenames, symbols, and line numbers.
+`grab` exposes:
 
+- exact filenames
+- exact line numbers
+- function boundaries
+- function start/end lines
+- function size in lines
+- deterministic extraction coordinates
 
-This allows the AI to progressively refine context acquisition by emitting exact range extraction commands directly from previous search output.
+This allows the AI to progressively refine context acquisition without inferring hidden implementation details.
 
-Because search results include precise line numbers, the AI can request surrounding implementation ranges without missing nearby logic, dependencies, or variable flow.
+Search results and function indexes provide explicit extraction coordinates that can be converted directly into deterministic `grab` range commands.
+
+Because the AI receives exact line ranges and function boundaries, it can request surrounding implementation context without missing nearby logic, dependencies, or variable flow.
 
 Typical workflow:
 
 ```
 AI searches symbol
 → grab returns exact file + line numbers
+→ AI requests function index
+→ grab returns function boundaries + sizes
 → AI emits exact extraction ranges
 → surrounding implementation context is preserved
 → Context expands incrementally
 ```
-
 
 grab does not infer hidden repository structure or dependencies automatically.
 
@@ -207,11 +217,11 @@ grab 500 635 auth.cs LoginFlow
 
  Interpretation:
 
- `server.py` is the file
- `167` is the function start line
- `211` is the function end line
- `[45L]` means the function is 45 lines long
- def _log_request_end(resp: Response): is the function signature
+ - `server.py` → source file
+ - `167` → function start line
+ - `211` → function end line
+ - `[45L]` → function length in lines
+ - `def _log_request_end(resp: Response):` → function signature
 
  To request the full function body, convert the range directly into a grab range command:
 
