@@ -1,4 +1,4 @@
-# Terminal-native AI context engineering for large codebases.
+Terminal-native AI context engineering for large codebases.
 
 grab is a terminal-native AI context builder for large codebases.
 
@@ -28,7 +28,7 @@ grab 500 635 file.cs
 ## Demo
 ![grab demo](docs/demo.gif)
 
-Example workflow:
+# Example workflow:
 - clear previous context
 - capture repository structure
 - search relevant code
@@ -63,30 +63,30 @@ The latest command output is saved to:
 ~/.cache/grab/buffer.txt
 ```
 
-Usage:
+# Usage:
   grab <pattern> [path...]
   grab --all <pattern> [path...]
   grab <start> <end> <file> [label...]
   grab --clear
 
-Examples:
+# Examples:
   grab variable /dir/proj
   grab --all VAR
   grab 500 635 file.cs HandleSetupHotkeys
   sed -n '500,635p' file.cs | grab HandleSetupHotkeys
   grab --clear
 
-Modes:
+# Modes:
   default   Search smart project files only
   --all     Search all non-ignored files from type_filters
   range     Extract line range from file
   stdin     Capture piped input automatically
 
-Notes:
-  - Latest clean output: ~/.cache/grab/buffer.txt
-  - AI context history:   ~/.cache/grab/context.txt
-  - Copies to clipboard for each grab command (see vim configuration)
-  -
+# Notes:
+  Latest clean output: ~/.cache/grab/buffer.txt
+  Accumulated AI context: ~/.cache/grab/context.txt
+  Copies to clipboard for each grab command (see vim configuration)
+
 
 # What grab Solves
 
@@ -114,34 +114,11 @@ grab fixes this by making context explicit, accumulated, and reusable.
 
 grab builds a reusable context file that can be pasted into:
 
-ChatGPT
-Claude
-an editor
-a ticket
-a debugging note
-Smart Search Mode
-
-By default, grab searches relevant project files only:
-
-source code
-configs
-documentation
-scripts
-
-It automatically ignores noise such as:
-
-node_modules
-.git
-dist
-build
-coverage
-vendor
-bin
-obj
-minified files
-source maps
-lock files
-generated artifacts
+- ChatGPT
+- Claude
+- an editor
+- a ticket
+- a debugging note
 
 Use --all to disable smart file-type filtering:
 
@@ -154,10 +131,12 @@ Ignored directories and noisy files are still skipped.
 
 Capture repository structure directly into AI context:
 
+```
 grab --tree
 grab --tree backend/
+```
 
-Example output:
+# Example output:
 
 ==================== DIRECTORY CONTEXT ====================
 path: /root/project
@@ -244,7 +223,7 @@ macOS clipboard via pbcopy
 
 
 ## Vim / Neovim Integration
-Example clipboard setup:
+# Example clipboard setup:
 
 ```
 set clipboard+=unnamedplus
@@ -329,6 +308,24 @@ Instead of “search and guess”, `grab` lets you:
 
 The result is reproducible debugging context, not fragmented snippets.
 
+> You are not copying results. You are exporting context.
+
+## Typical Workflow
+
+```
+grab --clear
+
+grab --tree
+
+grab auth
+
+grab 500 635 auth.cs LoginFlow
+```
+
+This builds incremental AI-ready debugging context across multiple extraction steps.
+
+
+
 
 ## Smart Search Mode
 
@@ -349,12 +346,3 @@ It automatically ignores:
 - generated artifacts
 
 Use `--all` to disable smart filtering.
-
-## Directory Context
-
-Capture repository structure directly into AI context:
-
-```
-grab --tree
-grab --tree backend/
-```
