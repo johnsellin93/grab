@@ -176,6 +176,9 @@ grab --clear
 | range | Extract line ranges from files |
 | stdin | Capture piped input automatically |
 
+
+Search results include exact filenames and line numbers, allowing the AI to request deterministic range extraction commands.
+
 ## Notes
 
 - Latest clean output: `~/.cache/grab/buffer.txt`
@@ -312,33 +315,45 @@ chmod +x install.sh
 ./install.sh
 ```
 
+## AI Protocol
 
+When working with `grab`, the AI should treat the accumulated `grab` context as the only source of truth.
 
-# AI Protocol
+The workflow is iterative:
 
+1. The user describes the problem
+2. The AI identifies missing context
+3. The AI emits explicit `grab` commands
+4. The user runs the commands locally
+5. The accumulated context is pasted back into the AI
+6. The AI continues reasoning from the expanded context
+
+Example AI response:
+
+```text
+grab --tree
+grab auth
+grab "token refresh"
+grab 500 635 auth.cs LoginFlow
 ```
-Use grab context mode.
-
-I will provide context strictly through grab output.
 
 Rules:
-- Never assume code outside the provided grab context.
-- Ask for exact grab commands when more context is needed.
-- Prefer exact line-range extraction.
-- When changing code, show BEFORE and AFTER.
-- Prefer full function or section replacements.
-- Do not remove existing behavior unless explicitly asked.
--
-```
 
-Recommended workflow:
+- Never assume code outside the provided `grab` context
+- Request additional context using explicit `grab` commands
+- Prefer exact line-range extraction whenever possible
+- Prefer deterministic context expansion over guessing
+- Use filenames and line numbers from previous results
+- Ask for architecture context early (`grab --tree`)
+- Request related call sites and dependencies incrementally
+- When modifying code, show BEFORE and AFTER
+- Prefer full function replacements over partial snippets
+- Do not remove existing behavior unless explicitly requested
 
-```
-grab --clear
-grab --tree
-grab ExactPattern
-grab 120 220 file.cs RelevantFunction
-```
+The goal is not to infer hidden code.
+
+The goal is to progressively construct explicit debugging context.
+
 
 
 ## Why grab Exists
