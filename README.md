@@ -76,18 +76,26 @@ grab builds a reusable context file that can be pasted into:
 
 `grab` is designed for iterative AI debugging workflows.
 
-Instead of manually searching and copy/pasting fragments, the AI can request explicit context using deterministic `grab` commands.
+Instead of manually searching through a codebase and copy/pasting fragments into an AI assistant, the workflow becomes:
 
-Example:
+1. Ask the AI what context it needs
+2. The AI generates explicit `grab` commands
+3. Run the commands locally
+4. `grab` accumulates the results automatically
+5. Paste the resulting context back into the AI
 
-```
+Example AI response:
+
+```text
 grab --tree
 grab auth
 grab 500 635 auth.cs LoginFlow
-grab token refresh
+grab "token refresh"
 ```
 
-The user runs the commands, and the resulting context accumulates automatically into:
+The user runs the commands locally.
+
+Each command appends additional context into:
 
 ```text
 ~/.cache/grab/context.txt
@@ -98,12 +106,18 @@ This creates a controlled feedback loop:
 ```text
 AI identifies missing context
 → AI emits grab commands
+→ User executes commands
 → Context accumulates automatically
 → AI receives explicit inputs
 → Hallucination decreases
 ```
 
 Instead of guessing missing architecture, dependencies, or call flow, the AI works from progressively expanded explicit context.
+
+`grab` does not infer repository structure or hidden dependencies automatically.
+
+It helps build deterministic context incrementally from explicit terminal commands.
+
 
 
 ## Context Model
