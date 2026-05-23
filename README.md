@@ -63,29 +63,40 @@ The latest command output is saved to:
 ~/.cache/grab/buffer.txt
 ```
 
-# Usage:
-  grab <pattern> [path...]
-  grab --all <pattern> [path...]
-  grab <start> <end> <file> [label...]
-  grab --clear
+## Usage
 
-# Examples:
-  grab variable /dir/proj
-  grab --all VAR
-  grab 500 635 file.cs HandleSetupHotkeys
-  sed -n '500,635p' file.cs | grab HandleSetupHotkeys
-  grab --clear
+```
+grab <pattern> [path...]
+grab --all <pattern> [path...]
+grab <start> <end> <file> [label...]
+grab --clear
+```
 
-# Modes:
-  default   Search smart project files only
-  --all     Search all non-ignored files from type_filters
-  range     Extract line range from file
-  stdin     Capture piped input automatically
+## Examples
 
-# Notes:
-  Latest clean output: ~/.cache/grab/buffer.txt
-  Accumulated AI context: ~/.cache/grab/context.txt
-  Copies to clipboard for each grab command (see vim configuration)
+```
+grab variable /dir/proj
+grab --all VAR
+grab 500 635 file.cs HandleSetupHotkeys
+sed -n '500,635p' file.cs | grab HandleSetupHotkeys
+grab --clear
+```
+
+## Modes
+
+| Mode | Description |
+|---|---|
+| default | Search smart project files only |
+| --all | Search all non-ignored files |
+| range | Extract line ranges from files |
+| stdin | Capture piped input automatically |
+
+## Notes
+
+- Latest clean output: `~/.cache/grab/buffer.txt`
+- Accumulated AI context: `~/.cache/grab/context.txt`
+- Clipboard integration supported
+```
 
 
 # What grab Solves
