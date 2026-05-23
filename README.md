@@ -26,12 +26,16 @@ grab --tree # capture repository structure
 
 grab ExactPattern # locate relevant symbols/functions
 
-grab 500 635 file.cs # extract exact implementation range
+grab 500 635 file.cs # extract exact implementation range from line number and file
 ```
 
 
 ## Demo
-![grab demo](docs/demo.gif)
+<video src="demo.mp4" controls autoplay loop muted></video>
+
+The workflow shown above is typically driven iteratively by an AI assistant.
+
+Search results expose exact filenames and line numbers, allowing the AI to request precise implementation ranges while preserving surrounding logic and minimizing missing context during debugging.
 
 ### Example workflow:
 - clear previous context
@@ -135,7 +139,6 @@ AI searches symbol
 → Context expands incrementally
 ```
 
-cat ~/.cache/grab/context.txt
 
 grab does not infer hidden repository structure or dependencies automatically.
 
@@ -414,6 +417,8 @@ grab --tree
 grab auth
 
 grab 500 635 auth.cs LoginFlow
+
+cat ~/.cache/grab/context.txt
 ```
 
 This builds incremental AI-ready debugging context across multiple extraction steps.
