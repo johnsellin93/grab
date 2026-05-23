@@ -31,7 +31,7 @@ grab 500 635 file.cs # extract exact implementation range from line number and f
 
 
 ## Demo
-<video src="demo.mp4" controls autoplay loop muted></video>
+<video src="simpledemo-cut.mp4" controls autoplay loop muted width="100%"></video>
 
 The workflow shown above is typically driven iteratively by an AI assistant.
 
