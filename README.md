@@ -90,6 +90,7 @@ Example AI response:
 grab --tree
 grab auth
 grab 500 635 auth.cs LoginFlow
+grab 170 250 file.py
 grab "token refresh"
 ```
 
