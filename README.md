@@ -28,14 +28,11 @@ grab ExactPattern # locate relevant symbols/functions
 
 grab 500 635 file.cs # extract exact implementation range from line number and file
 ```
+
+
 ## Demo
-<video src="https://github.com/user-attachments/assets/2a146485-c115-423a-b830-e2a9f242be02"
-       controls
-       autoplay
-       loop
-       muted
-       width="100%">
-</video>
+<video src="simpledemo-cut.mp4" controls autoplay loop muted width="100%"></video>
+
 The workflow shown above is typically driven iteratively by an AI assistant.
 
 Search results expose exact filenames and line numbers, allowing the AI to request precise implementation ranges while preserving surrounding logic and minimizing missing context during debugging.
@@ -188,30 +185,64 @@ The workflow is iterative:
 
 Example AI response:
 
-```text
+```
+grab --clear
 grab --tree
 grab auth
 grab "token refresh"
+grab --functions auth.cs
 grab 500 635 auth.cs LoginFlow
 ```
+## --Function Index Format
 
-Rules:
+ ```
+ file:start_line-end_line [function_length] function_signature
+ ```
+ Example:
 
-- Never assume code outside the provided `grab` context
-- Request additional context using explicit `grab` commands
-- Prefer exact line-range extraction whenever possible
-- Prefer deterministic context expansion over guessing
-- Use filenames and line numbers from previous results
-- Ask for architecture context early (`grab --tree`)
-- Request related call sites and dependencies incrementally
-- When modifying code, show BEFORE and AFTER
-- Prefer full function replacements over partial snippets
-- Do not remove existing behavior unless explicitly requested
+  ```
+  server.py:167-211 [45L] def _log_request_end(resp: Response):
+  server.py:212-227 [16L] def _log_unhandled_exception(e: Exception):
+  ```
 
-The goal is not to infer hidden code.
+ Interpretation:
 
-The goal is to progressively construct explicit debugging context.
+ `server.py` is the file
+ `167` is the function start line
+ `211` is the function end line
+ `[45L]` means the function is 45 lines long
+ def _log_request_end(resp: Response): is the function signature
 
+ To request the full function body, convert the range directly into a grab range command:
+
+ grab 167 211 server.py _log_request_end
+ or
+ grab 167 211 server.py
+
+ AI assistants should use function index output to request exact full-function implementations instead of guessing surrounding code.
+
+ Rules:
+
+ Never assume code outside the provided grab context
+ Request additional context using explicit grab commands
+ Use grab --tree early when architecture or file layout is unclear
+ Use grab <pattern> to locate symbols, call sites, routes, handlers, config keys, and error strings
+ Use grab --functions <file> to inspect function boundaries before requesting full implementations
+ Interpret function index lines as file:start_line-end_line [function_length] function_signature
+ Use file:start_line-end_line from function index output to request exact range extraction
+ Use [function_length] to estimate context size before requesting large functions
+ Prefer whole-function extraction over tiny snippets when debugging behavior
+ Prefer exact line-range extraction whenever possible
+ Prefer deterministic context expansion over guessing
+ Use filenames and line numbers from previous results
+ Request related call sites and dependencies incrementally
+ When modifying code, show BEFORE and AFTER
+ Prefer full function replacements over partial snippets
+ Do not remove existing behavior unless explicitly requested
+
+ The goal is not to infer hidden code.
+
+ The goal is to progressively construct explicit debugging context.
 
 
 
