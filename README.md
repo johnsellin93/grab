@@ -65,7 +65,7 @@ That causes AI to guess.
 grab fixes this by making context explicit, accumulated, and reusable.
 
 
-grab builds a reusable context file that can be pasted into:
+Every `grab` command incrementally expands a reusable AI context buffer:
 
 - ChatGPT
 - Claude
@@ -89,6 +89,7 @@ Instead of manually searching through a codebase and copy/pasting fragments into
 Example AI response:
 
 ```text
+grab --clear
 grab --tree
 grab auth
 grab 500 635 auth.cs LoginFlow
@@ -115,7 +116,7 @@ AI identifies missing context
 → Hallucination decreases
 ```
 
-Instead of guessing missing architecture, dependencies, or call flow, the AI works from progressively expanded explicit context.
+Instead of guessing missing architecture, dependencies, or variable call flow, the AI works from progressively expanded explicit context.
 
 Search results include exact filenames, symbols, and line numbers.
 
@@ -131,6 +132,7 @@ AI searches symbol
 → Context expands incrementally
 ```
 
+cat ~/.cache/grab/context.txt
 
 grab does not infer hidden repository structure or dependencies automatically.
 
@@ -381,6 +383,13 @@ You are debugging a large codebase: multiple services, mixed languages, thousand
 You know the variable name.
 You know the function exists.
 But you do not know where it lives, what calls it, what it calls, or how it interacts with the rest of the system.
+Large repositories make this worse.
+
+Relevant logic is often spread across multiple files, services, and directories.
+
+Sometimes a single file contains thousands of lines, making it impractical to paste the entire file into an AI assistant without overwhelming the context window.
+
+As a result, developers manually hunt for the smallest relevant fragments while trying to preserve enough surrounding context for accurate reasoning.
 
 So you search, jump between files, hit noisy matches, copy fragments into notes or AI tools, lose context, and repeat.
 
