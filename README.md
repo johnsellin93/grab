@@ -1,7 +1,3 @@
-
-
-https://github.com/user-attachments/assets/4ad22646-6021-4bb8-af80-be2610858c69
-
 # Terminal-native AI context engineering for large codebases.
 
 grab is a terminal-native AI context builder for large codebases.
@@ -32,11 +28,15 @@ grab ExactPattern # locate relevant symbols/functions
 
 grab 500 635 file.cs # extract exact implementation range from line number and file
 ```
-
-
 ## Demo
-<video src="simpledemo-cut.mp4" controls autoplay loop muted width="100%"></video>
 
+<video src="https://github.com/user-attachments/assets/711c051e-3a65-4b2c-90d9-878b8c21c542"
+       controls
+       autoplay
+       loop
+       muted
+       width="100%">
+</video>
 The workflow shown above is typically driven iteratively by an AI assistant.
 
 Search results expose exact filenames and line numbers, allowing the AI to request precise implementation ranges while preserving surrounding logic and minimizing missing context during debugging.
