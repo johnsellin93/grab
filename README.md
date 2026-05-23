@@ -38,13 +38,21 @@ grab --functions server.py
 
 ## Example output:
 
+```
 server.py:167-211 [45L] def _log_request_end(resp: Response):
 server.py:212-227 [16L] def _log_unhandled_exception(e: Exception):
+```
+Format:
 
+```
+file:start_line-end_line [function_length] signature
+```
 
 The AI can request exact implementations directly from function indexes:
 
 grab 167 211 server.py _log_request_end
+
+Instead of guessing missing code, the AI progressively acquires explicit repository context through deterministic extraction commands.
 
 
 ## Demo
