@@ -139,25 +139,13 @@ grab does not infer hidden repository structure or dependencies automatically.
 Instead, context is expanded explicitly through iterative search and deterministic extraction commands.
 
 
-
 ## Why grab Exists
 
-You are debugging a large codebase: multiple services, mixed languages, thousands of lines.
+Large repositories spread logic across multiple files, services, and directories.
 
-You know the variable name.
-You know the function exists.
-But you do not know where it lives, what calls it, what it calls, or how it interacts with the rest of the system.
-Large repositories make this worse.
+Often a single file contains thousands of lines, making it impractical to paste entire implementations into an AI assistant without overwhelming the context window.
 
-Relevant logic is often spread across multiple files, services, and directories.
-
-Sometimes a single file contains thousands of lines, making it impractical to paste the entire file into an AI assistant without overwhelming the context window.
-
-As a result, developers manually hunt for the smallest relevant fragments while trying to preserve enough surrounding context for accurate reasoning.
-
-So you search, jump between files, hit noisy matches, copy fragments into notes or AI tools, lose context, and repeat.
-
-Now add AI: partial context leads to inferred code paths, missing dependencies, and confident but incorrect answers.
+Developers end up manually hunting for the smallest relevant fragments while trying to preserve enough surrounding context for accurate reasoning.
 
 `grab` turns this into a controlled, repeatable workflow.
 
@@ -165,11 +153,10 @@ Instead of “search and guess”, `grab` lets you:
 
 - search precisely
 - extract exact code ranges
-- capture project structure
-- accumulate reusable context
+- accumulate reusable context incrementally
 - work from explicit inputs
 
-The result is reproducible debugging context, not fragmented snippets.
+The result is reproducible debugging context instead of fragmented snippets.
 
 > You are not copying results. You are exporting context.
 
