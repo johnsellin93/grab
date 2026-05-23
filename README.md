@@ -30,7 +30,7 @@ grab 500 635 file.cs # extract exact implementation range from line number and f
 ```
 ## Demo
 
-<video src="https://github.com/user-attachments/assets/711c051e-3a65-4b2c-90d9-878b8c21c542"
+<video src="https://github.com/user-attachments/assets/e5e0b275-f2bc-4799-aa38-f761d6831c95"
        controls
        autoplay
        loop
