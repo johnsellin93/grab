@@ -36,6 +36,46 @@ grab 500 635 file.cs
 - accumulate AI-ready debugging context
 
 
+# What grab Solves
+
+AI-assisted debugging fails when:
+
+- context is incomplete
+- irrelevant files are included
+- the model guesses missing code
+
+grab fixes this through explicit context selection and incremental context accumulation.
+
+
+Developers often:
+
+- search across many files
+- copy fragmented snippets
+- miss related code
+- lose directory structure
+- paste partial context into AI tools
+
+That causes AI to guess.
+
+grab fixes this by making context explicit, accumulated, and reusable.
+
+
+grab builds a reusable context file that can be pasted into:
+
+- ChatGPT
+- Claude
+- an editor
+- a ticket
+- a debugging note
+
+Use --all to disable smart file-type filtering:
+
+grab --all SomePattern
+
+Ignored directories and noisy files are still skipped.
+
+
+
 ## Context Model
 
 grab maintains two outputs:
@@ -93,52 +133,15 @@ grab --clear
 
 ## Notes
 
+```
 - Latest clean output: `~/.cache/grab/buffer.txt`
 - Accumulated AI context: `~/.cache/grab/context.txt`
 - Clipboard integration supported
 ```
 
 
-# What grab Solves
 
-AI-assisted debugging fails when:
-
-- context is incomplete
-- irrelevant files are included
-- the model guesses missing code
-
-grab fixes this through explicit context selection and incremental context accumulation.
-
-
-Developers often:
-
-- search across many files
-- copy fragmented snippets
-- miss related code
-- lose directory structure
-- paste partial context into AI tools
-
-That causes AI to guess.
-
-grab fixes this by making context explicit, accumulated, and reusable.
-
-
-grab builds a reusable context file that can be pasted into:
-
-- ChatGPT
-- Claude
-- an editor
-- a ticket
-- a debugging note
-
-Use --all to disable smart file-type filtering:
-
-grab --all SomePattern
-
-Ignored directories and noisy files are still skipped.
-
-# Directory Context
-
+## Directory Context
 
 Capture repository structure directly into AI context:
 
@@ -147,7 +150,7 @@ grab --tree
 grab --tree backend/
 ```
 
-# Example output:
+### Example output:
 
 ==================== DIRECTORY CONTEXT ====================
 path: /root/project
