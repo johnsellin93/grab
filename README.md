@@ -115,9 +115,24 @@ AI identifies missing context
 
 Instead of guessing missing architecture, dependencies, or call flow, the AI works from progressively expanded explicit context.
 
-`grab` does not infer repository structure or hidden dependencies automatically.
+Search results include exact filenames, symbols, and line numbers.
 
-It helps build deterministic context incrementally from explicit terminal commands.
+This allows the AI to progressively refine context acquisition by emitting deterministic range extraction commands based on previous search output.
+
+Typical flow:
+
+```
+AI searches symbol
+→ grab returns exact file + line numbers
+→ AI requests precise range extraction
+→ Context expands incrementally
+```
+
+
+grab does not infer hidden repository structure or dependencies automatically.
+
+Instead, context is expanded explicitly through iterative search and deterministic extraction commands.
+
 
 
 
