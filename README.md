@@ -29,8 +29,7 @@ grab ExactPattern # locate relevant symbols/functions
 grab 500 635 file.cs # extract exact implementation range from line number and file
 ```
 ## Demo
-
-<video src="https://github.com/user-attachments/assets/e5e0b275-f2bc-4799-aa38-f761d6831c95"
+<video src="https://github.com/user-attachments/assets/2a146485-c115-423a-b830-e2a9f242be02"
        controls
        autoplay
        loop
