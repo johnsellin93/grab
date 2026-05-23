@@ -127,13 +127,13 @@ Because search results include precise line numbers, the AI can request surround
 
 Typical workflow:
 
-```text
+```
 AI searches symbol
 → grab returns exact file + line numbers
 → AI emits exact extraction ranges
 → surrounding implementation context is preserved
 → Context expands incrementally
-
+```
 
 cat ~/.cache/grab/context.txt
 
