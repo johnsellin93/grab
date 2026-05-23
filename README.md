@@ -28,7 +28,7 @@ grab 500 635 file.cs
 ## Demo
 ![grab demo](docs/demo.gif)
 
-# Example workflow:
+### Example workflow:
 - clear previous context
 - capture repository structure
 - search relevant code
@@ -67,13 +67,6 @@ grab builds a reusable context file that can be pasted into:
 - an editor
 - a ticket
 - a debugging note
-
-Use --all to disable smart file-type filtering:
-
-grab --all SomePattern
-
-Ignored directories and noisy files are still skipped.
-
 
 
 ## Context Model
@@ -133,11 +126,9 @@ grab --clear
 
 ## Notes
 
-```
 - Latest clean output: `~/.cache/grab/buffer.txt`
 - Accumulated AI context: `~/.cache/grab/context.txt`
 - Clipboard integration supported
-```
 
 
 
@@ -145,10 +136,8 @@ grab --clear
 
 Capture repository structure directly into AI context:
 
-```
 grab --tree
 grab --tree backend/
-```
 
 ### Example output:
 
@@ -174,6 +163,8 @@ public async Task<LoginResult> Authenticate()
 {
     ...
 }
+
+
 
 This helps AI understand the project layout before reading code snippets.
 
@@ -235,9 +226,9 @@ Wayland clipboard via wl-copy
 X clipboard via xclip
 macOS clipboard via pbcopy
 
-
 ## Vim / Neovim Integration
-# Example clipboard setup:
+
+### Example clipboard setup
 
 ```
 set clipboard+=unnamedplus
@@ -358,5 +349,3 @@ It automatically ignores:
 - minified files
 - lock files
 - generated artifacts
-
-Use `--all` to disable smart filtering.
