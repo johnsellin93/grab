@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/4ad22646-6021-4bb8-af80-be2610858c69
+
 # Terminal-native AI context engineering for large codebases.
 
 grab is a terminal-native AI context builder for large codebases.
