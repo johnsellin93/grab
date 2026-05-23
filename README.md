@@ -2,7 +2,7 @@
 
 grab is a terminal-native AI context builder for large codebases.
 
-it's built on top of standard Unix tooling: `ripgrep` for search, `sed` for precise range extraction, and clipboard/tmux integration for transport.
+it's built on top of standard Unix tooling: `ripgrep` for search, `sed` for precise range extraction, and clipboard for transport.
 
 Every `grab` command automatically appends context and copies the accumulated result into the active clipboard/tmux buffer.
 
@@ -20,13 +20,13 @@ It lets you:
 ## Quick Example
 
 ```
-grab --clear
+grab --clear  # reset previous debugging context
 
-grab --tree
+grab --tree # capture repository structure
 
-grab ExactPattern
+grab ExactPattern # locate relevant symbols/functions
 
-grab 500 635 file.cs
+grab 500 635 file.cs # extract exact implementation range
 ```
 
 
