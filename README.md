@@ -2,6 +2,9 @@
 
 grab is a terminal-native AI context builder for large codebases.
 
+it's built on top of standard Unix tooling: `ripgrep` for search, `sed` for precise range extraction, and clipboard/tmux integration for transport.
+
+
 `grab` helps you collect clean, explicit code context for debugging and AI-assisted development.
 
 It lets you:
@@ -77,7 +80,7 @@ Instead of manually searching and copy/pasting fragments, the AI can request exp
 
 Example:
 
-```text
+```
 grab --tree
 grab auth
 grab 500 635 auth.cs LoginFlow
