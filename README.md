@@ -69,12 +69,17 @@ file:start_line-end_line [function_length] signature
 Then the AI can emit deterministic `grab` extraction commands directly from function boundaries:
 
 ```
-grab 167 211 server.py _log_request_end
-grab 122 166 server.py _log_request_start
-grab 212 227 server.py _log_unhandled_exception
+grab 167 211 server.py
+grab 122 166 server.py
+grab 212 227 server.py
 ```
 
-Each command appends additional repository context and copies the accumulated debugging context into the active clipboard/tmux buffer:
+Each command appends additional repository context and copies the accumulated debugging context into the active clipboard/tmux buffer.
+
+With delayed footer summaries enabled:
+
+```
+export GRAB_DELAY_FOOTER=1
 
 ```
 [grab] appended 3 blocks / +106L → context 254L / 6202B copied to X clipboard via xclip
