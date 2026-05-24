@@ -77,9 +77,10 @@ grab 212 227 server.py _log_unhandled_exception
 Each command appends additional repository context and copies the accumulated debugging context into the active clipboard/tmux buffer:
 
 ```
-[grab] context: 306 lines / 7662 bytes copied to X clipboard via xclip
-[grab] context: 358 lines / 8891 bytes copied to X clipboard via xclip
-[grab] context: 381 lines / 9471 bytes copied to X clipboard via xclip
+[grab] appended 3 blocks / +106L → context 254L / 6202B copied to X clipboard via xclip
+  +45L  def _attach_maxage_fields(bot_id: str, row: Dict[str, Any], now_dt: datetime) -> None:
+  +45L  def _parse_duration_to_seconds(spec: str) -> int:
+  +16L  def _parse_iso_utc_to_dt(iso: Any) -> datetime | None:
 ```
 
 Instead of guessing missing code, the AI progressively acquires explicit repository context through deterministic extraction commands.
