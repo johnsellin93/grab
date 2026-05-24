@@ -82,6 +82,8 @@ With delayed footer summaries enabled:
 export GRAB_DELAY_FOOTER=1
 
 ```
+
+```
 [grab] appended 3 blocks / +106L → context 254L / 6202B copied to X clipboard via xclip
   +45L  def _attach_maxage_fields(bot_id: str, row: Dict[str, Any], now_dt: datetime) -> None:
   +45L  def _parse_duration_to_seconds(spec: str) -> int:
