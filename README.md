@@ -34,7 +34,7 @@ grab 500 635 file.cs # extract exact implementation range from line number and f
 
 ```
 grab --functions server.py   # Only functions from server.py
-grab --functions             # repository-wide function index
+grab --functions .           # repository-wide function index
 ```
 
 Example output:
