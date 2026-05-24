@@ -66,7 +66,7 @@ Format:
 file:start_line-end_line [function_length] signature
 ```
 
-Then the AI can request exact implementations directly from function boundaries:
+Then the AI can emit deterministic `grab` extraction commands directly from function boundaries:
 
 ```
 grab 167 211 server.py _log_request_end
@@ -74,7 +74,7 @@ grab 122 166 server.py _log_request_start
 grab 212 227 server.py _log_unhandled_exception
 ```
 
-Each command appends to the accumulated context and copies the updated context to clipboard:
+Each command appends additional repository context and copies the accumulated debugging context into the active clipboard/tmux buffer:
 
 ```
 [grab] context: 306 lines / 7662 bytes copied to X clipboard via xclip
@@ -83,7 +83,6 @@ Each command appends to the accumulated context and copies the updated context t
 ```
 
 Instead of guessing missing code, the AI progressively acquires explicit repository context through deterministic extraction commands.
-
 
 ## Demo
 <video src="simpledemo-cut.mp4" controls autoplay loop muted width="100%"></video>
@@ -542,4 +541,3 @@ It automatically ignores:
 - minified files
 - lock files
 - generated artifacts
-  f
