@@ -33,7 +33,8 @@ grab 500 635 file.cs # extract exact implementation range from line number and f
 ## AI Workflow Example
 
 ```
-grab --functions server.py
+grab --functions server.py   # Only functions from server.py
+grab --functions             # repository-wide function index
 ```
 
 Example output:
@@ -41,26 +42,6 @@ Example output:
 ```
 server.py:167-211 [45L] def _log_request_end(resp: Response):
 server.py:212-227 [16L] def _log_unhandled_exception(e: Exception):
-server.py:38-58 [21L] def _init_logging() -> None:
-server.py:59-95 [37L] def format(self, record: logging.LogRecord) -> str:
-server.py:96-110 [15L] def _get_real_client_ip() -> str:
-server.py:111-121 [11L] def get_cloudflare_access_email() -> str:
-server.py:122-166 [45L] def _log_request_start():
-server.py:167-211 [45L] def _log_request_end(resp: Response):
-server.py:212-227 [16L] def _log_unhandled_exception(e: Exception):
-server.py:228-246 [19L] def _safe_float(x: Any) -> float:
-server.py:247-264 [18L] def _enqueue_all_trading_commands(bot_to_instance: dict, val: bool) -> int:
-server.py:265-269 [5L] def _line_key(bot_id: str, instance_id: str, line_id: str) -> Tuple[str, str, str]:
-server.py:270-303 [34L] def _coerce_nonneg_float(x: Any) -> float | None:
-server.py:304-357 [54L] def _history_add_event(row: Dict[str, Any], event_type: str) -> bool:
-server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_row: Dict[str, Any]) -> bool:
-
- [grab] copy 25: functions 13 lines / 969 bytes
- latest : /root/.cache/grab/buffer.txt
- context: /root/.cache/grab/context.txt
- size   : 862 lines / 29874 bytes
- copied : X clipboard via xclip
-
 ```
 Format:
 
