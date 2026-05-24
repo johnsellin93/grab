@@ -74,6 +74,30 @@ grab 122 166 server.py _log_request_start
 grab 212 227 server.py _log_unhandled_exception
 ```
 
+Example output:
+
+```
+[grab] copy 30: range 45 lines / 975 bytes
+  file   : server.py
+  lines  : 167-211
+  latest : /root/.cache/grab/buffer.txt
+  context: /root/.cache/grab/context.txt
+  copied : X clipboard via xclip
+[grab] copy 31: range 45 lines / 1041 bytes
+  file   : server.py
+  lines  : 122-166
+  latest : /root/.cache/grab/buffer.txt
+  context: /root/.cache/grab/context.txt
+  copied : X clipboard via xclip
+[grab] copy 32: range 16 lines / 386 bytes
+  file   : server.py
+  lines  : 212-227
+  latest : /root/.cache/grab/buffer.txt
+  context: /root/.cache/grab/context.txt
+  copied : X clipboard via xclip
+```
+
+
 Instead of guessing missing code, the AI progressively acquires explicit repository context through deterministic extraction commands.
 
 
