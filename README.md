@@ -76,7 +76,7 @@ grab 212 227 server.py
 
 Each command appends additional repository context and copies the accumulated debugging context into the active clipboard/tmux buffer.
 
-With delayed footer summaries enabled:
+With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
 
 ```
 [grab] appended 3 blocks / +106L → context 254L / 6202B copied to X clipboard via xclip
