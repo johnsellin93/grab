@@ -66,10 +66,12 @@ Format:
 file:start_line-end_line [function_length] signature
 ```
 
-The AI can request exact implementations directly from function boundaries:
+Then AI can emit exact implementations directly from function boundaries:
 
 ```
 grab 167 211 server.py _log_request_end
+grab 122 166 server.py _log_request_start
+grab 212 227 server.py _log_unhandled_exception
 ```
 
 Instead of guessing missing code, the AI progressively acquires explicit repository context through deterministic extraction commands.
@@ -532,4 +534,3 @@ It automatically ignores:
 - minified files
 - lock files
 - generated artifacts
- f
