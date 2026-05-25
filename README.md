@@ -69,6 +69,7 @@ Format:
 file:start_line-end_line [function_length] signature
 ```
 
+
 ```text
 grab --functions .
     ↓
@@ -76,7 +77,7 @@ AI sees exact function ranges
     ↓
 AI emits additional grab extraction commands
     ↓
-repository context expands recursively
+repository context expands incrementally
 ```
 
 Function indexing gives the AI exact extraction coordinates that can be used to gather additional surrounding implementation context.
