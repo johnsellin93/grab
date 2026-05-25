@@ -55,20 +55,17 @@ server.py:265-269 [5L] def _line_key(bot_id: str, instance_id: str, line_id: str
 server.py:270-303 [34L] def _coerce_nonneg_float(x: Any) -> float | None:
 server.py:304-357 [54L] def _history_add_event(row: Dict[str, Any], event_type: str) -> bool:
 server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_row: Dict[str, Any]) -> bool:
-[grab] copy 29: functions 13 lines / 969 bytes
-  target : server.py
-  latest : /root/.cache/grab/buffer.txt
-  context: /root/.cache/grab/context.txt
-  size   : 2106 lines / 122918 bytes
-  copied : X clipboard via xclip
+
+[grab] functions:. +13L → context 489L / 44768B copied to X clipboard via xclip
 ```
+
 Format:
 
 ```
 file:start_line-end_line [function_length] signature
 ```
 
-Function-boundary indexing enables AI systems to recursively acquire additional repository context through deterministic extraction commands instead of semantic-only retrieval.
+Function indexing lets the AI request additional repository context using exact `grab` extraction commands.
 
 ```
 grab 167 211 server.py
@@ -546,3 +543,4 @@ It automatically ignores:
 - minified files
 - lock files
 - generated artifacts
+  f
