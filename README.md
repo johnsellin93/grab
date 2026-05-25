@@ -167,25 +167,6 @@ source ~/.zshrc
 ```
 
 
-## Typical Workflow
-
-```
-grab --clear
-
-grab --tree # capture repository structure
-
-grab auth
-
-grab 500 635 auth.cs LoginFlow
-
-cat ~/.cache/grab/context.txt
-```
-
-This builds incremental AI-ready debugging context across multiple extraction steps.
-
-
-
-
 ## Smart Search Mode
 
 By default, `grab` searches only relevant project files:
