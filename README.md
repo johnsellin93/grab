@@ -6,11 +6,6 @@ It combines `ripgrep`, `sed`, and clipboard workflows into deterministic reposit
 
 Instead of copy-pasting fragmented snippets, `grab` incrementally accumulates explicit AI-ready debugging context across multiple extraction passes.
 
-
-## Supported Languages
-
-Python, C#, JavaScript, TypeScript, shell scripts, and generic text/code repositories.
-
 It lets you:
 
 - search relevant project files
@@ -19,6 +14,10 @@ It lets you:
 - accumulate debugging context incrementally
 - automatically copy accumulated context to clipboard/tmux
 - paste clean AI-ready context directly into AI tools
+
+## Supported Languages
+
+Python, C#, JavaScript, TypeScript, shell scripts, and generic text/code repositories.
 
 ## Quick Example
 
@@ -228,3 +227,4 @@ It automatically ignores:
 - minified files
 - lock files
 - generated artifacts
+  f
