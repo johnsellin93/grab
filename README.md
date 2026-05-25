@@ -69,7 +69,17 @@ Format:
 file:start_line-end_line [function_length] signature
 ```
 
-Function indexing gives the AI exact start/end extraction coordinates that can be used to gather additional surrounding implementation context with deterministic `grab` commands.
+```text
+grab --functions .
+    ↓
+AI sees exact function ranges
+    ↓
+AI emits additional grab extraction commands
+    ↓
+repository context expands recursively
+```
+
+Function indexing gives the AI exact extraction coordinates that can be used to gather additional surrounding implementation context.
 
 ```
 grab 265 269 server.py
