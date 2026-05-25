@@ -128,16 +128,6 @@ That causes AI to guess.
 
 grab fixes this by making context explicit, accumulated, and reusable.
 
-
-Every `grab` command incrementally expands a reusable AI context buffer:
-
-- ChatGPT
-- Claude
-- an editor
-- a ticket
-- a debugging note
-
-
 ## Why grab Exists
 
 Large repositories spread logic across multiple files and services.
@@ -227,4 +217,3 @@ It automatically ignores:
 - minified files
 - lock files
 - generated artifacts
-  f
