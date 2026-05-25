@@ -1,4 +1,4 @@
-# Terminal-native AI context engineering for large codebases
+# Terminal-native repository context engineering for large codebases
 
 grab is a terminal-native context acquisition tool for debugging and AI-assisted development in large repositories.
 
