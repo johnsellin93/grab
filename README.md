@@ -1,8 +1,10 @@
 # Terminal-native AI context engineering for large codebases
 
-grab is a terminal-native AI context builder for large codebases.
+grab is a terminal-native context acquisition tool for large codebases.
 
 It turns repository interaction into an explicit, stateful context accumulation process instead of a single-shot prompt retrieval workflow.
+
+grab is designed for iterative debugging workflows where repository context must be accumulated progressively across multiple files and extraction passes.
 
 It composes standard Unix tooling — `ripgrep` for search, `sed` for precise range extraction, and clipboard/tmux for transport — into deterministic repository-context acquisition workflows.
 
@@ -74,16 +76,17 @@ grab 122 166 server.py
 grab 212 227 server.py
 ```
 
-Each command appends additional repository context and copies the accumulated debugging context into the active clipboard/tmux buffer.
+Each command appends additional repository context and copies the accumulated result into the active clipboard/tmux buffer.
 
 With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
 
 ```
-[grab] appended 3 blocks / +106L → context 254L / 6202B copied to X clipboard via xclip
-  +45L  def _attach_maxage_fields(bot_id: str, row: Dict[str, Any], now_dt: datetime) -> None:
-  +45L  def _parse_duration_to_seconds(spec: str) -> int:
-  +16L  def _parse_iso_utc_to_dt(iso: Any) -> datetime | None:
-  +4L   def _line_key(bot_id: str, instance_id: str, line_id: str) -> Tuple[str, str, str]:
+[grab] +3 blocks (+106L) → context 254L / 6202B
+
+  +45L  _attach_maxage_fields(...)
+  +45L  _parse_duration_to_seconds(...)
+  +16L  _parse_iso_utc_to_dt(...)
+  +4L   _line_key(...)
 ```
 
 Instead of guessing missing code, the AI progressively acquires explicit repository context through deterministic extraction commands.
@@ -545,3 +548,4 @@ It automatically ignores:
 - minified files
 - lock files
 - generated artifacts
+  f
