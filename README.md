@@ -65,8 +65,7 @@ Format:
 file:start_line-end_line [function_length] signature
 ```
 
-
-Function indexing lets the AI request additional repository context using exact `grab` extraction commands.
+Function indexing gives the AI exact start/end extraction coordinates that can be used to gather additional surrounding implementation context with deterministic `grab` commands.
 
 ```
 grab 265 269 server.py
@@ -75,7 +74,7 @@ grab 122 166 server.py
 grab 212 227 server.py
 ```
 
-Each command appends repository context directly into the active clipboard buffer.
+Each extraction incrementally expands the active repository context available to the AI.
 
 With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
 
