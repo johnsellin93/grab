@@ -74,7 +74,7 @@ grab 122 166 server.py
 grab 212 227 server.py
 ```
 
-Each extraction incrementally expands the active repository context available to the AI.
+Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
 
 With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
 
