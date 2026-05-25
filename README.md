@@ -1,16 +1,10 @@
 # Terminal-native AI context engineering for large codebases
 
-grab is a terminal-native context acquisition tool for large codebases.
+grab is a terminal-native context acquisition tool for debugging and AI-assisted development in large repositories.
 
-It turns repository interaction into an explicit, stateful context accumulation process instead of a single-shot prompt retrieval workflow.
+It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic repository-context extraction.
 
-grab is designed for iterative debugging workflows where repository context must be accumulated progressively across multiple files and extraction passes.
-
-It composes standard Unix tooling — `ripgrep` for search, `sed` for precise range extraction, and clipboard/tmux for transport — into deterministic repository-context acquisition workflows.
-
-Every `grab` command automatically appends context and copies the accumulated result into the active clipboard/tmux buffer.
-
-`grab` helps you collect clean, explicit code context for debugging and AI-assisted development.
+Instead of copy-pasting fragmented snippets, `grab` incrementally accumulates explicit AI-ready debugging context across multiple extraction passes.
 
 It lets you:
 
@@ -26,7 +20,7 @@ It lets you:
 ```
 grab --clear  # reset previous debugging context
 
-`grab --tree` helps expose repository layout before extracting implementation details.
+grab --tree` helps expose repository layout before extracting implementation details.
 
 grab ExactPattern # locate relevant symbols/functions
 
@@ -244,3 +238,4 @@ It automatically ignores:
 - minified files
 - lock files
 - generated artifacts
+  f
