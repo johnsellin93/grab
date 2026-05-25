@@ -2,9 +2,14 @@
 
 grab is a terminal-native context acquisition tool for debugging and AI-assisted development in large repositories.
 
-It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic repository-context extraction.
+It combines `ripgrep`, `sed`, and clipboard workflows into deterministic repository-context extraction.
 
 Instead of copy-pasting fragmented snippets, `grab` incrementally accumulates explicit AI-ready debugging context across multiple extraction passes.
+
+
+## Supported Languages
+
+Python, C#, JavaScript, TypeScript, shell scripts, and generic text/code repositories.
 
 It lets you:
 
@@ -20,7 +25,7 @@ It lets you:
 ```
 grab --clear  # reset previous debugging context
 
-grab --tree` helps expose repository layout before extracting implementation details.
+grab --tree # capture repository structure
 
 grab ExactPattern # locate relevant call flow and implementation paths
 
@@ -71,7 +76,7 @@ grab 122 166 server.py
 grab 212 227 server.py
 ```
 
-Each command appends additional repository context and copies the accumulated result into the active clipboard/tmux buffer.
+Each command appends repository context directly into the active clipboard buffer.
 
 With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
 
@@ -136,29 +141,14 @@ Every `grab` command incrementally expands a reusable AI context buffer:
 
 ## Why grab Exists
 
-Large repositories spread logic across multiple files, services, and directories.
+Large repositories spread logic across multiple files and services.
 
-Often a single file contains thousands of lines, making it impractical to paste entire implementations into an AI assistant without overwhelming the context window.
+Developers debugging with AI tools often paste fragmented snippets, lose surrounding context, and force the model to guess missing implementation details.
 
-Developers end up manually hunting for the smallest relevant fragments while trying to preserve enough surrounding context for accurate reasoning.
-
-`grab` turns this into a controlled, repeatable workflow.
-
-Instead of “search and guess”, `grab` lets you:
-
-- search precisely
-- extract exact code ranges
-- accumulate reusable context incrementally
-- work from explicit inputs
-
-The result is reproducible debugging context instead of fragmented snippets.
+`grab` turns repository exploration into a deterministic context acquisition workflow built around exact search results, function boundaries, and explicit range extraction.
 
 > You are not copying results. You are exporting context.
 
-
-## Supported Languages
-
-Python, C#, JavaScript, TypeScript, shell scripts, and generic text/code repositories.
 
 # Clipboard Integration
 
@@ -171,10 +161,10 @@ Supported targets:
 
 ## Vim / Neovim Integration
 
-```vim
+```
 set clipboard+=unnamedplus
 set clipboard+=unnamed
-
+```
 
 # Requirements
 
@@ -207,7 +197,7 @@ chmod +x install.sh
 ```
 grab --clear
 
-grab --tree
+grab --tree # helps expose repository layout before extracting implementation details.
 
 grab auth
 
