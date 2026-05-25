@@ -70,7 +70,8 @@ file:start_line-end_line [function_length] signature
 ```
 
 
-```text
+
+```
 grab --functions .
     ↓
 AI sees exact function ranges
