@@ -35,8 +35,8 @@ grab 500 635 file.cs # extract exact implementation range from line number and f
 ## AI Workflow Example
 
 ```
-grab --functions server.py   # Only functions from server.py
-grab --functions .           # repository-wide function index
+grab --functions server.py   # function index for a single file
+grab --functions .           # repository-wide function index (Python/C#/JS/TS)
 ```
 
 Example output:
@@ -44,7 +44,7 @@ Example output:
 ```
 server.py:38-58 [21L] def _init_logging() -> None:
 server.py:59-95 [37L] def format(self, record: logging.LogRecord) -> str:
-server.py:96-110 [15L] def _get_real_client_ip() -> str:
+server.py:96-110 [15L] def _get_client() -> str:
 server.py:111-121 [11L] def get_cloudflare_access_email() -> str:
 server.py:122-166 [45L] def _log_request_start():
 server.py:167-211 [45L] def _log_request_end(resp: Response):
@@ -68,6 +68,7 @@ file:start_line-end_line [function_length] signature
 Function indexing lets the AI request additional repository context using exact `grab` extraction commands.
 
 ```
+grab 265 269 server.py
 grab 167 211 server.py
 grab 122 166 server.py
 grab 212 227 server.py
@@ -82,6 +83,7 @@ With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
   +45L  def _attach_maxage_fields(bot_id: str, row: Dict[str, Any], now_dt: datetime) -> None:
   +45L  def _parse_duration_to_seconds(spec: str) -> int:
   +16L  def _parse_iso_utc_to_dt(iso: Any) -> datetime | None:
+  +4L   def _line_key(bot_id: str, instance_id: str, line_id: str) -> Tuple[str, str, str]:
 ```
 
 Instead of guessing missing code, the AI progressively acquires explicit repository context through deterministic extraction commands.
@@ -543,4 +545,3 @@ It automatically ignores:
 - minified files
 - lock files
 - generated artifacts
-  f
