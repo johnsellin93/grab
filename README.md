@@ -6,6 +6,12 @@ It combines `ripgrep`, `sed`, and clipboard workflows into deterministic reposit
 
 Instead of copy-pasting fragmented snippets, `grab` incrementally accumulates explicit AI-ready debugging context across multiple extraction passes.
 
+
+
+## Demo
+<video src="https://github.com/user-attachments/assets/7c451617-e470-4b72-b2e4-d75b3148fe31" controls autoplay loop muted width="100%"></video>
+
+
 It lets you:
 
 - search relevant project files
