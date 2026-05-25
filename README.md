@@ -74,10 +74,13 @@ file:start_line-end_line [function_length] signature
 ```
 grab --functions .
     ↓
+
 AI sees exact function ranges
     ↓
+
 AI emits additional grab extraction commands
     ↓
+
 repository context expands incrementally
 ```
 
