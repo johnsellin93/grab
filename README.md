@@ -1,8 +1,10 @@
-# Terminal-native AI context engineering for large codebases.
+# Terminal-native AI context engineering for large codebases
 
 grab is a terminal-native AI context builder for large codebases.
 
-it's built on top of standard Unix tooling: `ripgrep` for search, `sed` for precise range extraction, and clipboard for transport.
+It turns repository interaction into an explicit, stateful context accumulation process instead of a single-shot prompt retrieval workflow.
+
+It composes standard Unix tooling — `ripgrep` for search, `sed` for precise range extraction, and clipboard/tmux for transport — into deterministic repository-context acquisition workflows.
 
 Every `grab` command automatically appends context and copies the accumulated result into the active clipboard/tmux buffer.
 
@@ -66,7 +68,7 @@ Format:
 file:start_line-end_line [function_length] signature
 ```
 
-Then the AI can emit deterministic `grab` extraction commands directly from function boundaries:
+Function-boundary indexing enables AI systems to recursively acquire additional repository context through deterministic extraction commands instead of semantic-only retrieval.
 
 ```
 grab 167 211 server.py
