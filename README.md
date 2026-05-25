@@ -89,20 +89,6 @@ With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
 
 Instead of guessing missing code, the AI progressively acquires explicit repository context through deterministic extraction commands.
 
-## Demo
-<video src="simpledemo-cut.mp4" controls autoplay loop muted width="100%"></video>
-
-The workflow shown above is typically driven iteratively by an AI assistant.
-
-Search results expose exact filenames and line numbers, allowing the AI to request precise implementation ranges while preserving surrounding logic and minimizing missing context during debugging.
-
-### Example workflow:
-- clear previous context
-- capture repository structure
-- search relevant code
-- extract exact implementation ranges
-- accumulate AI-ready debugging context
-
 
 # What grab Solves
 
@@ -173,10 +159,11 @@ If tree is not installed, grab --tree falls back to find.
 # Install
 
 ```
-git clone https://github.com/YOUR_USERNAME/grab.git
+git clone https://github.com/johnsellin93/grab.git
 cd grab
-chmod +x install.sh
-./install.sh
+chmod +x grab
+echo 'export PATH="$HOME/grab:$PATH"' >> ~/.zshrc
+source ~/.zshrc
 ```
 
 
@@ -185,7 +172,7 @@ chmod +x install.sh
 ```
 grab --clear
 
-grab --tree # helps expose repository layout before extracting implementation details.
+grab --tree # capture repository structure
 
 grab auth
 
@@ -216,3 +203,8 @@ It automatically ignores:
 - minified files
 - lock files
 - generated artifacts
+
+
+## Workflow Tips
+
+For fast keyboard-driven AI workflows, browser extensions like Vimium C work well alongside `grab`.
