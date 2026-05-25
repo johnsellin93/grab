@@ -22,7 +22,7 @@ grab --clear  # reset previous debugging context
 
 grab --tree` helps expose repository layout before extracting implementation details.
 
-grab ExactPattern # locate relevant symbols/functions
+grab ExactPattern # locate relevant call flow and implementation paths
 
 grab 500 635 file.cs # extract exact implementation range from line number and file
 ```
@@ -238,4 +238,3 @@ It automatically ignores:
 - minified files
 - lock files
 - generated artifacts
-  f
