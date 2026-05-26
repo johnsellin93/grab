@@ -95,7 +95,7 @@ Each extraction incrementally expands the active repository context and copies t
 With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
 
 ```
-[grab] +4 blocks (+110L) → context 254L / 6202B
+[grab] +4 blocks (+110L) → context 254L / 6202B copied to X clipboard via xclip
 
   +45L  _attach_maxage_fields(...)
   +45L  _parse_duration_to_seconds(...)
