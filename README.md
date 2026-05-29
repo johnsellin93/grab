@@ -74,11 +74,13 @@ Workflow:
 ```
 grab --functions .
     ↓
-AI sees exact function ranges
+AI sees function ranges and name context
     ↓
 AI emits additional grab extraction commands
     ↓
-repository context expands incrementally
+repository context expands incrementally to clipboard
+
+grab '--clear' clears the context from .cache/grab/context.txt
 ```
 
 Function indexing gives the AI exact extraction coordinates that can be used to gather additional surrounding implementation context.
