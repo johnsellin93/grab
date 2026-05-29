@@ -35,6 +35,7 @@ grab ExactPattern # locate relevant call flow and implementation paths
 grab 500 635 file.cs # extract exact implementation range from line number and file
 
 Filter functions by keywords.
+
 grab --functions . Order
 grab --functions . Trade
 grab --functions . Execute
