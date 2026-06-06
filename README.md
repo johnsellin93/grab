@@ -10,6 +10,7 @@ Unlike repository indexing tools, grab focuses on explicit, user-directed contex
 
 > You are not copying results. You are exporting context.
 
+grab helps developers build explicit repository context for AI systems instead of relying on repository-wide indexing or incomplete snippets.
 
 ## Demo
 <video src="https://github.com/user-attachments/assets/7c451617-e470-4b72-b2e4-d75b3148fe31" controls autoplay loop muted width="100%"></video>
@@ -25,8 +26,7 @@ It lets you:
 - paste clean AI-ready context directly into AI tools
 
 ## Supported Languages
-
-Python, C#, JavaScript, TypeScript, shell scripts, and generic text/code repositories. Support for `Ansible` is coming soon.
+Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
 
 
 ## Example Workflow
@@ -40,7 +40,7 @@ grab ExactPattern # locate relevant call flow and implementation paths
 
 grab 500 635 file.cs # extract exact implementation range from line number and file
 
-Filter functions by keywords.
+Filter discovered functions by keyword:
 
 grab --functions . Order
 grab --functions . Trade
@@ -49,22 +49,7 @@ grab --functions . Rebuy
 grab --functions . Breakout
 ```
 
-## Context Storage
-
-Latest extraction:
-```
-~/.cache/grab/buffer.txt
-```
-
-Accumulated AI context:
-
-```
-~/.cache/grab/context.txt
-```
-
-The context file maintains a growing repository investigation history, making it easier to build context for large-scale debugging and codebase analysis.
-
-## Incremental Context Acquisition
+## Function Indexing and Context Acquisition
 
 1. Search for symbols, variables, functions, or configuration values.
 2. Extract relevant code ranges.
@@ -133,6 +118,23 @@ With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
   +16L  _parse_iso_utc_to_dt(...)
   +4L   _line_key(...)
 ```
+
+## Context Storage
+
+Latest extraction:
+```
+~/.cache/grab/buffer.txt
+```
+
+Accumulated AI context:
+
+```
+~/.cache/grab/context.txt
+```
+
+The context file maintains a growing repository investigation history, making it easier to build context for large-scale debugging and codebase analysis.
+
+
 
 Instead of guessing missing code, the AI progressively acquires explicit repository context through deterministic extraction commands.
 
