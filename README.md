@@ -1,6 +1,4 @@
-# Terminal workflows for debugging large codebases with AI
-
-grab is a small terminal tool for building explicit repository context during AI-assisted debugging.
+# Terminal workflows for AI-assisted debugging and repository analysis
 
 It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic code-context extraction.
 
@@ -43,8 +41,34 @@ grab --functions . Rebuy
 grab --functions . Breakout
 ```
 
+## Context Storage
+
+Latest extraction:
+```
+~/.cache/grab/buffer.txt
+```
+
+Accumulated AI context:
+
+```
+~/.cache/grab/context.txt
+```
+
+The context file maintains a growing repository investigation history, making it easier to build context for large-scale debugging and codebase analysis.
+
 
 ## AI Workflow Example
+
+Workflow
+
+Grab is designed for AI-assisted debugging and repository exploration.
+
+Search for symbols, variables, functions, or configuration values.
+Extract relevant code ranges.
+Accumulate context across multiple files and searches.
+Automatically copy aggregated context to tmux or the system clipboard.
+Paste directly into AI tools for troubleshooting, analysis, or implementation assistance.
+
 
 ```
 grab --functions server.py   # function index for a single file
