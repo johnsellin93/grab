@@ -29,7 +29,7 @@ It lets you:
 Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
 
 
-## Example Workflow
+## Basic Workflow
 
 ```
 grab --clear  # reset previous debugging context
