@@ -90,12 +90,14 @@ grab --functions .
     ↓
 AI sees function ranges and name context
     ↓
-AI emits additional grab extraction commands
+AI emits batches of grab extraction commands
     ↓
 repository context expands incrementally to clipboard
 
 grab '--clear' clears the context from .cache/grab/context.txt
 ```
+
+The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
 
 Function indexing gives the AI exact extraction coordinates that can be used to gather additional surrounding implementation context.
 
@@ -105,6 +107,8 @@ grab 167 211 server.py
 grab 122 166 server.py
 grab 212 227 server.py
 ```
+
+Example batch emitted by the AI:
 
 Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
 
