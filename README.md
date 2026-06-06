@@ -31,23 +31,16 @@ Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
 
 ## Basic Workflow
 
-```
-grab --clear  # reset previous debugging context
+| Command | Purpose |
+|----------|----------|
+| `grab --clear` | Reset previous debugging context |
+| `grab --tree` | Capture repository structure |
+| `grab ExactPattern` | Locate relevant call flows and implementation paths |
+| `grab 500 635 file.cs` | Extract an exact implementation range |
+| `grab --functions . Order` | Locate Order-related functions |
+| `grab --functions . Trade` | Locate Trade-related functions |
+| `grab --functions . Execute` | Locate execution-related functions |
 
-grab --tree # capture repository structure
-
-grab ExactPattern # locate relevant call flow and implementation paths
-
-grab 500 635 file.cs # extract exact implementation range from line number and file
-
-Filter discovered functions by keyword:
-
-grab --functions . Order
-grab --functions . Trade
-grab --functions . Execute
-grab --functions . Rebuy
-grab --functions . Breakout
-```
 
 ## Function Indexing and Context Acquisition
 
