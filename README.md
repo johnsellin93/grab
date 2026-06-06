@@ -94,14 +94,14 @@ The intended workflow is batch-oriented. Rather than extracting one function at 
 
 Function indexing gives the AI exact extraction coordinates that can be used to gather additional surrounding implementation context.
 
+Example batch emitted by the AI:
+
 ```
 grab 265 269 server.py
 grab 167 211 server.py
 grab 122 166 server.py
 grab 212 227 server.py
 ```
-
-Example batch emitted by the AI:
 
 Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
 
