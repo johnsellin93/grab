@@ -57,7 +57,7 @@ Accumulated AI context:
 The context file maintains a growing repository investigation history, making it easier to build context for large-scale debugging and codebase analysis.
 
 
-## AI Workflow Example
+## Workflow Example
 
 Workflow
 
