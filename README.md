@@ -26,9 +26,10 @@ It lets you:
 
 ## Supported Languages
 
-Python, C#, JavaScript, TypeScript, shell scripts, and generic text/code repositories.
+Python, C#, JavaScript, TypeScript, shell scripts, and generic text/code repositories. Support for `Ansible` is coming soon.
 
-## Quick Example
+
+## Example Workflow
 
 ```
 grab --clear  # reset previous debugging context
@@ -96,11 +97,6 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 [grab] functions:. +13L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
-Format:
-
-```
-file:start_line-end_line [function_length] signature
-```
 
 Workflow:
 
