@@ -1,8 +1,15 @@
 # Terminal workflows for AI-assisted debugging and repository analysis
 
+grab is a terminal tool for deterministic repository context extraction during AI-assisted debugging and codebase analysis.
+
 It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic code-context extraction.
 
-Instead of repeatedly copy-pasting fragmented snippets, `grab` incrementally accumulates surrounding implementation context across multiple extraction passes.
+Instead of indexing entire repositories, grab allows developers and AI systems to progressively acquire only the context required for a specific debugging or implementation task.
+
+Unlike repository indexing tools, grab focuses on explicit, user-directed context acquisition.
+
+> You are not copying results. You are exporting context.
+
 
 ## Demo
 <video src="https://github.com/user-attachments/assets/7c451617-e470-4b72-b2e4-d75b3148fe31" controls autoplay loop muted width="100%"></video>
@@ -56,19 +63,13 @@ Accumulated AI context:
 
 The context file maintains a growing repository investigation history, making it easier to build context for large-scale debugging and codebase analysis.
 
+## Incremental Context Acquisition
 
-## Workflow Example
-
-Workflow
-
-Grab is designed for AI-assisted debugging and repository exploration.
-
-Search for symbols, variables, functions, or configuration values.
-Extract relevant code ranges.
-Accumulate context across multiple files and searches.
-Automatically copy aggregated context to tmux or the system clipboard.
-Paste directly into AI tools for troubleshooting, analysis, or implementation assistance.
-
+1. Search for symbols, variables, functions, or configuration values.
+2. Extract relevant code ranges.
+3. Accumulate context across multiple files and searches.
+4. Automatically copy aggregated context to tmux or the system clipboard.
+5. Paste directly into AI tools for troubleshooting and analysis.
 
 ```
 grab --functions server.py   # function index for a single file
@@ -142,11 +143,13 @@ Instead of guessing missing code, the AI progressively acquires explicit reposit
 
 # What grab Solves
 
-AI-assisted debugging fails when:
+AI-assisted debugging breaks down when:
 
-- context is incomplete
-- irrelevant files are included
-- the model guesses missing code
+- Context is incomplete
+- Relevant implementation details are missing
+- Irrelevant files pollute the prompt
+- The model is forced to guess missing code
+
 
 grab fixes this through explicit context selection and incremental context accumulation.
 
@@ -170,9 +173,6 @@ Large repositories spread logic across multiple files and services.
 Developers debugging with AI tools often paste fragmented snippets, lose surrounding context, and force the model to guess missing implementation details.
 
 `grab` turns repository exploration into a deterministic context acquisition workflow built around exact search results, function boundaries, and explicit range extraction.
-
-> You are not copying results. You are exporting context.
-
 
 # Clipboard Integration
 
