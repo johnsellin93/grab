@@ -1,4 +1,4 @@
-# Terminal workflows for AI-assisted debugging and repository analysis
+# Terminal workflows for rapid AI-powered debugging and repository analysis
 
 grab is a terminal tool for rapid repository context extraction during AI-assisted debugging and codebase analysis.
 
