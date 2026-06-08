@@ -1,6 +1,6 @@
 # Terminal workflows for AI-assisted debugging and repository analysis
 
-grab is a terminal tool for deterministic repository context extraction during AI-assisted debugging and codebase analysis.
+grab is a terminal tool for rapid repository context extraction during AI-assisted debugging and codebase analysis.
 
 It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic code-context extraction.
 
