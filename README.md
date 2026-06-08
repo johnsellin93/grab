@@ -97,10 +97,15 @@ Function indexing gives the AI exact extraction coordinates that can be used to 
 Example batch emitted by the AI:
 
 ```
-grab 265 269 server.py
-grab 167 211 server.py
-grab 122 166 server.py
-grab 212 227 server.py
+grab 280 378 SampleLinesTrader.SL_TP_logic.cs EnforceLineInvalidationOnOpenPositions
+grab 196 219 SampleLinesTrader.SL_TP_logic.cs GetLineInvalidationBufferPrice
+grab 818 850 SampleLinesTrader.SL_TP_logic.cs ResolveLineIdForPosition
+grab 496 545 lines18.cs TryGetTrendLinePriceAtTime
+grab 1128 1153 lines18.cs GetDistancePriceToLineId
+grab 463 495 lines18.cs TryExtractLineIdFromPosition
+grab LineInvalidationMinBufferUnits .
+grab LineInvalidationSpreadMultiplier .
+grab "LINE INVALIDATION" .
 ```
 
 Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
