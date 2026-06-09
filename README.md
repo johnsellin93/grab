@@ -95,8 +95,6 @@ AI identifies likely investigation targets
 AI emits batches of grab extraction commands
     ↓
 repository context expands incrementally to clipboard
-    ↓
-AI reasons over explicit repository context instead of guessing
 ```
 
 
