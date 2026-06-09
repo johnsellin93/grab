@@ -83,13 +83,10 @@ Problem statement:
 "An intermittent production bug spans multiple services.
 Users occasionally receive duplicate notifications."
 
-Initial hypothesis:
+"We suspect the issue might be related to retry handling,
+but we don't yet know which parts of the codebase are involved."
 
-"The issue might be related to retry handling,
-but the relevant execution path is unclear."
-
-↓
-
+    ↓
 grab --functions .
     ↓
 AI sees function ranges and name context
