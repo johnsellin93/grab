@@ -78,7 +78,6 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 
 Workflow:
 
-```
 **Problem statement**
 
 > An intermittent production bug spans multiple services.
