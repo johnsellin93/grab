@@ -80,11 +80,10 @@ Workflow:
 ```
 Problem statement:
 
-"An intermittent production bug spans multiple services.
-Users occasionally receive duplicate notifications."
+"Users occasionally receive duplicate notifications.
 
-"We suspect the issue might be related to retry handling,
-but we don't yet know which parts of the codebase are involved."
+We suspect retry handling might be involved,
+but we don't yet know which parts of the codebase to investigate."
 
 grab --functions .
     ↓
