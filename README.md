@@ -79,14 +79,25 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 Workflow:
 
 ```
+Problem statement:
+
+"An intermittent production bug spans multiple services.
+Users occasionally receive duplicate notifications.
+
+We suspect the issue might be related to retry handling,
+but the relevant execution path is unclear."
+    ↓
+
 grab --functions .
     ↓
 AI sees function ranges and name context
     ↓
+AI identifies likely investigation targets
+    ↓
 AI emits batches of grab extraction commands
     ↓
 repository context expands incrementally to clipboard
-
+    ↓
 grab '--clear' clears the context from .cache/grab/context.txt
 ```
 
