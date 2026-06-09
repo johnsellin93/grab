@@ -79,15 +79,15 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 Workflow:
 
 ```
-Problem statement:
+**Problem statement**
 
-"An intermittent production bug spans multiple services.
-Users occasionally receive duplicate notifications.
+> An intermittent production bug spans multiple services.
+> Users occasionally receive duplicate notifications.
+>
+> We suspect the issue might be related to retry handling,
+> but the relevant execution path is unclear.
 
-We suspect the issue might be related to retry handling,
-but the relevant execution path is unclear."
-    ↓
-
+```
 grab --functions .
     ↓
 AI sees function ranges and name context
