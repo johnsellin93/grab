@@ -88,6 +88,7 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 Example bot batch emission:
 
 ```
+grab --functions .
 grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
 grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
 grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
@@ -160,7 +161,7 @@ nnoremap <C-v> :call PasteAndHighlight()<CR>
 vnoremap <C-v> :call PasteAndHighlight()<CR>
 ```
 
-### Assistant Patch Adjustment
+### Assistant Indentation adjustment
 
 Useful when pasting assistant-generated code that requires indentation adjustments.
 
@@ -206,20 +207,6 @@ Selects from the current line through line `250`.
 
 
 
-
-
-The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
-
-Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
-Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
-
-
-Delayed footers summarize newly added context after batch extraction.
-
-```
-export GRAB_DELAY_FOOTER=1
-```
-
 Workflow:
 
 ```
@@ -246,6 +233,20 @@ repository context expands incrementally to clipboard
 
 Instead of guessing missing code, the AI proposes deterministic extraction commands that developers can use to progressively acquire explicit repository context.
 
+
+The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
+
+
+Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer.
+
+Function indexing provides exact extraction coordinates that assistants can use to request additional surrounding implementation context.
+
+
+Delayed footers summarize newly added context after batch extraction.
+
+```
+export GRAB_DELAY_FOOTER=1
+```
 
 ## Context Storage
 
