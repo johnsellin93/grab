@@ -127,6 +127,7 @@ The following mappings are not required to use `grab`, but they significantly im
 |----------|----------|
 | `<C-s>` | Select the current function or method |
 | `<M-s>` | Alternate function-selection mapping |
+| `<M-c>` | Copy the entire current file to the clipboard |
 | `<M-m>` | Shift selected code left by one space |
 | `<M-.>` | Shift selected code right by one space |
 | `<Leader>r` | Search and replace throughout the current file |
@@ -142,7 +143,7 @@ set clipboard+=unnamed
 
 ### Function Selection
 
-Useful when preparing function-level context for `grab`.
+Useful when you manually want to copy a whole function.
 
 ```vim
 nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
@@ -155,9 +156,6 @@ Useful when reviewing assistant-generated patches immediately after insertion.
 
 ```vim
 nnoremap p :call PasteAndHighlight()<CR>
-vnoremap p :call PasteAndHighlight()<CR>
-
-nnoremap <C-v> :call PasteAndHighlight()<CR>
 vnoremap <C-v> :call PasteAndHighlight()<CR>
 ```
 
@@ -172,15 +170,23 @@ xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
 
 ### Search and Replace
 
-Search and replace key-words in current file, makes refactoring of a codebase very easy.
+Search and replace keyword in file.
 
 ```vim
 nnoremap <Leader>r :SReplace<CR>
 ```
 
+### Copy Entire File
+
+Useful when an assistant requires complete file context rather than individual functions or ranges.
+
+```vim
+nnoremap <M-c> :%!xclip -sel clip<CR>
+```
+
 ### Highlight to Line
 
-Useful when preparing exact ranges for extraction.
+Highligth to a specific line.
 
 ```vim
 nnoremap <silent> <Space>h :call HighlightToLine()<CR>
@@ -197,7 +203,7 @@ Selects from the current line through line `250`.
 
 
 
-### Workflow:
+### Example Investigation Workflow:
 
 ```
 Problem statement:
