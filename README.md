@@ -38,8 +38,8 @@ Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
 | `grab ExactPattern` | Locate relevant call flows and implementation paths |
 | `grab 500 635 file.cs` | Extract an exact implementation range |
 | `grab --functions . Order` | Locate Order-related functions |
-| `grab --functions . Trade` | Locate Trade-related functions |
-| `grab --functions . Execute` | Locate execution-related functions |
+| `grab --functions .` | index all functions |
+
 
 
 ## Function Indexing and Context Acquisition
