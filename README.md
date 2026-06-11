@@ -1,5 +1,7 @@
 # Rapid AI-assisted debugging and repository analysis from the terminal
 
+> You are not copying results. You are exporting context.
+
 grab is a terminal tool for rapid repository context extraction during AI-assisted debugging and codebase analysis.
 
 It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic code-context extraction.
@@ -7,8 +9,6 @@ It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic co
 Instead of indexing entire repositories, grab allows developers and AI systems to progressively acquire only the context required for a specific debugging or implementation task.
 
 Unlike repository indexing tools, grab focuses on explicit, user-directed context acquisition.
-
-> You are not copying results. You are exporting context.
 
 grab helps developers build explicit repository context for AI systems instead of relying on repository-wide indexing or incomplete snippets.
 
@@ -93,7 +93,12 @@ The intended workflow is batch-oriented. Rather than extracting one function at 
 Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
 
 Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
-With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
+
+Delayed footers summarize newly added context after batch extraction.
+
+```
+export GRAB_DELAY_FOOTER=1
+```
 
 Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
 
@@ -149,10 +154,7 @@ Accumulated AI context:
 
 The context file maintains a growing repository investigation history, making it easier to build context for large-scale debugging and codebase analysis.
 
-
-
-Instead of guessing missing code, the AI progressively acquires explicit repository context through deterministic extraction commands.
-
+Instead of guessing missing code, the AI proposes deterministic extraction commands that developers can use to progressively acquire explicit repository context.
 
 # What grab Solves
 
