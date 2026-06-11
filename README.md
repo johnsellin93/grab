@@ -93,18 +93,7 @@ grab "duplicate notification" . # exact text search
 [grab] functions:. +361L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
-The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
-Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
-
-Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
-
-Delayed footers summarize newly added context after batch extraction.
-
-```
-export GRAB_DELAY_FOOTER=1
-```
-
-Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
+Example Clipboard integration
 
 ```
   +72L  block  ProcessNotificationDelivery(...)
@@ -119,6 +108,19 @@ Function indexing gives the bot exact extraction coordinates that can be used to
 
 [grab] +9 entries (+318L) → context 807L / 64192B copied to X clipboard via xclip
 
+```
+
+The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
+Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
+
+Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
+Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
+
+
+Delayed footers summarize newly added context after batch extraction.
+
+```
+export GRAB_DELAY_FOOTER=1
 ```
 
 Workflow:
