@@ -121,8 +121,6 @@ Each extraction incrementally expands the active repository context and copies t
 With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
 
 ```
-[grab] +9 entries (+318L) → context 807L / 64192B copied to X clipboard via xclip
-
   +72L  block  ProcessNotificationDelivery(...)
   +38L  block  ShouldRetryNotification(...)
   +44L  block  RecordDeliveryAttempt(...)
@@ -132,6 +130,9 @@ With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
   +18L  symbol NotificationRetryLimit
   +13L  symbol DeliveryDeduplicationWindowMinutes
   +26L  text   "duplicate notification"
+
+[grab] +9 entries (+318L) → context 807L / 64192B copied to X clipboard via xclip
+
 
 ```
 
