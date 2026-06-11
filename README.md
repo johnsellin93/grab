@@ -77,18 +77,20 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 [grab] functions:. +13L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
-Example batch emitted:
+Example bot batch emission:
 
 ```
-grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
-grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
-grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
+grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery  # variable / symbol
+grab 448 486 NotificationDispatcher.cs ShouldRetryNotification  # variable / symbol
+grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt  
 grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
 grab 188 236 RetryPolicy.cs RetryFailedNotification
 grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
-grab NotificationRetryLimit .
-grab DeliveryDeduplicationWindowMinutes .
-grab "duplicate notification" .
+grab NotificationRetryLimit .  # exact text search 
+grab DeliveryDeduplicationWindowMinutes . #search in directory 
+grab "duplicate notification" . # exact text search
+
+[grab] functions:. +361L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
 The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
