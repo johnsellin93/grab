@@ -90,11 +90,9 @@ grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
 grab NotificationRetryLimit .               # variable / symbol lookup
 grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
 grab "duplicate notification" .            # exact text search
-
-[grab] functions:. +361L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
-Example Print Message
+Example Clipboard integration
 
 ```
   +72L  block  ProcessNotificationDelivery(...)
@@ -135,15 +133,20 @@ but we don't yet know which parts of the codebase to investigate."
 
 grab --functions .
     ↓
-bot sees function ranges and name context
-    ↓
-bot identifies likely investigation targets
-    ↓
-bot proposes grab commands
-that the developer can review and execute.
-    ↓
+assistant sees function ranges and name context
+↓
+assistant identifies likely investigation targets
+↓
+assistant emits batches of grab commands
+↓
+developer reviews and executes them
+↓
 repository context expands incrementally to clipboard
 ```
+
+
+Instead of guessing missing code, the AI proposes deterministic extraction commands that developers can use to progressively acquire explicit repository context.
+
 
 ## Context Storage
 
@@ -160,7 +163,6 @@ Accumulated AI context:
 
 The context file maintains a growing repository investigation history, making it easier to build context for large-scale debugging and codebase analysis.
 
-Instead of guessing missing code, the AI proposes deterministic extraction commands that developers can use to progressively acquire explicit repository context.
 
 # What grab Solves
 
@@ -204,12 +206,48 @@ Supported targets:
 - X clipboard via xclip
 - macOS clipboard via pbcopy
 
-## Vim / Neovim Integration
 
+
+## Vim / Neovim Workflow Integration
+
+The following mappings are not required to use `grab`, but they significantly improve keyboard-driven AI workflows.
+
+| Mapping | Purpose |
+|----------|----------|
+| `<C-s>` | Select the current function or method |
+| `<M-s>` | Alternate function-selection mapping |
+| `<M-.>` | Indent code to the left |
+| `<M-m>` | Indent code to the rigth |
+
+
+### Function Selection
+
+Useful when preparing function-level context for `grab`.
+
+```vim
+nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
+nnoremap <silent> <M-s> :call SelectWholeFunction()<CR>
 ```
+
+### Assistant Patch Adjustment
+
+Useful when pasting assistant-generated code that requires indentation adjustments.
+
+```vim
+xnoremap <M-m> :<C-U>call MoveTextOneCharSpace('left')<CR>
+xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
+```
+
+
+Clipboard integration:
+
+```vim
 set clipboard+=unnamedplus
 set clipboard+=unnamed
 ```
+
+
+
 
 # Requirements
 
