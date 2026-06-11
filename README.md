@@ -131,7 +131,7 @@ The following mappings are not required to use `grab`, but they significantly im
 | `<M-.>` | Shift selected code right by one space |
 | `<Leader>r` | Search and replace throughout the current file |
 | `<Space>h` | Highlight from the current line to a specific line |
-| `p` | Highlight clipboard context after paste |
+| `p` | Paste from clipboard and highlight inserted text |
 
 ### Clipboard Integration
 
@@ -172,7 +172,7 @@ xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
 
 ### Search and Replace
 
-Search and replace key-words in current file
+Search and replace key-words in current file, makes refactoring of a codebase very easy.
 
 ```vim
 nnoremap <Leader>r :SReplace<CR>
@@ -197,7 +197,7 @@ Selects from the current line through line `250`.
 
 
 
-Workflow:
+### Workflow:
 
 ```
 Problem statement:
