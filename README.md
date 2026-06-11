@@ -128,7 +128,9 @@ The following mappings are not required to use `grab`, but they significantly im
 | `<M-s>` | Alternate function-selection mapping |
 | `<M-.>` | Indent code to the left |
 | `<M-m>` | Indent code to the rigth |
-
+| `<Leader>r` | Search and replace all occurences of word |
+| `<space>h>` | Highlight from the current line to a specific line |
+| `<Space>h>` | Highlight clipboard context when pasted |
 
 ### Function Selection
 
@@ -148,6 +150,21 @@ xnoremap <M-m> :<C-U>call MoveTextOneCharSpace('left')<CR>
 xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
 ```
 
+
+## Highlight to Line
+
+Useful when preparing exact ranges for extraction.
+
+```vim
+nnoremap <silent> <Space>h :call HighlightToLine()<CR>
+```
+
+Workflow:
+
+Highlight to line:
+250
+
+Selects from the current line through line 250.
 
 Clipboard integration:
 
@@ -262,47 +279,6 @@ Supported targets:
 - Wayland clipboard via wl-copy
 - X clipboard via xclip
 - macOS clipboard via pbcopy
-
-
-
-## Vim / Neovim Workflow Integration
-
-The following mappings are not required to use `grab`, but they significantly improve keyboard-driven AI workflows.
-
-| Mapping | Purpose |
-|----------|----------|
-| `<C-s>` | Select the current function or method |
-| `<M-s>` | Alternate function-selection mapping |
-| `<M-.>` | Indent code to the left |
-| `<M-m>` | Indent code to the rigth |
-
-
-### Function Selection
-
-Useful when preparing function-level context for `grab`.
-
-```vim
-nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
-nnoremap <silent> <M-s> :call SelectWholeFunction()<CR>
-```
-
-### Assistant Patch Adjustment
-
-Useful when pasting assistant-generated code that requires indentation adjustments.
-
-```vim
-xnoremap <M-m> :<C-U>call MoveTextOneCharSpace('left')<CR>
-xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
-```
-
-
-Clipboard integration:
-
-```vim
-set clipboard+=unnamedplus
-set clipboard+=unnamed
-```
-
 
 
 
