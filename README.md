@@ -128,34 +128,65 @@ The following mappings are not required to use `grab`, but they significantly im
 | `<M-s>` | Alternate function-selection mapping |
 | `<M-.>` | Indent code to the left |
 | `<M-m>` | Indent code to the rigth |
-| `<Leader>r` | Search and replace all occurences of word |
+| `<Leader>r` | Search and replace throughout the current file |
 | `<space>h>` | Highlight from the current line to a specific line |
-| `<Space>h>` | Highlight clipboard context when pasted |
+| `p` | Highlight clipboard context after paste |
 
-### Function Selection
 
-Useful when preparing function-level context for `grab`.
+Clipboard integration:
 
-```vim
+set clipboard+=unnamedplus
+set clipboard+=unnamed
+
+Function Selection
+
+Useful when preparing function-level context for grab.
+```
 nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
 nnoremap <silent> <M-s> :call SelectWholeFunction()<CR>
 ```
 
-### Assistant Patch Adjustment
+Assistant Paste Highlighting
+
+Useful when reviewing assistant-generated patches immediately after insertion.
+
+```
+nnoremap p :call PasteAndHighlight()<CR>
+vnoremap p :call PasteAndHighlight()<CR>
+
+nnoremap <C-v> :call PasteAndHighlight()<CR>
+vnoremap <C-v> :call PasteAndHighlight()<CR>
+```
+
+Assistant Patch Adjustment
 
 Useful when pasting assistant-generated code that requires indentation adjustments.
-
-```vim
+```
 xnoremap <M-m> :<C-U>call MoveTextOneCharSpace('left')<CR>
 xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
 ```
 
 
-## Highlight to Line
+Search and Replace
+
+Useful when applying repetitive assistant-suggested refactors.
+
+```
+nnoremap <Leader>r :SReplace<CR>
+```
+
+Workflow:
+
+Enter search term:
+oldName
+
+Enter replacement term:
+newName
+Highlight to Line
 
 Useful when preparing exact ranges for extraction.
 
-```vim
+```
 nnoremap <silent> <Space>h :call HighlightToLine()<CR>
 ```
 
@@ -165,23 +196,6 @@ Highlight to line:
 250
 
 Selects from the current line through line 250.
-
-Clipboard integration:
-
-```vim
-set clipboard+=unnamedplus
-set clipboard+=unnamed
-```
-
-
-
-
-
-
-
-
-
-
 
 The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
 
