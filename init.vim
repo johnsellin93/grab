@@ -55,6 +55,51 @@ endfunction
 
 
 
+function! HighlightToLine()
+    let target_line = input("Highlight to line: ")
+    if target_line =~ '^\d\+$'
+        " Start visual selection from the current line and go to the target line
+        execute "normal! V" . target_line . "G"
+    else
+        echo "Invalid line number. Please enter a valid number."
+    endif
+endfunction
+
+nnoremap <silent> <Space>h :call HighlightToLine()<CR>
+
+function! PasteAndHighlight()
+    " Mark current cursor position before pasting
+    let l:save_cursor = getpos(".")
+
+    " Mark start of paste
+    normal! m'[
+
+    " Paste from clipboard
+    normal! "+p
+
+    " Mark end of paste
+    normal! m']
+
+    " Visually select only the pasted text
+    execute "normal! '[V']"
+
+    " Move cursor to end of pasted content
+    call setpos('.', getpos("']"))
+endfunction
+
+" Normal mode: Paste from clipboard and highlight
+nnoremap p :call PasteAndHighlight()<CR>
+
+" Visual mode: Paste and highlight selection
+vnoremap p :call PasteAndHighlight()<CR>
+
+" Override `<C-v>` for pasting in terminal mode
+nnoremap <C-v> :call PasteAndHighlight()<CR>
+vnoremap <C-v> :call PasteAndHighlight()<CR>
+
+
+
+
       
 function! SelectWholeFunction() abort
     normal! mz
@@ -147,6 +192,17 @@ function! SelectWholeFunction() abort
     if line("'<") == line("'>")
         normal! `z
     endif
+
+
+function! SearchAndReplace()
+    let search_term = escape(input('Enter search term: '), '/\')
+    let replace_term = escape(input('Enter replacement term: '), '/\')
+    execute '%s/'.search_term.'/'.replace_term.'/g'
+endfunction
+
+command! SReplace call SearchAndReplace()
+nnoremap <Leader>r :SReplace<CR>
+
 
 
 " Both call the same function
