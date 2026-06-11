@@ -11,6 +11,7 @@ Instead of indexing entire repositories, grab allows developers and AI systems t
 Unlike repository indexing tools, grab focuses on explicit, user-directed context acquisition.
 
 grab helps developers build explicit repository context for AI systems without relying on repository-wide indexing or fragmented snippets.
+Context is acquired incrementally as the investigation evolves.
 
 <!--
 ## Demo
@@ -143,7 +144,9 @@ set clipboard+=unnamed
 
 ### Function Selection
 
-Useful when you manually want to copy a whole function.
+Useful when capturing complete implementation context for `grab`.
+
+Large functions spanning hundreds of lines can be selected in a single action, making it easy to export entire execution paths to the clipboard for AI-assisted analysis.
 
 ```vim
 nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
@@ -178,7 +181,7 @@ nnoremap <Leader>r :SReplace<CR>
 
 ### Copy Entire File
 
-Useful when an assistant requires complete file context rather than individual functions or ranges.
+Useful when assistants require complete file context rather than targeted extractions.
 
 ```vim
 nnoremap <M-c> :%!xclip -sel clip<CR>
