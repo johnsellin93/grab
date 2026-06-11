@@ -94,7 +94,7 @@ grab "duplicate notification" .            # exact text search
 [grab] functions:. +361L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
-Example Clipboard integration
+Example Print Message
 
 ```
   +72L  block  ProcessNotificationDelivery(...)
