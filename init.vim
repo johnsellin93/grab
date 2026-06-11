@@ -1,365 +1,229 @@
-# Rapid AI-assisted debugging and repository analysis from the terminal
+function! MoveTextOneCharSpace(direction)
+    " Get the visual selection range
+    let [line_start, line_end] = [line("'<"), line("'>")]
+    let col_start = col("'<")
 
-> You are not copying results. You are exporting context.
+    " Create a vertical guide spanning the selected column across the entire visible window
+    let vertical_marker_pattern = '\%'.col_start.'c'
+    let vertical_guide_id = matchadd('VerticalGuide', vertical_marker_pattern, -1)
 
-grab turns repository exploration into a deterministic workflow for building AI-ready context from large codebases, one extraction at a time.
+    " Move text based on the direction
+    if a:direction == 'right'
+        " Insert a space at the beginning of each selected line
+        execute line_start . "," . line_end . "s/^/ /"
+    elseif a:direction == 'left'
+        " Remove a space from the beginning of each selected line
+        execute line_start . "," . line_end . "s/^ \\{1}//"
+    endif
 
-It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic code-context extraction.
+    " Reselect the visual block to maintain user context
+    normal! gv
 
-Instead of indexing entire repositories, grab allows developers and AI systems to progressively acquire only the context required for a specific debugging or implementation task.
+    " Remove the vertical guide after a short delay
+    call timer_start(1000, { -> matchdelete(vertical_guide_id) }) " Increase delay for better visibility
+endfunction
 
-Unlike repository indexing tools, grab focuses on explicit, user-directed context acquisition.
-
-grab helps developers build explicit repository context for AI systems without relying on repository-wide indexing or fragmented snippets.
-
-<!--
-## Demo
-
-<video src="https://github.com/user-attachments/assets/7c451617-e470-4b72-b2e4-d75b3148fe31" controls autoplay loop muted width="100%"></video>
--->
-
-It lets you:
-
-- search relevant project files
-- extract exact code ranges
-- capture directory structure
-- accumulate debugging context incrementally
-- automatically copy accumulated context to clipboard/tmux
-- paste clean AI-ready context directly into AI tools
-
-## Supported Languages
-Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
-
-
-## Basic Workflow
-
-| Command | Purpose |
-|----------|----------|
-| `grab --clear` | Reset previous debugging context |
-| `grab --tree` | Capture repository structure |
-| `grab ExactPattern` | Locate relevant call flows and implementation paths |
-| `grab 500 635 file.cs` | Extract an exact implementation range |
-| `grab --functions . Order` | Locate Order-related functions |
-| `grab --functions .` | index all functions |
-
-# Install
-
-```
-git clone https://github.com/johnsellin93/grab.git
-cd grab
-chmod +x grab
-echo 'export PATH="$HOME/grab:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-```
-
-## Function Indexing and Context Acquisition
-
-1. Search for symbols, variables, functions, or configuration values.
-2. Extract relevant code ranges.
-3. Accumulate context across multiple files and searches.
-4. Automatically copy aggregated context to tmux or the system clipboard.
-5. Paste directly into AI tools for troubleshooting and analysis.
-
-```
-grab --functions server.py   # function index for a single file
-grab --functions .           # search current repository and index all discovered functions
-```
-
-Example output:
-
-```
-server.py:38-58 [21L] def _init_logging() -> None:
-server.py:59-95 [37L] def format(self, record: logging.LogRecord) -> str:
-server.py:96-110 [15L] def _get_client() -> str:
-server.py:111-121 [11L] def get_cloudflare_access_email() -> str:
-server.py:122-166 [45L] def _log_request_start():
-server.py:167-211 [45L] def _log_request_end(resp: Response):
-server.py:212-227 [16L] def _log_unhandled_exception(e: Exception):
-server.py:228-246 [19L] def _safe_float(x: Any) -> float:
-server.py:247-264 [18L] def _enqueue_all_trading_commands(bot_to_instance: dict, val: bool) -> int:
-server.py:265-269 [5L] def _line_key(bot_id: str, instance_id: str, line_id: str) -> Tuple[str, str, str]:
-server.py:270-303 [34L] def _coerce_nonneg_float(x: Any) -> float | None:
-server.py:304-357 [54L] def _history_add_event(row: Dict[str, Any], event_type: str) -> bool:
-server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_row: Dict[str, Any]) -> bool:
-
-[grab] functions:. +13L → context 489L / 44768B copied to X clipboard via xclip
-```
-
-Example bot batch emission:
-
-```
-grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
-grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
-grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
-grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
-grab 188 236 RetryPolicy.cs RetryFailedNotification
-grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
-
-grab NotificationRetryLimit .               # variable / symbol lookup
-grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
-grab "duplicate notification" .            # exact text search
-```
-
-Example Clipboard integration
-
-```
-  +72L  block  ProcessNotificationDelivery(...)
-  +38L  block  ShouldRetryNotification(...)
-  +44L  block  RecordDeliveryAttempt(...)
-  +31L  block  HasRecentSuccessfulDelivery(...)
-  +49L  block  RetryFailedNotification(...)
-  +27L  block  GetRetryBackoffDelay(...)
-  +18L  symbol NotificationRetryLimit
-  +13L  symbol DeliveryDeduplicationWindowMinutes
-  +26L  text   "duplicate notification"
-
-[grab] +9 entries (+318L) → context 807L / 64192B copied to X clipboard via xclip
-
-```
-
-
-## Vim / Neovim Workflow Integration
-
-The following mappings are not required to use `grab`, but they significantly improve keyboard-driven AI workflows.
-
-| Mapping | Purpose |
-|----------|----------|
-| `<C-s>` | Select the current function or method |
-| `<M-s>` | Alternate function-selection mapping |
-| `<M-.>` | Indent code to the left |
-| `<M-m>` | Indent code to the rigth |
-| `<Leader>r` | Search and replace all occurences of word |
-| `<space>h>` | Highlight from the current line to a specific line |
-| `<Space>h>` | Highlight clipboard context when pasted |
-
-### Function Selection
-
-Useful when preparing function-level context for `grab`.
-
-```vim
-nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
-nnoremap <silent> <M-s> :call SelectWholeFunction()<CR>
-```
-
-### Assistant Patch Adjustment
-
-Useful when pasting assistant-generated code that requires indentation adjustments.
-
-```vim
+" Mappings for visual mode operations
 xnoremap <M-m> :<C-U>call MoveTextOneCharSpace('left')<CR>
 xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
-```
+
+function! CommentLine() range
+  let l:filetype = &filetype
+  if l:filetype ==# 'cs' || l:filetype ==# 'csharp' || l:filetype ==# 'javascript'
+    execute a:firstline . "," . a:lastline . "s/^/\\/\\/ /"
+  elseif l:filetype ==# 'sh' || l:filetype ==# 'python' || l:filetype ==# 'i3config' || l:filetype ==# 'zsh' || l:filetype ==# 'tmux' || l:filetype ==# 'yaml'
+    execute a:firstline . "," . a:lastline . "s/^/# /"
+  elseif l:filetype ==# 'vim'
+    execute a:firstline . "," . a:lastline . "s/^/\" /"
+  elseif l:filetype ==# 'lua'
+    execute a:firstline . "," . a:lastline . "s/^/-- /"
+  endif
+endfunction
+
+function! UncommentLine() range
+  let l:filetype = &filetype
+  if l:filetype ==# 'cs' || l:filetype ==# 'csharp' || l:filetype ==# 'javascript'
+    execute a:firstline . "," . a:lastline . "s/^\\(\\s*\\)\\/\\/ /\\1/e"
+  elseif l:filetype ==# 'sh' || l:filetype ==# 'python' || l:filetype ==# 'i3config' || l:filetype ==# 'zsh' || l:filetype ==# 'tmux' || l:filetype ==# 'yaml'
+    execute a:firstline . "," . a:lastline . "s/^\\(\\s*\\)# /\\1/e"
+  elseif l:filetype ==# 'vim'
+    execute a:firstline . "," . a:lastline . "s/^\\(\\s*\\)\" /\\1/e"
+  elseif l:filetype ==# 'lua'
+    execute a:firstline . "," . a:lastline . "s/^\\(\\s*\\)-- /\\1/e"
+  endif
+endfunction
 
 
-## Highlight to Line
 
-Useful when preparing exact ranges for extraction.
+function! HighlightToLine()
+    let target_line = input("Highlight to line: ")
+    if target_line =~ '^\d\+$'
+        " Start visual selection from the current line and go to the target line
+        execute "normal! V" . target_line . "G"
+    else
+        echo "Invalid line number. Please enter a valid number."
+    endif
+endfunction
 
-```vim
 nnoremap <silent> <Space>h :call HighlightToLine()<CR>
-```
 
-Workflow:
+function! PasteAndHighlight()
+    " Mark current cursor position before pasting
+    let l:save_cursor = getpos(".")
 
-Highlight to line:
-250
+    " Mark start of paste
+    normal! m'[
 
-Selects from the current line through line 250.
+    " Paste from clipboard
+    normal! "+p
 
-Clipboard integration:
+    " Mark end of paste
+    normal! m']
 
-```vim
-set clipboard+=unnamedplus
-set clipboard+=unnamed
-```
+    " Visually select only the pasted text
+    execute "normal! '[V']"
 
+    " Move cursor to end of pasted content
+    call setpos('.', getpos("']"))
+endfunction
 
+" Normal mode: Paste from clipboard and highlight
+nnoremap p :call PasteAndHighlight()<CR>
 
+" Visual mode: Paste and highlight selection
+vnoremap p :call PasteAndHighlight()<CR>
 
-
-
-
-
-
-
-
-The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
-
-Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
-Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
-
-
-Delayed footers summarize newly added context after batch extraction.
-
-```
-export GRAB_DELAY_FOOTER=1
-```
-
-Workflow:
-
-```
-Problem statement:
-
-"Users occasionally receive duplicate notifications.
-
-We suspect retry handling might be involved,
-but we don't yet know which parts of the codebase to investigate."
-
-grab --functions .
-    ↓
-assistant sees function ranges and name context
-↓
-assistant identifies likely investigation targets
-↓
-assistant emits batches of grab commands
-↓
-developer reviews and executes them
-↓
-repository context expands incrementally to clipboard
-```
-
-
-Instead of guessing missing code, the AI proposes deterministic extraction commands that developers can use to progressively acquire explicit repository context.
-
-
-## Context Storage
-
-Latest extraction:
-```
-~/.cache/grab/buffer.txt
-```
-
-Accumulated AI context:
-
-```
-~/.cache/grab/context.txt
-```
-
-The context file maintains a growing repository investigation history, making it easier to build context for large-scale debugging and codebase analysis.
-
-
-# What grab Solves
-
-AI-assisted debugging breaks down when:
-
-- Context is incomplete
-- Relevant implementation details are missing
-- Irrelevant files pollute the prompt
-- The model is forced to guess missing code
-
-
-grab fixes this through explicit context selection and incremental context accumulation.
-
-
-Developers often:
-
-- search across many files
-- copy fragmented snippets
-- miss related code
-- lose directory structure
-- paste partial context into AI tools
-
-That causes AI to guess.
-
-grab fixes this by making context explicit, accumulated, and reusable.
-
-## Why grab Exists
-
-Large repositories spread logic across multiple files and services.
-
-Developers debugging with AI tools often paste fragmented snippets, lose surrounding context, and force the model to guess missing implementation details.
-
-`grab` turns repository exploration into a deterministic context acquisition workflow built around exact search results, function boundaries, and explicit range extraction.
-
-# Clipboard Integration
-
-Supported targets:
-
-- tmux buffer
-- Wayland clipboard via wl-copy
-- X clipboard via xclip
-- macOS clipboard via pbcopy
+" Override `<C-v>` for pasting in terminal mode
+nnoremap <C-v> :call PasteAndHighlight()<CR>
+vnoremap <C-v> :call PasteAndHighlight()<CR>
 
 
 
-## Vim / Neovim Workflow Integration
 
-The following mappings are not required to use `grab`, but they significantly improve keyboard-driven AI workflows.
+      
+function! SelectWholeFunction() abort
+    normal! mz
+    let l:filetype = &filetype
 
-| Mapping | Purpose |
-|----------|----------|
-| `<C-s>` | Select the current function or method |
-| `<M-s>` | Alternate function-selection mapping |
-| `<M-.>` | Indent code to the left |
-| `<M-m>` | Indent code to the rigth |
+    " ---- C# path (method first, then class/type) ----
+    if l:filetype ==# 'cs' || l:filetype ==# 'csharp'
+        if s:SelectCSharpMethod()
+            return
+        endif
+        if SelectWholeClass()
+            return
+        endif
+        echo "No C# method or type block found."
+        normal! `z
+        return
+    endif
+
+    " ---- Generic path ----
+    let l:start_pattern = ''
+    let l:end_pattern = ''
+
+    if l:filetype ==# 'python'
+        let l:start_pattern = '^\s*def'
+    elseif l:filetype ==# 'sh'
+        let l:start_pattern = '^\s*function'
+    elseif l:filetype ==# 'vim'
+        let l:start_pattern = '^\s*function!'
+        let l:end_pattern = '^\s*endfunction'
+    elseif l:filetype ==# 'yaml' || l:filetype ==# 'ansible'
+        let l:start_pattern = '^\s*\-\s*name:\|\s*\-$'
+        let l:end_pattern   = '^\s*\-\s*name:\|\s*\-$'
+    elseif l:filetype ==# 'javascript'
+        let l:start_pattern = '^\s*function\s'
+        let l:end_pattern   = '^\s*}'
+    elseif l:filetype ==# 'java'
+        let l:start_pattern = '^\s*\(public\|private\|protected\)\=\s*void\s\|^\s*\(public\|private\|protected\)\=\s*\w\+\s\+\w\+\s*('
+        let l:end_pattern   = '^\s*}'
+    elseif l:filetype ==# 'ruby'
+        let l:start_pattern = '^\s*def\s'
+        let l:end_pattern   = '^\s*end'
+    else
+        echo "Unsupported filetype: " . l:filetype
+        normal! `z
+        return
+    endif
+
+    let l:is_visual_mode = mode() ==# 'v' || mode() ==# 'V' || mode() ==# "\<C-V>"
+
+    if !l:is_visual_mode
+        let l:start_pos = search(l:start_pattern, 'bW')
+        if l:start_pos == 0
+            normal! `z
+            return
+        endif
+        execute 'normal! ' . l:start_pos . 'G^'
+        let l:start_indent = indent('.')
+        normal! V
+    else
+        let l:start_indent = indent(line("'>"))
+    endif
+
+    if l:filetype ==# 'yaml' || l:filetype ==# 'ansible'
+        let l:current_indent = indent('.')
+        while 1
+            normal! j
+            if line('.') == line('$')
+                break
+            endif
+            let l:next_line = getline('.')
+            if l:next_line =~ l:end_pattern && indent('.') == l:current_indent
+                normal! k
+                break
+            endif
+        endwhile
+    else
+        while 1
+            normal! j
+            if line('.') == line('$') || (l:end_pattern !=# '' && getline('.') =~ l:end_pattern)
+                break
+            endif
+            let l:current_line = getline('.')
+            if l:current_line !~# '^\s*$' && (indent('.') <= l:start_indent || l:current_line =~ l:start_pattern)
+                normal! k
+                break
+            endif
+        endwhile
+    endif
+
+    if line("'<") == line("'>")
+        normal! `z
+    endif
 
 
-### Function Selection
+function! SearchAndReplace()
+    let search_term = escape(input('Enter search term: '), '/\')
+    let replace_term = escape(input('Enter replacement term: '), '/\')
+    execute '%s/'.search_term.'/'.replace_term.'/g'
+endfunction
 
-Useful when preparing function-level context for `grab`.
+command! SReplace call SearchAndReplace()
+nnoremap <Leader>r :SReplace<CR>
 
-```vim
+
+
+" Both call the same function
 nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
 nnoremap <silent> <M-s> :call SelectWholeFunction()<CR>
-```
 
-### Assistant Patch Adjustment
+" Mappings to run the script
+"nnoremap <leader>m :!python %<CR>
+"nnoremap <leader>v :!dotnet run<CR>
 
-Useful when pasting assistant-generated code that requires indentation adjustments.
+xnoremap # :call CommentLine()<CR>
+xnoremap @ :call UncommentLine()<CR>
 
-```vim
-xnoremap <M-m> :<C-U>call MoveTextOneCharSpace('left')<CR>
-xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
-```
-
-
-Clipboard integration:
-
-```vim
+      
 set clipboard+=unnamedplus
 set clipboard+=unnamed
-```
 
 
 
 
-# Requirements
+      
+endfunction
 
-Required:
-
-zsh
-ripgrep
-
-Optional:
-tree
-tmux
-wl-copy
-xclip
-pbcopy
-
-If tree is not installed, grab --tree falls back to find.
-
-
-## Smart Search Mode
-
-By default, `grab` searches only relevant project files:
-
-- source code
-- configs
-- documentation
-- scripts
-
-It automatically ignores:
-
-- node_modules
-- build/dist output
-- vendor directories
-- minified files
-- lock files
-- generated artifacts
-
-
-## Workflow Tips
-
-For fast keyboard-driven AI workflows, browser extensions like Vimium C work well alongside `grab`.
-    f
+      
