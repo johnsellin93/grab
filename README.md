@@ -75,6 +75,43 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 [grab] functions:. +13L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
+Example batch emitted:
+
+```
+grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
+grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
+grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
+grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
+grab 188 236 RetryPolicy.cs RetryFailedNotification
+grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
+grab NotificationRetryLimit .
+grab DeliveryDeduplicationWindowMinutes .
+grab "duplicate notification" .
+```
+
+The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
+Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
+
+Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
+With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
+
+Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
+
+```
+  +72L  block  ProcessNotificationDelivery(...)
+  +38L  block  ShouldRetryNotification(...)
+  +44L  block  RecordDeliveryAttempt(...)
+  +31L  block  HasRecentSuccessfulDelivery(...)
+  +49L  block  RetryFailedNotification(...)
+  +27L  block  GetRetryBackoffDelay(...)
+  +18L  symbol NotificationRetryLimit
+  +13L  symbol DeliveryDeduplicationWindowMinutes
+  +26L  text   "duplicate notification"
+
+[grab] +9 entries (+318L) → context 807L / 64192B copied to X clipboard via xclip
+
+```
+
 Workflow:
 
 ```
@@ -95,45 +132,6 @@ bot proposes grab commands
 that the developer can review and execute.
     ↓
 repository context expands incrementally to clipboard
-```
-
-
-The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
-
-Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
-
-Example batch emitted:
-
-```
-grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
-grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
-grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
-grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
-grab 188 236 RetryPolicy.cs RetryFailedNotification
-grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
-grab NotificationRetryLimit .
-grab DeliveryDeduplicationWindowMinutes .
-grab "duplicate notification" .
-```
-
-Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
-
-With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
-
-```
-  +72L  block  ProcessNotificationDelivery(...)
-  +38L  block  ShouldRetryNotification(...)
-  +44L  block  RecordDeliveryAttempt(...)
-  +31L  block  HasRecentSuccessfulDelivery(...)
-  +49L  block  RetryFailedNotification(...)
-  +27L  block  GetRetryBackoffDelay(...)
-  +18L  symbol NotificationRetryLimit
-  +13L  symbol DeliveryDeduplicationWindowMinutes
-  +26L  text   "duplicate notification"
-
-[grab] +9 entries (+318L) → context 807L / 64192B copied to X clipboard via xclip
-
-
 ```
 
 ## Context Storage
