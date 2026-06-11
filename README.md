@@ -119,6 +119,31 @@ Example Clipboard integration
 
 ```
 
+### Example Investigation Workflow:
+
+```
+Problem statement:
+
+"Users occasionally receive duplicate notifications.
+
+We suspect retry handling might be involved,
+but we don't yet know which parts of the codebase to investigate."
+
+grab --functions .
+    ↓
+assistant sees function ranges and name context
+↓
+assistant identifies likely investigation targets
+↓
+assistant emits batches of grab commands
+↓
+developer reviews and executes them
+↓
+repository context expands incrementally to clipboard
+```
+
+
+
 
 ## Vim / Neovim Workflow Integration
 
@@ -153,14 +178,6 @@ nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
 nnoremap <silent> <M-s> :call SelectWholeFunction()<CR>
 ```
 
-### Paste Highlighting
-
-Useful when reviewing assistant-generated patches immediately after insertion.
-
-```vim
-nnoremap p :call PasteAndHighlight()<CR>
-vnoremap <C-v> :call PasteAndHighlight()<CR>
-```
 
 ### Indentation adjustment
 
@@ -169,6 +186,15 @@ Useful when pasting assistant-generated code that requires indentation adjustmen
 ```vim
 xnoremap <M-m> :<C-U>call MoveTextOneCharSpace('left')<CR>
 xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
+```
+
+### Paste Highlighting
+
+Useful when reviewing assistant-generated patches immediately after insertion.
+
+```vim
+nnoremap p :call PasteAndHighlight()<CR>
+vnoremap <C-v> :call PasteAndHighlight()<CR>
 ```
 
 ### Search and Replace
@@ -203,31 +229,6 @@ Highlight to line:
 ```
 
 Selects from the current line through line `250`.
-
-
-
-### Example Investigation Workflow:
-
-```
-Problem statement:
-
-"Users occasionally receive duplicate notifications.
-
-We suspect retry handling might be involved,
-but we don't yet know which parts of the codebase to investigate."
-
-grab --functions .
-    ↓
-assistant sees function ranges and name context
-↓
-assistant identifies likely investigation targets
-↓
-assistant emits batches of grab commands
-↓
-developer reviews and executes them
-↓
-repository context expands incrementally to clipboard
-```
 
 
 Instead of guessing missing code, the AI proposes deterministic extraction commands that developers can use to progressively acquire explicit repository context.
