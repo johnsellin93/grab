@@ -85,7 +85,7 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 [grab] functions:. +13L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
-Example bot batch emission:
+Example assistant batch emission:
 
 ```
 grab --functions .
@@ -127,8 +127,8 @@ The following mappings are not required to use `grab`, but they significantly im
 |----------|----------|
 | `<C-s>` | Select the current function or method |
 | `<M-s>` | Alternate function-selection mapping |
-| `<M-.>` | Indent code to the left |
-| `<M-m>` | Indent code to the right |
+| `<M-m>` | Shift selected code left by one space |
+| `<M-.>` | Shift selected code right by one space |
 | `<Leader>r` | Search and replace throughout the current file |
 | `<Space>h` | Highlight from the current line to a specific line |
 | `p` | Highlight clipboard context after paste |
@@ -149,7 +149,7 @@ nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
 nnoremap <silent> <M-s> :call SelectWholeFunction()<CR>
 ```
 
-### Assistant Paste Highlighting
+### Paste Highlighting
 
 Useful when reviewing assistant-generated patches immediately after insertion.
 
@@ -161,7 +161,7 @@ nnoremap <C-v> :call PasteAndHighlight()<CR>
 vnoremap <C-v> :call PasteAndHighlight()<CR>
 ```
 
-### Assistant Indentation adjustment
+### Indentation adjustment
 
 Useful when pasting assistant-generated code that requires indentation adjustments.
 
@@ -172,20 +172,10 @@ xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
 
 ### Search and Replace
 
-Useful when applying repetitive assistant-suggested refactors.
+Search and replace key-words in current file
 
 ```vim
 nnoremap <Leader>r :SReplace<CR>
-```
-
-Workflow:
-
-```text
-Enter search term:
-oldName
-
-Enter replacement term:
-newName
 ```
 
 ### Highlight to Line
