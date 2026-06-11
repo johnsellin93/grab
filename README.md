@@ -87,11 +87,12 @@ but we don't yet know which parts of the codebase to investigate."
 
 grab --functions .
     ↓
-AI sees function ranges and name context
+bot sees function ranges and name context
     ↓
-AI identifies likely investigation targets
+bot identifies likely investigation targets
     ↓
-AI emits batches of grab extraction commands
+bot proposes grab commands
+that the developer can review and execute.
     ↓
 repository context expands incrementally to clipboard
 ```
@@ -101,18 +102,18 @@ The intended workflow is batch-oriented. Rather than extracting one function at 
 
 Function indexing gives the AI exact extraction coordinates that can be used to gather additional surrounding implementation context.
 
-Example batch emitted by the AI:
+Example batch emitted:
 
 ```
-grab 280 378 SampleLinesTrader.SL_TP_logic.cs EnforceLineInvalidationOnOpenPositions
-grab 196 219 SampleLinesTrader.SL_TP_logic.cs GetLineInvalidationBufferPrice
-grab 818 850 SampleLinesTrader.SL_TP_logic.cs ResolveLineIdForPosition
-grab 496 545 lines18.cs TryGetTrendLinePriceAtTime
-grab 1128 1153 lines18.cs GetDistancePriceToLineId
-grab 463 495 lines18.cs TryExtractLineIdFromPosition
-grab LineInvalidationMinBufferUnits .
-grab LineInvalidationSpreadMultiplier .
-grab "LINE INVALIDATION" .
+grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
+grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
+grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
+grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
+grab 188 236 RetryPolicy.cs RetryFailedNotification
+grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
+grab NotificationRetryLimit .
+grab DeliveryDeduplicationWindowMinutes .
+grab "duplicate notification" .
 ```
 
 Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer
@@ -120,12 +121,18 @@ Each extraction incrementally expands the active repository context and copies t
 With delayed footer summaries enabled: ```export GRAB_DELAY_FOOTER=1```
 
 ```
-[grab] +4 blocks (+110L) → context 254L / 6202B copied to X clipboard via xclip
+[grab] +9 entries (+318L) → context 807L / 64192B copied to X clipboard via xclip
 
-  +45L  _attach_maxage_fields(...)
-  +45L  _parse_duration_to_seconds(...)
-  +16L  _parse_iso_utc_to_dt(...)
-  +4L   _line_key(...)
+  +72L  block  ProcessNotificationDelivery(...)
+  +38L  block  ShouldRetryNotification(...)
+  +44L  block  RecordDeliveryAttempt(...)
+  +31L  block  HasRecentSuccessfulDelivery(...)
+  +49L  block  RetryFailedNotification(...)
+  +27L  block  GetRetryBackoffDelay(...)
+  +18L  symbol NotificationRetryLimit
+  +13L  symbol DeliveryDeduplicationWindowMinutes
+  +26L  text   "duplicate notification"
+
 ```
 
 ## Context Storage
