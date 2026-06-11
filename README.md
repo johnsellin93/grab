@@ -2,7 +2,7 @@
 
 > You are not copying results. You are exporting context.
 
-grab is a terminal tool for rapid repository context extraction during AI-assisted debugging and codebase analysis.
+grab turns repository exploration into a deterministic workflow for building AI-ready context from large codebases.
 
 It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic code-context extraction.
 
@@ -10,11 +10,13 @@ Instead of indexing entire repositories, grab allows developers and AI systems t
 
 Unlike repository indexing tools, grab focuses on explicit, user-directed context acquisition.
 
-grab helps developers build explicit repository context for AI systems instead of relying on repository-wide indexing or incomplete snippets.
+grab helps developers build explicit repository context for AI systems without relying on repository-wide indexing or fragmented snippets.
 
-// ### Demo
-// <video src="https://github.com/user-attachments/assets/7c451617-e470-4b72-b2e4-d75b3148fe31" controls autoplay loop muted width="100%"></video>
+<!--
+## Demo
 
+<video src="https://github.com/user-attachments/assets/7c451617-e470-4b72-b2e4-d75b3148fe31" controls autoplay loop muted width="100%"></video>
+-->
 
 It lets you:
 
