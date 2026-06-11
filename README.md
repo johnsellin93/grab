@@ -12,8 +12,8 @@ Unlike repository indexing tools, grab focuses on explicit, user-directed contex
 
 grab helps developers build explicit repository context for AI systems instead of relying on repository-wide indexing or incomplete snippets.
 
-## Demo
-<video src="https://github.com/user-attachments/assets/7c451617-e470-4b72-b2e4-d75b3148fe31" controls autoplay loop muted width="100%"></video>
+// ### Demo
+// <video src="https://github.com/user-attachments/assets/7c451617-e470-4b72-b2e4-d75b3148fe31" controls autoplay loop muted width="100%"></video>
 
 
 It lets you:
@@ -100,7 +100,7 @@ repository context expands incrementally to clipboard
 
 The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
 
-Function indexing gives the AI exact extraction coordinates that can be used to gather additional surrounding implementation context.
+Function indexing gives the bot exact extraction coordinates that can be used to gather additional surrounding implementation context.
 
 Example batch emitted:
 
