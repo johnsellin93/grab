@@ -127,30 +127,32 @@ The following mappings are not required to use `grab`, but they significantly im
 | `<C-s>` | Select the current function or method |
 | `<M-s>` | Alternate function-selection mapping |
 | `<M-.>` | Indent code to the left |
-| `<M-m>` | Indent code to the rigth |
+| `<M-m>` | Indent code to the right |
 | `<Leader>r` | Search and replace throughout the current file |
-| `<space>h>` | Highlight from the current line to a specific line |
+| `<Space>h` | Highlight from the current line to a specific line |
 | `p` | Highlight clipboard context after paste |
 
+### Clipboard Integration
 
-Clipboard integration:
-
+```vim
 set clipboard+=unnamedplus
 set clipboard+=unnamed
-
-Function Selection
-
-Useful when preparing function-level context for grab.
 ```
+
+### Function Selection
+
+Useful when preparing function-level context for `grab`.
+
+```vim
 nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
 nnoremap <silent> <M-s> :call SelectWholeFunction()<CR>
 ```
 
-Assistant Paste Highlighting
+### Assistant Paste Highlighting
 
 Useful when reviewing assistant-generated patches immediately after insertion.
 
-```
+```vim
 nnoremap p :call PasteAndHighlight()<CR>
 vnoremap p :call PasteAndHighlight()<CR>
 
@@ -158,44 +160,53 @@ nnoremap <C-v> :call PasteAndHighlight()<CR>
 vnoremap <C-v> :call PasteAndHighlight()<CR>
 ```
 
-Assistant Patch Adjustment
+### Assistant Patch Adjustment
 
 Useful when pasting assistant-generated code that requires indentation adjustments.
-```
+
+```vim
 xnoremap <M-m> :<C-U>call MoveTextOneCharSpace('left')<CR>
 xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
 ```
 
-
-Search and Replace
+### Search and Replace
 
 Useful when applying repetitive assistant-suggested refactors.
 
-```
+```vim
 nnoremap <Leader>r :SReplace<CR>
 ```
 
 Workflow:
 
+```text
 Enter search term:
 oldName
 
 Enter replacement term:
 newName
-Highlight to Line
+```
+
+### Highlight to Line
 
 Useful when preparing exact ranges for extraction.
 
-```
+```vim
 nnoremap <silent> <Space>h :call HighlightToLine()<CR>
 ```
 
 Workflow:
 
+```text
 Highlight to line:
 250
+```
 
-Selects from the current line through line 250.
+Selects from the current line through line `250`.
+
+
+
+
 
 The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
 
