@@ -42,7 +42,15 @@ Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
 | `grab --functions . Order` | Locate Order-related functions |
 | `grab --functions .` | index all functions |
 
+# Install
 
+```
+git clone https://github.com/johnsellin93/grab.git
+cd grab
+chmod +x grab
+echo 'export PATH="$HOME/grab:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
 
 ## Function Indexing and Context Acquisition
 
@@ -108,6 +116,55 @@ Example Clipboard integration
 [grab] +9 entries (+318L) → context 807L / 64192B copied to X clipboard via xclip
 
 ```
+
+
+## Vim / Neovim Workflow Integration
+
+The following mappings are not required to use `grab`, but they significantly improve keyboard-driven AI workflows.
+
+| Mapping | Purpose |
+|----------|----------|
+| `<C-s>` | Select the current function or method |
+| `<M-s>` | Alternate function-selection mapping |
+| `<M-.>` | Indent code to the left |
+| `<M-m>` | Indent code to the rigth |
+
+
+### Function Selection
+
+Useful when preparing function-level context for `grab`.
+
+```vim
+nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
+nnoremap <silent> <M-s> :call SelectWholeFunction()<CR>
+```
+
+### Assistant Patch Adjustment
+
+Useful when pasting assistant-generated code that requires indentation adjustments.
+
+```vim
+xnoremap <M-m> :<C-U>call MoveTextOneCharSpace('left')<CR>
+xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
+```
+
+
+Clipboard integration:
+
+```vim
+set clipboard+=unnamedplus
+set clipboard+=unnamed
+```
+
+
+
+
+
+
+
+
+
+
 
 The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
 
@@ -264,16 +321,6 @@ xclip
 pbcopy
 
 If tree is not installed, grab --tree falls back to find.
-
-# Install
-
-```
-git clone https://github.com/johnsellin93/grab.git
-cd grab
-chmod +x grab
-echo 'export PATH="$HOME/grab:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-```
 
 
 ## Smart Search Mode
