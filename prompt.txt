@@ -16,7 +16,7 @@ The accumulated `grab` session is the **only source of truth**.
 
 ## Context Acquisition Strategy
 
-Use the following order:
+Use this order:
 
 ```bash
 grab --clear
@@ -35,27 +35,50 @@ Guidelines:
 
 * Use `grab --functions .` to discover coordinates.
 * Use exact range extraction whenever coordinates are known.
-* Use exact-pattern searches for symbols, strings, settings, error messages, and configuration values.
+* Use exact-pattern searches for symbols, strings, settings, configuration values, and error messages.
 * Request only the minimum context necessary to proceed confidently.
+* Prefer hypothesis-driven investigation. Identify the highest ROI area first, then acquire only the context required to validate that hypothesis.
+
+## Change Validation Rules
+
+Before proposing any code modification, determine whether sufficient context exists.
+
+State:
+
+1. The intended change.
+2. The extracted functions/sections relevant to that change.
+3. Any missing context required to implement the change safely.
+4. Whether the change is safe to produce immediately.
+
+If the available context is insufficient, stop and request additional `grab` commands.
+
+Do not produce code if:
+
+* the target function has not been extracted;
+* relevant callers or lifecycle methods may influence behavior but have not been reviewed;
+* required fields, types, or configuration are missing;
+* threading, async behavior, timers, or concurrency may be affected without sufficient context;
+* persistence or state-management behavior has not been inspected.
 
 ## Code Modification Rules
 
 For every proposed code change, provide:
 
-1. File name
-2. Function or section being replaced
-3. BEFORE code block
-4. AFTER code block
+1. File name.
+2. Function or section being replaced.
+3. Why this exact replacement target was selected.
+4. Compatibility and behavior considerations.
+5. Full BEFORE code block.
+6. Full AFTER code block.
 
-Use complete replacements whenever possible.
+Use complete function or section replacements whenever possible.
 
 Do not:
 
 * invent functions, fields, classes, or configuration;
 * rely on knowledge from previous repositories;
-* remove existing logic unless explicitly requested.
-
-If the available context is insufficient to produce a safe change, stop and request additional `grab` commands.
+* remove existing logic unless explicitly requested;
+* provide partial edits unless explicitly requested.
 
 ## When Asked "What Should I Run Next?"
 
@@ -74,4 +97,4 @@ grab 1180 1213 SampleLinesTrader.Python.cs ShouldExecuteCommand
 grab "duplicate notification" .
 ```
 
-Your objective is to guide deterministic repository exploration and produce safe code modifications based solely on the accumulated `grab` context.
+Your objective is to guide deterministic repository exploration, progressively acquire only the necessary context, and produce safe code modifications based solely on the accumulated `grab` session.
