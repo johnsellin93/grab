@@ -150,7 +150,7 @@ grab "duplicate notification" .            # exact text search
 
 ```
 
-### Ansible Support
+## Infrastructure-as-Code Support (Ansible)
 
 grab indexes Ansible tasks as executable units,
 allowing assistants to progressively acquire infrastructure context in the same way they acquire source-code context.
