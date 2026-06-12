@@ -86,6 +86,29 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 [grab] functions:. +13L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
+## AI-Assisted Investigation Workflow
+
+```
+Problem statement:
+
+"Users occasionally receive duplicate notifications.
+
+We suspect retry handling might be involved,
+but we don't yet know which parts of the codebase to investigate."
+
+grab --functions .
+    ↓
+assistant sees function ranges and name context
+↓
+assistant identifies likely investigation targets
+↓
+assistant emits batches of grab commands
+↓
+developer reviews and executes them
+↓
+repository context expands incrementally to clipboard
+```
+
 Example assistant batch emission:
 
 ```
@@ -118,32 +141,6 @@ Example Clipboard integration
 [grab] +9 entries (+318L) → context 807L / 64192B copied to X clipboard via xclip
 
 ```
-
-### Example Investigation Workflow:
-
-```
-Problem statement:
-
-"Users occasionally receive duplicate notifications.
-
-We suspect retry handling might be involved,
-but we don't yet know which parts of the codebase to investigate."
-
-grab --functions .
-    ↓
-assistant sees function ranges and name context
-↓
-assistant identifies likely investigation targets
-↓
-assistant emits batches of grab commands
-↓
-developer reviews and executes them
-↓
-repository context expands incrementally to clipboard
-```
-
-
-
 
 ## Vim / Neovim Workflow Integration
 
