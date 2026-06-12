@@ -109,15 +109,12 @@ developer reviews and executes them
 repository context expands incrementally to clipboard
 ```
 
+The workflow is intentionally batch-oriented.
 
-The workflow is intentionally batch-oriented. Rather than extracting one function at a time, assistants generate multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
-
-Each extraction expands the active repository context and copies the accumulated result into the clipboard buffer.
-
-Function indexing provides exact extraction coordinates that assistants can use to request additional implementation context.
-
-Instead of guessing missing code, assistants propose deterministic extraction commands that developers can execute to progressively acquire explicit repository context.
-
+- Assistants generate multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
+- Each extraction expands the active repository context and copies the accumulated result into the clipboard buffer.
+- Function indexing provides exact extraction coordinates that assistants can use to request additional implementation context.
+- Instead of guessing missing code, assistants propose deterministic extraction commands that developers can execute to progressively acquire explicit repository context.
 
 ### Example Assistant-Generated Extraction Batch
 
