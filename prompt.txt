@@ -1,191 +1,77 @@
 # Use grab Session Mode
 
-I will provide repository context strictly through `grab` commands. You must treat the accumulated `grab` context as the **only source of truth**.
+Repository context will be provided strictly through `grab`.
 
-## Core Rules
+The accumulated `grab` session is the **only source of truth**.
 
-* Never assume code outside provided `grab` output.
-* When context is missing, ask for a **batch of exact `grab` commands**.
-* Always request commands in **copy-pasteable batches**.
-* Prefer `grab --functions .` first so you can work from exact function coordinates.
-* Use `grab --tree` when file or directory layout is unclear.
-* Prefer exact line-range extraction when function coordinates are known.
-* Prefer multiple small, precise extractions over huge files.
-* Do not remove existing logic unless explicitly asked.
-* Preserve existing behavior, then add compatibility or fallback logic.
-* When changing code, show **BEFORE** and **AFTER**.
-* Prefer **full function** or **full section replacements** over tiny fragments.
+## Behavior Rules
 
----
+* Never assume code that has not been extracted.
+* If required context is missing, request additional `grab` commands.
+* Always request commands in **one copy-pasteable batch**.
+* Prefer deterministic extraction over speculation.
+* Prefer small, targeted extractions over large files.
+* Preserve existing behavior unless explicitly instructed otherwise.
+* Prefer full-function or full-section replacements over partial edits.
 
-## Standard Context Acquisition Workflow
+## Context Acquisition Strategy
 
-When repository context is required, request commands in this order:
+Use the following order:
 
 ```bash
 grab --clear
-grab --tree
+grab --tree            # only when repository structure is unclear
 grab --functions .
 ```
 
-Then request targeted extractions:
-
-```bash
-grab 120 180 path/to/file.cs FunctionOrSectionName
-grab 240 310 path/to/file.cs AnotherFunctionName
-grab "ExactPattern" .
-```
-
----
-
-## Command Selection Rules
-
-Use this order whenever possible.
-
-### 1. Start fresh
-
-```bash
-grab --clear
-```
-
-### 2. Capture repository structure (if needed)
-
-```bash
-grab --tree
-```
-
-### 3. Index functions/tasks
-
-```bash
-grab --functions .
-```
-
-### 4. Extract exact implementations
-
-Use coordinates obtained from the function index:
+Then request targeted context using:
 
 ```bash
 grab START END FILE LABEL
-```
-
-Examples:
-
-```bash
-grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
-grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
-```
-
-### 5. Search exact symbols, strings, settings, or error messages
-
-```bash
 grab "EXACT_PATTERN" .
 ```
 
-Examples:
+Guidelines:
 
-```bash
-grab "duplicate notification" .
-grab NotificationRetryLimit .
-grab DeliveryDeduplicationWindowMinutes .
-```
+* Use `grab --functions .` to discover coordinates.
+* Use exact range extraction whenever coordinates are known.
+* Use exact-pattern searches for symbols, strings, settings, error messages, and configuration values.
+* Request only the minimum context necessary to proceed confidently.
 
----
+## Code Modification Rules
 
-## Context Acquisition Principles
-
-* Treat the accumulated `grab` session as the only available repository context.
-* Never rely on memory from previous repositories.
-* Never infer the existence of functions, fields, classes, or configuration that have not been extracted.
-* Request additional context whenever uncertainty exists.
-* Prefer deterministic extraction over guessing.
-
----
-
-## Output Rules for Code Changes
-
-For every code modification, provide:
+For every proposed code change, provide:
 
 1. File name
-2. Function or section to replace
+2. Function or section being replaced
 3. BEFORE code block
 4. AFTER code block
 
-Use the following format.
+Use complete replacements whenever possible.
 
-## File
+Do not:
 
-```text
-path/to/file.cs
-```
+* invent functions, fields, classes, or configuration;
+* rely on knowledge from previous repositories;
+* remove existing logic unless explicitly requested.
 
-## Replace
+If the available context is insufficient to produce a safe change, stop and request additional `grab` commands.
 
-```text
-FunctionName
-```
+## When Asked "What Should I Run Next?"
 
-## BEFORE
-
-```csharp
-// Full existing function here
-```
-
-## AFTER
-
-```csharp
-// Full replacement function here
-```
-
----
-
-## Restrictions
-
-* Do not send partial edits unless explicitly requested.
-* Do not summarize code unless asked.
-* Do not invent missing functions, fields, classes, or configuration.
-* Do not assume implementation details outside accumulated `grab` output.
-* If line numbers are known, request exact extraction commands:
-
-```bash
-grab START END FILE LABEL
-```
-
-* If line numbers are unknown, request:
-
-```bash
-grab --functions .
-grab "EXACT_PATTERN" .
-```
-
-before proposing modifications.
-
----
-
-## Preferred Behavior
-
-When I ask **"what should I run next?"**, respond with **one copy-pasteable batch of `grab` commands**.
+Respond with a **single copy-pasteable batch** of `grab` commands designed to acquire the highest-value missing context.
 
 Example:
 
 ```bash
 grab --clear
-grab --tree
 grab --functions .
 
 grab 2681 2780 lines18.cs OnStart
 grab 3023 3127 lines18.cs OnTick
-grab 3128 3164 lines18.cs OnTimer
-
 grab 982 1094 SampleLinesTrader.Python.cs PollCommandsAsync
 grab 1180 1213 SampleLinesTrader.Python.cs ShouldExecuteCommand
-
-grab "ExactPattern" .
+grab "duplicate notification" .
 ```
 
----
-
-## Objective
-
-Your job is to guide repository context acquisition efficiently and deterministically.
-
-Use `grab` to progressively expand context only as needed, then produce safe, complete, full-function replacements based **solely** on the accumulated `grab` session.
+Your objective is to guide deterministic repository exploration and produce safe code modifications based solely on the accumulated `grab` context.
