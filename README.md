@@ -83,10 +83,6 @@ server.py:270-303 [34L] def _coerce_nonneg_float(x: Any) -> float | None:
 server.py:304-357 [54L] def _history_add_event(row: Dict[str, Any], event_type: str) -> bool:
 server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_row: Dict[str, Any]) -> bool:
 
-./roles/google_chrome/tasks/main.yml:27-48 [22L] [ROLE: google_chrome] ansible task: Create Chrome extensions directory
-./roles/google_chrome/tasks/main.yml:49-60 [12L] [ROLE: google_chrome] ansible task: Install Chrome extensions
-
-
 [grab] functions:. +15L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
@@ -131,9 +127,6 @@ grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
 grab 188 236 RetryPolicy.cs RetryFailedNotification
 grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
 
-grab 20 26 ./roles/google_chrome/tasks/main.yml "Install Google Chrome"
-grab 49 60 ./roles/google_chrome/tasks/main.yml "Install Chrome extensions"
-
 grab NotificationRetryLimit .               # variable / symbol lookup
 grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
 grab "duplicate notification" .            # exact text search
@@ -152,11 +145,38 @@ grab "duplicate notification" .            # exact text search
   +18L  symbol NotificationRetryLimit
   +13L  symbol DeliveryDeduplicationWindowMinutes
   +26L  text   "duplicate notification"
-  +7L   task   Install Google Chrome
-  +12L  task   Install Chrome extensions
 
 [grab] +11 entries (+337L) → context 826L / 64192B copied to X clipboard via xclip
 
+```
+
+### Ansible Support
+
+grab indexes Ansible tasks as executable units,
+allowing assistants to progressively acquire infrastructure context in the same way they acquire source-code context.
+
+
+```
+grab --functions roles
+```
+
+### Ansible Task Index Output
+
+```
+roles/os_settings/tasks/main.yml:164-176 [13L] [ROLE: os_settings] ansible task: Render hardened sshd_config
+roles/os_settings/handlers/main.yml:23-28 [6L] [ROLE: os_settings] ansible task: reload ssh
+roles/google_chrome/tasks/main.yml:20-26 [7L] [ROLE: google_chrome] ansible task: Install Google Chrome
+roles/google_chrome/tasks/main.yml:49-60 [12L] [ROLE: google_chrome] ansible task: Install Chrome extensions
+```
+
+Tasks can then be extracted directly using the reported coordinates:
+This enables assistants to reason about infrastructure changes incrementally, without requiring entire playbooks or repository-wide indexing.
+
+```
+grab 164 176 roles/os_settings/tasks/main.yml "Render hardened sshd_config"
+grab 23 28 roles/os_settings/handlers/main.yml "reload ssh"
+grab 20 26 roles/google_chrome/tasks/main.yml "Install Google Chrome"
+grab 49 60 roles/google_chrome/tasks/main.yml "Install Chrome extensions"
 ```
 
 ## Vim / Neovim Workflow Integration
