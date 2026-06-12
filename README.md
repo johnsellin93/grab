@@ -66,7 +66,7 @@ grab --functions server.py   # function index for a single file
 grab --functions .           # search current repository and index all discovered functions
 ```
 
-Example output:
+### Function Index Output
 
 ```
 server.py:38-58 [21L] def _init_logging() -> None:
@@ -109,6 +109,15 @@ developer reviews and executes them
 repository context expands incrementally to clipboard
 ```
 
+The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
+
+Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer.
+
+Function indexing provides exact extraction coordinates that assistants can use to request additional surrounding implementation context.
+
+Instead of guessing missing code, the AI proposes deterministic extraction commands that developers can use to progressively acquire explicit repository context.
+
+
 Example assistant batch emission:
 
 ```
@@ -123,17 +132,10 @@ grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
 grab NotificationRetryLimit .               # variable / symbol lookup
 grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
 grab "duplicate notification" .            # exact text search
+
 ```
 
-The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
-Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer.
-
-Function indexing provides exact extraction coordinates that assistants can use to request additional surrounding implementation context.
-
-Instead of guessing missing code, the AI proposes deterministic extraction commands that developers can use to progressively acquire explicit repository context.
-
-
-Clipboard integration
+### Accumulated Clipboard Context
 
 ```
   +72L  block  ProcessNotificationDelivery(...)
@@ -176,8 +178,7 @@ set clipboard+=unnamed
 
 Useful when capturing complete implementation context for `grab`.
 
-Large functions spanning hundreds of lines can be selected in a single action, making it easy to export entire execution paths to the clipboard for AI-assisted analysis.
-
+Functions spanning hundreds of lines can be selected in a single action, making it easy to export entire execution paths without manually scrolling, selecting, or risking partial copies.
 ```vim
 nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
 nnoremap <silent> <M-s> :call SelectWholeFunction()<CR>
