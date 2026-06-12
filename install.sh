@@ -2,8 +2,12 @@
 set -euo pipefail
 
 INSTALL_DIR="$HOME/grab"
+BIN_DIR="$HOME/.local/bin"
+WRAPPER_PATH="$BIN_DIR/grab"
 REPO_URL="https://github.com/johnsellin93/grab.git"
-PATH_EXPORT='export PATH="$HOME/grab:$PATH"'
+
+PATH_EXPORT_LOCAL='export PATH="$HOME/.local/bin:$PATH"'
+PATH_EXPORT_GRAB='export PATH="$HOME/grab:$PATH"'
 
 info() { echo "[grab] $*"; }
 ok() { echo "✓ $*"; }
@@ -80,8 +84,24 @@ ensure_optional_dependency() {
     fi
 }
 
+append_path_if_missing() {
+    local shell_rc="$1"
+    local line="$2"
+
+    touch "$shell_rc"
+
+    if ! grep -Fxq "$line" "$shell_rc" 2>/dev/null; then
+        echo "$line" >> "$shell_rc"
+        ok "Added PATH entry to $shell_rc"
+    else
+        ok "PATH entry already present in $shell_rc"
+    fi
+}
+
 info "Checking dependencies..."
 
+ensure_required_dependency zsh zsh
+ensure_required_dependency git git
 ensure_required_dependency rg ripgrep
 ensure_optional_dependency tree tree
 
@@ -101,11 +121,22 @@ fi
 
 chmod +x "$INSTALL_DIR/grab"
 
-if ! grep -Fxq "$PATH_EXPORT" "$HOME/.zshrc" 2>/dev/null; then
-    echo "$PATH_EXPORT" >> "$HOME/.zshrc"
-    ok "Added grab to PATH in ~/.zshrc"
-else
-    ok "PATH already configured"
+info "Installing wrapper..."
+
+mkdir -p "$BIN_DIR"
+
+cat > "$WRAPPER_PATH" <<'EOF'
+#!/usr/bin/env bash
+exec zsh "$HOME/grab/grab" "$@"
+EOF
+
+chmod +x "$WRAPPER_PATH"
+ok "Installed wrapper at $WRAPPER_PATH"
+
+append_path_if_missing "$HOME/.zshrc" "$PATH_EXPORT_LOCAL"
+
+if [[ -f "$HOME/.bashrc" ]]; then
+    append_path_if_missing "$HOME/.bashrc" "$PATH_EXPORT_LOCAL"
 fi
 
 echo
@@ -117,3 +148,4 @@ echo
 info "Verify with:"
 echo
 echo "    grab --help"
+echo "    grab --functions ."
