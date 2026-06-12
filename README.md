@@ -10,7 +10,7 @@ Instead of indexing entire repositories, grab allows developers and AI systems t
 
 Unlike repository indexing tools, grab focuses on explicit, user-directed context acquisition.
 
-grab helps developers build explicit repository context for AI systems without relying on repository-wide indexing or fragmented snippets.
+grab helps developers build explicit repository context for AI systems without relying on repository-wide indexing, embeddings, or fragmented snippets.
 Context is acquired incrementally as the investigation evolves.
 
 <!--
@@ -51,11 +51,11 @@ curl -fsSL https://raw.githubusercontent.com/johnsellin93/grab/main/install.sh |
 
 The installer will:
 
-install required dependencies such as ripgrep
-install optional utilities such as tree
-clone or update grab in ~/grab
-make the grab executable available in your shell
-update your PATH automatically if required
+- install required dependencies such as `ripgrep`
+- install optional utilities such as `tree`
+- clone or update `grab` in `~/grab`
+- make the `grab` executable available in your shell
+- update your `PATH` automatically if required
 
 Restart your shell or run:
 
