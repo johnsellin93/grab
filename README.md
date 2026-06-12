@@ -46,11 +46,28 @@ Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
 # Install
 
 ```
-git clone https://github.com/johnsellin93/grab.git
-cd grab
-chmod +x grab
-echo 'export PATH="$HOME/grab:$PATH"' >> ~/.zshrc
+curl -fsSL https://raw.githubusercontent.com/johnsellin93/grab/main/install.sh | zsh
+```
+
+The installer will:
+
+install required dependencies such as ripgrep
+install optional utilities such as tree
+clone or update grab in ~/grab
+make the grab executable available in your shell
+update your PATH automatically if required
+
+Restart your shell or run:
+
+```
 source ~/.zshrc
+```
+
+Verify the installation:
+
+```
+grab --help
+grab --functions .
 ```
 
 ## Function Indexing and Context Acquisition
