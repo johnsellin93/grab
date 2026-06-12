@@ -153,10 +153,10 @@ The following mappings are not required to use `grab`, but they significantly im
 |----------|----------|
 | `<C-s>` | Select the current function or method |
 | `<M-s>` | Alternate function-selection mapping |
-| `<M-c>` | Copy the entire current file to the clipboard |
-| `<M-m>` | Shift selected code left by one space |
-| `<M-.>` | Shift selected code right by one space |
-| `<Leader>r` | Search and replace throughout the current file |
+| `<M-c>` | Copy entire current file to the clipboard |
+| `<M-m>` | Indent selected code left by one space |
+| `<M-.>` | Indent selected code right by one space |
+| `<Leader>r` | Search and replace all occurences of keyword |
 | `<Space>h` | Highlight from the current line to a specific line |
 | `p` | Paste from clipboard and highlight inserted text |
 
@@ -190,7 +190,7 @@ xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
 
 ### Paste Highlighting
 
-Useful when reviewing assistant-generated patches immediately after insertion.
+Useful when reviewing and indent assistant-generated patches immediately after insertion.
 
 ```vim
 nnoremap p :call PasteAndHighlight()<CR>
@@ -215,7 +215,7 @@ nnoremap <M-c> :%!xclip -sel clip<CR>
 
 ### Highlight to Line
 
-Highligth to a specific line.
+Highligth code to a specific line.
 
 ```vim
 nnoremap <silent> <Space>h :call HighlightToLine()<CR>
