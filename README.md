@@ -130,6 +130,9 @@ Each extraction incrementally expands the active repository context and copies t
 
 Function indexing provides exact extraction coordinates that assistants can use to request additional surrounding implementation context.
 
+Instead of guessing missing code, the AI proposes deterministic extraction commands that developers can use to progressively acquire explicit repository context.
+
+
 Clipboard integration
 
 ```
@@ -231,17 +234,6 @@ Highlight to line:
 ```
 
 Selects from the current line through line `250`.
-
-
-Instead of guessing missing code, the AI proposes deterministic extraction commands that developers can use to progressively acquire explicit repository context.
-
-
-The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
-
-
-Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer.
-
-Function indexing provides exact extraction coordinates that assistants can use to request additional surrounding implementation context.
 
 
 Delayed footers summarize newly added context after batch extraction.
