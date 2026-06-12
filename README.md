@@ -125,7 +125,12 @@ grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
 grab "duplicate notification" .            # exact text search
 ```
 
-Example Clipboard integration
+The intended workflow is batch-oriented. Rather than extracting one function at a time, the AI generates multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
+Each extraction incrementally expands the active repository context and copies the accumulated result into the active clipboard buffer.
+
+Function indexing provides exact extraction coordinates that assistants can use to request additional surrounding implementation context.
+
+Clipboard integration
 
 ```
   +72L  block  ProcessNotificationDelivery(...)
