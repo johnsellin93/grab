@@ -6,7 +6,7 @@ usage() {
   cat <<'EOF'
 Usage:
   grab <pattern> [path...]
-  grab --all <pattern> [path...]
+#   grab --all <pattern> [path...]
   grab <start> <end> <file> [label...]
   grab --clear
   grab --functions <file> [symbol]
@@ -406,6 +406,82 @@ if [[ "${1:-}" == "--functions" ]]; then
       flush(NR)
     }
   '
+  ansible_outline_awk='
+    function trim(s) {
+      sub(/^[[:space:]]*/, "", s)
+      sub(/[[:space:]]*$/, "", s)
+      return s
+    }
+
+    function ansible_role_name(path, parts, i) {
+      n = split(path, parts, "/")
+
+      for (i = 1; i <= n; i++) {
+        if (parts[i] == "roles" && (i + 1) <= n) {
+          return parts[i + 1]
+        }
+      }
+
+      return ""
+    }
+
+    function flush(end_line) {
+      if (start > 0) {
+        len = end_line - start + 1
+
+        extra = ""
+        if (symbol != "" && hits != "") {
+          extra = " [" symbol ": " hits "]"
+        }
+
+        role = ansible_role_name(file)
+
+        if (role != "") {
+          print file ":" start "-" end_line " [" len "L] [ROLE: " role "] " sig extra
+        } else {
+          print file ":" start "-" end_line " [" len "L] " sig extra
+        }
+      }
+
+      start = 0
+      sig = ""
+      hits = ""
+    }
+
+    function add_hit(line_no, where) {
+      if (symbol == "") return
+
+      hit = where != "" ? where : line_no
+
+      if (hits == "") hits = hit
+      else hits = hits "," hit
+    }
+
+    /^[[:space:]]*-[[:space:]]+name:[[:space:]]*/ {
+      flush(NR - 1)
+
+      start = NR
+      line = $0
+      sub(/^[[:space:]]*-[[:space:]]+name:[[:space:]]*/, "", line)
+      gsub(/^["\047]|["\047]$/, "", line)
+
+      sig = "ansible task: " trim(line)
+
+      if (symbol != "" && sig ~ symbol) {
+        add_hit(NR, "signature")
+      }
+
+      next
+    }
+
+    start > 0 && symbol != "" && $0 ~ symbol {
+      add_hit(NR, "")
+    }
+
+    END {
+      flush(NR)
+    }
+  '
   files=()
 
   if [[ -f "$target" ]]; then
@@ -443,7 +519,9 @@ if [[ "${1:-}" == "--functions" ]]; then
            -name '*.jsx' -o \
            -name '*.ts' -o \
            -name '*.tsx' -o \
-           -name '*.py' \) \
+           -name '*.py' -o \
+           -name '*.yml' -o \
+           -name '*.yaml' \) \
         -print
     )
 
@@ -456,9 +534,15 @@ if [[ "${1:-}" == "--functions" ]]; then
   fi
 
   for function_file in "${files[@]}"; do
-    awk -v file="$function_file" -v symbol="$symbol" "$function_outline_awk" "$function_file" >> "$buffer_file"
+    case "$function_file" in
+      *.yml|*.yaml)
+        awk -v file="$function_file" -v symbol="$symbol" "$ansible_outline_awk" "$function_file" >> "$buffer_file"
+        ;;
+      *)
+        awk -v file="$function_file" -v symbol="$symbol" "$function_outline_awk" "$function_file" >> "$buffer_file"
+        ;;
+    esac
   done
-
   if [[ -n "$symbol" ]]; then
     tmp_filtered_file="${buffer_file}.filtered.tmp"
 
