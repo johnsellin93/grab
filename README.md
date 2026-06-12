@@ -103,7 +103,7 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 [grab] functions:. +15L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
-## Example Debugging Session
+## AI-Assisted Debugging Workflow
 
 ```
 Problem statement:
@@ -125,6 +125,8 @@ developer reviews and executes them
     ↓
 repository context expands incrementally to clipboard
 ```
+
+### Why this workflow works
 
 The workflow is intentionally batch-oriented.
 
@@ -199,6 +201,10 @@ grab 49 60 roles/google_chrome/tasks/main.yml "Install Chrome extensions"
 ## Vim / Neovim Workflow Integration
 
 The following mappings are not required to use `grab`, but they significantly improve keyboard-driven AI workflows.
+
+A complete example configuration is available here:
+
+See the included [`init.vim`](./init.vim) for a complete example configuration.
 
 | Mapping | Purpose |
 |----------|----------|
