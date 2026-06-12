@@ -103,6 +103,7 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 [grab] functions:. +15L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
+
 ## AI-Assisted Debugging Workflow
 
 ```
@@ -126,6 +127,7 @@ developer reviews and executes them
 repository context expands incrementally to clipboard
 ```
 
+
 ### Why this workflow works
 
 The workflow is intentionally batch-oriented.
@@ -134,6 +136,7 @@ The workflow is intentionally batch-oriented.
 - Each extraction expands the active repository context and copies the accumulated result into the clipboard buffer.
 - Function indexing provides exact extraction coordinates that assistants can use to request additional implementation context.
 - Instead of guessing missing code, assistants propose deterministic extraction commands that developers can execute to progressively acquire explicit repository context.
+
 
 ### Example Assistant-Generated Extraction Batch
 
