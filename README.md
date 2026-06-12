@@ -99,13 +99,13 @@ but we don't yet know which parts of the codebase to investigate."
 grab --functions .
     ↓
 assistant sees function ranges and name context
-↓
+    ↓
 assistant identifies likely investigation targets
-↓
+    ↓
 assistant emits batches of grab commands
-↓
+    ↓
 developer reviews and executes them
-↓
+    ↓
 repository context expands incrementally to clipboard
 ```
 
@@ -118,7 +118,7 @@ Function indexing provides exact extraction coordinates that assistants can use 
 Instead of guessing missing code, the AI proposes deterministic extraction commands that developers can use to progressively acquire explicit repository context.
 
 
-Example assistant batch emission:
+Example assistant emits batch
 
 ```
 grab --functions .
