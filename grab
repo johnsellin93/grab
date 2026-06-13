@@ -1,15 +1,16 @@
+
 #!/usr/bin/env zsh
 set -euo pipefail
 # AI context grab for terminal workflows, search/extract → accumulate context → copy to clipboard.
 
-usage() {
-  cat <<'EOF'
 Usage:
   grab <pattern> [path...]
 #   grab --all <pattern> [path...]
   grab <start> <end> <file> [label...]
+  grab --replace <start> <end> <file> <expected-label>
   grab --clear
   grab --functions <file> [symbol]
+
 
 Examples:
   grab variable /dir/proj
@@ -135,6 +136,55 @@ grab_detect_symbol_name() {
     }
   ' "$file"
 }
+
+grab_validate_file_syntax() {
+  local file="$1"
+
+  case "$file" in
+    *.py)
+      if command -v python3 >/dev/null 2>&1; then
+        python3 -m py_compile "$file"
+      elif command -v python >/dev/null 2>&1; then
+        python -m py_compile "$file"
+      else
+        print -r -- "[grab] syntax validation skipped: python not found"
+      fi
+      ;;
+
+    *.sh|*.bash)
+      if command -v bash >/dev/null 2>&1; then
+        bash -n "$file"
+      else
+        print -r -- "[grab] syntax validation skipped: bash not found"
+      fi
+      ;;
+
+    *.zsh)
+      if command -v zsh >/dev/null 2>&1; then
+        zsh -n "$file"
+      else
+        print -r -- "[grab] syntax validation skipped: zsh not found"
+      fi
+      ;;
+
+    *.yml|*.yaml)
+      if command -v python3 >/dev/null 2>&1; then
+        python3 - <<PY
+import sys, yaml
+with open("$file", "r", encoding="utf-8") as f:
+    yaml.safe_load(f)
+PY
+      else
+        print -r -- "[grab] syntax validation skipped: python3 not found"
+      fi
+      ;;
+
+    *)
+      print -r -- "[grab] syntax validation skipped for file type: $file"
+      ;;
+  esac
+}
+
 
 
 if [[ $# -lt 1 ]]; then
@@ -601,6 +651,122 @@ if [[ "${1:-}" == "--functions" ]]; then
 fi
 
 # Auto-detect real piped stdin.
+
+if [[ "${1:-}" == "--replace" ]]; then
+  shift
+
+  if [[ $# -lt 4 ]]; then
+    print -r -- "[grab] usage: grab --replace <start> <end> <file> <expected-label>" >&2
+    exit 1
+  fi
+
+  start_line="$1"
+  end_line="$2"
+  target_file="$3"
+  shift 3
+
+  expected_parts=("$@")
+  expected_label="${(j: :)expected_parts}"
+
+  if [[ ! "$start_line" =~ '^[0-9]+$' ]] || [[ ! "$end_line" =~ '^[0-9]+$' ]]; then
+    print -r -- "[grab] replace requires numeric start/end lines" >&2
+    exit 1
+  fi
+
+  if [[ ! -f "$target_file" ]]; then
+    print -r -- "[grab] replace target file not found: $target_file" >&2
+    exit 1
+  fi
+
+  if (( start_line <= 0 || end_line < start_line )); then
+    print -r -- "[grab] invalid range: ${start_line}-${end_line}" >&2
+    exit 1
+  fi
+
+  old_block="$(sed -n "${start_line},${end_line}p" "$target_file")"
+
+  if ! print -r -- "$old_block" | grep -Fq -- "$expected_label"; then
+    print -r -- "[grab] expected label not found in target range" >&2
+    print -r -- "  file   : $target_file" >&2
+    print -r -- "  lines  : ${start_line}-${end_line}" >&2
+    print -r -- "  expect : $expected_label" >&2
+    print -r -- "" >&2
+    print -r -- "[grab] refusing replacement to avoid line-drift damage" >&2
+    exit 1
+  fi
+
+  tmp_dir="${GRAB_BUFFER_DIR:-$HOME/.cache/grab}"
+  mkdir -p "$tmp_dir"
+
+  replacement_file="${tmp_dir}/replacement.tmp"
+  new_file="${tmp_dir}/replace.new.tmp"
+  backup_file="${target_file}.grab.bak.$(date +%Y%m%d%H%M%S)"
+
+  print -r -- "[grab] replacing:"
+  print -r -- "  file   : $target_file"
+  print -r -- "  lines  : ${start_line}-${end_line}"
+  print -r -- "  expect : $expected_label"
+  print -r -- ""
+  print -r -- "Paste replacement now. Press Ctrl-D when finished."
+  print -r -- "------------------------------------------------------------"
+
+  cat > "$replacement_file"
+
+  if [[ ! -s "$replacement_file" ]]; then
+    print -r -- "[grab] replacement was empty; aborting" >&2
+    exit 1
+  fi
+
+  cp "$target_file" "$backup_file"
+
+  awk -v start="$start_line" -v end="$end_line" -v repl="$replacement_file" '
+    NR == start {
+      while ((getline line < repl) > 0) {
+        print line
+      }
+    }
+
+    NR < start || NR > end {
+      print
+    }
+  ' "$target_file" > "$new_file"
+
+  cp "$new_file" "$target_file"
+
+  if ! grab_validate_file_syntax "$target_file"; then
+    cp "$backup_file" "$target_file"
+    print -r -- "[grab] syntax validation failed; restored backup" >&2
+    print -r -- "  backup: $backup_file" >&2
+    exit 1
+  fi
+
+  print -r -- ""
+  print -r -- "[grab] diff:"
+  print -r -- "------------------------------------------------------------"
+  diff -u "$backup_file" "$target_file" || true
+  print -r -- "------------------------------------------------------------"
+  print -r -- ""
+
+  print -n -- "Apply replacement? [y/N] "
+  read -r answer
+
+  case "$answer" in
+    y|Y|yes|YES)
+      print -r -- "[grab] replacement applied"
+      print -r -- "  backup: $backup_file"
+      ;;
+    *)
+      cp "$backup_file" "$target_file"
+      print -r -- "[grab] replacement cancelled; restored original"
+      print -r -- "  backup: $backup_file"
+      ;;
+  esac
+
+  rm -f "$replacement_file" "$new_file"
+  exit 0
+fi
+
+
 # This avoids hanging on "cat > buffer_file" when stdin looks non-TTY
 # but no real data arrives.
 if [[ ! -t 0 ]]; then
@@ -681,10 +847,9 @@ mode="smart"
 #   && [[ -f "$3" ]]; then
 
 if [[ $# -ge 3 ]] \
-  && [[ "$1" == <-> ]] \
-  && [[ "$2" == <-> ]] \
+  && [[ "$1" =~ '^[0-9]+$' ]] \
+  && [[ "$2" =~ '^[0-9]+$' ]] \
   && [[ -f "$3" ]]; then
-
   start_line="$1"
   end_line="$2"
   target_file="$3"
