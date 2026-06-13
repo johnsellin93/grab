@@ -1,4 +1,4 @@
-# Rapid AI-assisted debugging and repository analysis from the terminal
+# AI-assisted debugging and code modification from the terminal
 
 > You are not copying results. You are exporting context.
 
