@@ -162,6 +162,7 @@ See the included [`prompt.txt`](./prompt.txt) for a complete example AI-assisted
 ### Example Generated Extraction Batch
 
 ```
+grab --clear
 grab --functions .
 grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
 grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
