@@ -42,6 +42,8 @@ Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
 | `grab 500 635 file.cs` | Extract an exact implementation range |
 | `grab --functions . Order` | Locate Order-related functions |
 | `grab --functions .` | index all functions |
+| `grab --replace server.py function_name .` | replace full function |
+
 
 # Install
 
