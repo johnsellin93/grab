@@ -1,4 +1,4 @@
-# AI-assisted debugging and code modification from the terminal
+# Rapid AI-assisted debugging and repository analysis from the terminal
 
 > You are not copying results. You are exporting context.
 
@@ -301,16 +301,6 @@ Highligth code to a specific line.
 ```vim
 nnoremap <silent> <Space>h :call HighlightToLine()<CR>
 ```
-
-Workflow:
-
-```text
-Highlight to line:
-250
-```
-
-Selects from the current line through line `250`.
-
 
 Delayed footers summarize newly added context after batch extraction.
 
