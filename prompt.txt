@@ -1,126 +1,420 @@
-# Use grab Session Mode
+# Rapid AI-assisted debugging and repository analysis from the terminal
 
-Repository context will be provided strictly through `grab`.
+> You are not copying results. You are exporting context.
 
-The accumulated `grab` session is the **only source of truth**.
+grab turns repository exploration into a deterministic workflow for building AI-ready context from large codebases, one extraction at a time.
 
-## Behavior Rules
+It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic code-context extraction.
 
-* Never assume code that has not been extracted.
-* If required context is missing, request additional `grab` commands.
-* Always request commands in **one copy-pasteable batch**.
-* Prefer deterministic extraction over speculation.
-* Prefer small, targeted extractions over large files.
-* Preserve existing behavior unless explicitly instructed otherwise.
-* Prefer full-function or full-section replacements over partial edits.
-* Prefer symbol-based replacements over line-based modifications whenever supported.
+Instead of indexing entire repositories, grab allows developers and AI systems to progressively acquire only the context required for a specific debugging or implementation task.
 
-## Context Acquisition Strategy
+Unlike repository indexing tools, grab focuses on explicit, user-directed context acquisition.
 
-Use this order:
+grab helps developers build explicit repository context for AI systems without relying on repository-wide indexing, embeddings, or fragmented snippets.
+Context is acquired incrementally as the investigation evolves.
 
-```bash
-grab --clear
-grab --tree            # only when repository structure is unclear
+<!--
+## Demo
+
+<video src="https://github.com/user-attachments/assets/7c451617-e470-4b72-b2e4-d75b3148fe31" controls autoplay loop muted width="100%"></video>
+-->
+
+It lets you:
+
+- search relevant project files
+- extract exact code ranges
+- capture directory structure
+- accumulate debugging context incrementally
+- automatically copy accumulated context to clipboard/tmux
+- paste clean AI-ready context directly into AI tools
+
+## Supported Languages
+Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
+
+
+## Basic Workflow
+
+| Command | Purpose |
+|----------|----------|
+| `grab --clear` | Reset previous debugging context |
+| `grab --tree` | Capture repository structure |
+| `grab ExactPattern` | Locate relevant call flows and implementation paths |
+| `grab 500 635 file.cs` | Extract an exact implementation range |
+| `grab --functions .` | index all functions |
+| `grab --replace FILE FUNCTION` | Replace a function by symbol, validate, show diff, and ask for approval |
+
+
+# Install
+
+```
+curl -fsSL https://raw.githubusercontent.com/johnsellin93/grab/main/install.sh | zsh
+```
+
+The installer will:
+
+- install required dependencies such as `ripgrep`
+- install optional utilities such as `tree`
+- clone or update `grab` in `~/grab`
+- make the `grab` executable available in your shell
+- update your `PATH` automatically if required
+
+Restart your shell or run:
+
+```
+source ~/.zshrc
+```
+
+Verify the installation:
+
+```
+grab --help
 grab --functions .
 ```
 
-Then request targeted context using:
+## Function Indexing and Context Acquisition
 
-```bash
-grab START END FILE LABEL
-grab "EXACT_PATTERN" .
+1. Search for symbols, variables, functions, or configuration values.
+2. Extract relevant code ranges.
+3. Accumulate context across multiple files and searches.
+4. Automatically copy aggregated context to tmux or the system clipboard.
+5. Paste directly into AI tools for troubleshooting and analysis.
+
+```
+grab --functions server.py   # function index for a single file
+grab --functions .           # search current repository and index all discovered functions
 ```
 
-Guidelines:
+### Function Index Output
 
-* Use `grab --functions .` to discover functions, tasks, and replacement targets.
-* Use exact range extraction whenever coordinates are known.
-* Use exact-pattern searches for symbols, strings, settings, configuration values, and error messages.
-* Request only the minimum context necessary to proceed confidently.
-* Prefer hypothesis-driven investigation. Identify the highest ROI area first, then acquire only the context required to validate that hypothesis.
+```
+server.py:38-58 [21L] def _init_logging() -> None:
+server.py:59-95 [37L] def format(self, record: logging.LogRecord) -> str:
+server.py:96-110 [15L] def _get_client() -> str:
+server.py:111-121 [11L] def get_cloudflare_access_email() -> str:
+server.py:122-166 [45L] def _log_request_start():
+server.py:167-211 [45L] def _log_request_end(resp: Response):
+server.py:212-227 [16L] def _log_unhandled_exception(e: Exception):
+server.py:228-246 [19L] def _safe_float(x: Any) -> float:
+server.py:247-264 [18L] def _enqueue_all_trading_commands(bot_to_instance: dict, val: bool) -> int:
+server.py:265-269 [5L] def _line_key(bot_id: str, instance_id: str, line_id: str) -> Tuple[str, str, str]:
+server.py:270-303 [34L] def _coerce_nonneg_float(x: Any) -> float | None:
+server.py:304-357 [54L] def _history_add_event(row: Dict[str, Any], event_type: str) -> bool:
+server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_row: Dict[str, Any]) -> bool:
 
-## Change Validation Rules
-
-Before proposing any code modification, determine whether sufficient context exists.
-
-State:
-
-1. The intended change.
-2. The extracted functions/sections relevant to that change.
-3. Any missing context required to implement the change safely.
-4. Whether the change is safe to produce immediately.
-
-If the available context is insufficient, stop and request additional `grab` commands.
-
-Do not produce code if:
-
-* the target function has not been extracted;
-* relevant callers or lifecycle methods may influence behavior but have not been reviewed;
-* required fields, types, or configuration are missing;
-* threading, async behavior, timers, or concurrency may be affected without sufficient context;
-* persistence or state-management behavior has not been inspected.
-
-## Code Modification Rules
-
-For every proposed code change, provide:
-
-1. File name.
-2. Function or section being replaced.
-3. Why this exact replacement target was selected.
-4. Compatibility and behavior considerations.
-5. Full BEFORE code block.
-6. Full AFTER code block.
-
-Use complete function or section replacements whenever possible.
-
-Do not:
-
-* invent functions, fields, classes, or configuration;
-* rely on knowledge from previous repositories;
-* remove existing logic unless explicitly requested;
-* provide partial edits unless explicitly requested.
-
-## Preferred Replacement Workflow
-
-When function replacement is supported, prefer symbol-based replacement:
-
-```bash
-grab --replace FILE FUNCTION_NAME
+[grab] functions:. +15L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
-Examples:
+
+## AI-Assisted Debugging Workflow
+
+```
+Problem statement:
+
+"Users occasionally receive duplicate notifications.
+
+We suspect retry handling might be involved,
+but we don't yet know which parts of the codebase to investigate."
+
+grab --functions .
+    ↓
+assistant sees function ranges and name context
+    ↓
+assistant identifies likely investigation targets
+    ↓
+assistant emits batches of grab commands
+    ↓
+developer reviews and executes them
+    ↓
+repository context expands incrementally to clipboard
+```
+
+
+## AI-Assisted Function Replacement
+
+After an assistant proposes a full replacement function or task, `grab` can apply the change safely from the terminal.
 
 ```bash
 grab --replace server.py _safe_float
-grab --replace lineflow.js showError
-grab --replace SampleLinesTrader.cs OnTick
+grab --replace file.js showError
 grab --replace roles/os_settings/tasks/main.yml "Render hardened sshd_config"
 ```
 
-Use range-based replacement only when symbol-based replacement is unavailable:
+`grab` will:
 
-```bash
-grab --replace START END FILE LABEL
+* resolve the current function or task location by symbol;
+* prompt for the replacement implementation;
+* validate syntax where supported;
+* display a colored diff showing the proposed change;
+* require explicit approval before modifying the source file.
+
+This workflow keeps AI-assisted code changes deterministic, review-first, and human-controlled rather than fully autonomous.
+
+
+The workflow is batch-oriented.
+
+- Assistants generate multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
+- Each extraction expands the active repository context and copies the accumulated result into the clipboard buffer.
+- Function indexing provides exact extraction coordinates that assistants can use to request additional implementation context.
+- Instead of guessing missing code, assistants propose deterministic extraction commands that developers can execute to progressively acquire explicit repository context.
+
+See the included [`prompt.txt`](./promt.txt) for a complete example configuration.
+
+
+
+### Example Assistant-Generated Extraction Batch
+
 ```
-
-Assistants should generate complete replacement implementations suitable for direct use with `grab --replace`.
-
-## When Asked "What Should I Run Next?"
-
-Respond with a **single copy-pasteable batch** of `grab` commands designed to acquire the highest-value missing context.
-
-Example:
-
-```bash
-grab --clear
 grab --functions .
+grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
+grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
+grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
+grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
+grab 188 236 RetryPolicy.cs RetryFailedNotification
+grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
 
-grab 2681 2780 lines18.cs OnStart
-grab 3023 3127 lines18.cs OnTick
-grab 982 1094 SampleLinesTrader.Python.cs PollCommandsAsync
-grab 1180 1213 SampleLinesTrader.Python.cs ShouldExecuteCommand
-grab "duplicate notification" .
+grab NotificationRetryLimit .               # variable / symbol lookup
+grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
+grab "duplicate notification" .            # exact text search
+
 ```
 
-Your objective is to guide deterministic repository exploration, progressively acquire only the necessary context, and produce safe code modifications based solely on the accumulated `grab` session.
+### Accumulated Clipboard Context
+
+```
+  +72L  block  ProcessNotificationDelivery(...)
+  +38L  block  ShouldRetryNotification(...)
+  +44L  block  RecordDeliveryAttempt(...)
+  +31L  block  HasRecentSuccessfulDelivery(...)
+  +49L  block  RetryFailedNotification(...)
+  +27L  block  GetRetryBackoffDelay(...)
+  +18L  symbol NotificationRetryLimit
+  +13L  symbol DeliveryDeduplicationWindowMinutes
+  +26L  text   "duplicate notification"
+
+[grab] +11 entries (+337L) → context 826L / 64192B copied to X clipboard via xclip
+
+```
+
+## Infrastructure-as-Code Support (Ansible)
+
+grab indexes Ansible tasks as executable units,
+allowing assistants to progressively acquire infrastructure context in the same way they acquire source-code context.
+
+
+```
+grab --functions roles
+```
+
+### Ansible Task Index Output
+
+```
+roles/os_settings/tasks/main.yml:164-176 [13L] [ROLE: os_settings] ansible task: Render hardened sshd_config
+roles/os_settings/handlers/main.yml:23-28 [6L] [ROLE: os_settings] ansible task: reload ssh
+roles/google_chrome/tasks/main.yml:20-26 [7L] [ROLE: google_chrome] ansible task: Install Google Chrome
+roles/google_chrome/tasks/main.yml:49-60 [12L] [ROLE: google_chrome] ansible task: Install Chrome extensions
+```
+
+Tasks can then be extracted directly using the reported coordinates:
+This enables assistants to reason about infrastructure changes incrementally, without requiring entire playbooks or repository-wide indexing.
+
+```
+grab 164 176 roles/os_settings/tasks/main.yml "Render hardened sshd_config"
+grab 23 28 roles/os_settings/handlers/main.yml "reload ssh"
+grab 20 26 roles/google_chrome/tasks/main.yml "Install Google Chrome"
+grab 49 60 roles/google_chrome/tasks/main.yml "Install Chrome extensions"
+```
+
+## Vim / Neovim Workflow Integration
+
+The following mappings are not required to use `grab`, but they significantly improve keyboard-driven AI workflows.
+
+A complete example configuration is available here:
+
+See the included [`init.vim`](./init.vim) for a complete example configuration.
+
+| Mapping | Purpose |
+|----------|----------|
+| `<C-s>` | Select the current function or method |
+| `<M-s>` | Alternate function-selection mapping |
+| `<M-c>` | Copy entire current file to the clipboard |
+| `<M-m>` | Indent selected code left by one space |
+| `<M-.>` | Indent selected code right by one space |
+| `<Leader>r` | Search and replace all occurences of keyword |
+| `<Space>h` | Highlight from the current line to a specific line |
+| `p` | Paste from clipboard and highlight inserted text |
+
+### Clipboard Integration
+
+```vim
+set clipboard+=unnamedplus
+set clipboard+=unnamed
+```
+
+### Function Selection
+
+Useful when capturing complete implementation context for `grab`.
+
+Functions spanning hundreds of lines can be selected in a single action, making it easy to export entire execution paths without manually scrolling, selecting, or risking partial copies.
+```vim
+nnoremap <silent> <C-s> :call SelectWholeFunction()<CR>
+nnoremap <silent> <M-s> :call SelectWholeFunction()<CR>
+```
+
+
+### Indentation adjustment
+
+Useful when pasting assistant-generated code that requires indentation adjustments.
+
+```vim
+xnoremap <M-m> :<C-U>call MoveTextOneCharSpace('left')<CR>
+xnoremap <M-.> :<C-U>call MoveTextOneCharSpace('right')<CR>
+```
+
+### Paste Highlighting
+
+Useful when reviewing and indent assistant-generated patches immediately after insertion.
+
+```vim
+nnoremap p :call PasteAndHighlight()<CR>
+vnoremap <C-v> :call PasteAndHighlight()<CR>
+```
+
+### Search and Replace
+
+Search and replace keyword in file.
+
+```vim
+nnoremap <Leader>r :SReplace<CR>
+```
+
+### Copy Entire File
+
+Useful when assistants require complete file context rather than targeted extractions.
+
+```vim
+nnoremap <M-c> :%!xclip -sel clip<CR>
+```
+
+### Highlight to Line
+
+Highligth code to a specific line.
+
+```vim
+nnoremap <silent> <Space>h :call HighlightToLine()<CR>
+```
+
+Workflow:
+
+```text
+Highlight to line:
+250
+```
+
+Selects from the current line through line `250`.
+
+
+Delayed footers summarize newly added context after batch extraction.
+
+```
+export GRAB_DELAY_FOOTER=1
+```
+
+## Context Storage
+
+Latest extraction:
+```
+~/.cache/grab/buffer.txt
+```
+
+Accumulated AI context:
+
+```
+~/.cache/grab/context.txt
+```
+
+The context file maintains a growing repository investigation history, making it easier to build context for large-scale debugging and codebase analysis.
+
+
+# What grab Solves
+
+AI-assisted debugging breaks down when:
+
+- Context is incomplete
+- Relevant implementation details are missing
+- Irrelevant files pollute the prompt
+- The model is forced to guess missing code
+
+
+grab fixes this through explicit context selection and incremental context accumulation.
+
+
+Developers often:
+
+- search across many files
+- copy fragmented snippets
+- miss related code
+- lose directory structure
+- paste partial context into AI tools
+
+That causes AI to guess.
+
+grab fixes this by making context explicit, accumulated, and reusable.
+
+## Why grab Exists
+
+Large repositories spread logic across multiple files and services.
+
+Developers debugging with AI tools often paste fragmented snippets, lose surrounding context, and force the model to guess missing implementation details.
+
+`grab` turns repository exploration into a deterministic context acquisition workflow built around exact search results, function boundaries, and explicit range extraction.
+
+# Clipboard Integration
+
+Supported targets:
+
+- tmux buffer
+- Wayland clipboard via wl-copy
+- X clipboard via xclip
+- macOS clipboard via pbcopy
+
+
+
+# Requirements
+
+Required:
+
+zsh
+ripgrep
+
+Optional:
+tree
+tmux
+wl-copy
+xclip
+pbcopy
+
+If tree is not installed, grab --tree falls back to find.
+
+
+## Smart Search Mode
+
+By default, `grab` searches only relevant project files:
+
+- source code
+- configs
+- documentation
+- scripts
+
+It automatically ignores:
+
+- node_modules
+- build/dist output
+- vendor directories
+- minified files
+- lock files
+- generated artifacts
+
+
+## Workflow Tips
+
+For fast keyboard-driven AI workflows, browser extensions like Vimium C work well alongside `grab`.
