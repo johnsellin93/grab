@@ -40,9 +40,8 @@ Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
 | `grab --tree` | Capture repository structure |
 | `grab ExactPattern` | Locate relevant call flows and implementation paths |
 | `grab 500 635 file.cs` | Extract an exact implementation range |
-| `grab --functions . Order` | Locate Order-related functions |
 | `grab --functions .` | index all functions |
-| `grab --replace FILE FUNCTION` | Modify function, ctrl+D to apply |
+| `grab --replace FILE FUNCTION` | Replace a function by symbol, validate, show diff, and ask for approval |
 
 
 # Install
