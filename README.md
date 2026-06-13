@@ -135,7 +135,7 @@ After an assistant proposes a full replacement function or task, `grab` can appl
 
 ```bash
 grab --replace server.py _safe_float
-grab --replace lineflow.js showError
+grab --replace file.js showError
 grab --replace roles/os_settings/tasks/main.yml "Render hardened sshd_config"
 ```
 
@@ -151,14 +151,12 @@ This workflow keeps AI-assisted code changes deterministic, review-first, and hu
 
 
 
-### Why this workflow works
+For larger investigations, `grab` is designed around deterministic, batch-oriented workflows.
 
-The workflow is intentionally batch-oriented.
+Assistants propose exact extraction commands, developers review and execute them, and repository context expands incrementally without relying on repository-wide indexing or guesswork.
 
-- Assistants generate multiple extraction commands that can be executed together to rapidly expand repository context across related code paths.
-- Each extraction expands the active repository context and copies the accumulated result into the clipboard buffer.
-- Function indexing provides exact extraction coordinates that assistants can use to request additional implementation context.
-- Instead of guessing missing code, assistants propose deterministic extraction commands that developers can execute to progressively acquire explicit repository context.
+See the included [`prompt.txt`](./prompt.txt) for a complete example AI-assisted debugging workflow.
+
 
 
 ### Example Assistant-Generated Extraction Batch
