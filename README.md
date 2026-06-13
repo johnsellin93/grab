@@ -159,7 +159,7 @@ See the included [`prompt.txt`](./prompt.txt) for a complete example AI-assisted
 
 
 
-### Example Generated Extraction Batch
+### Example Extraction Batch
 
 ```
 grab --clear
