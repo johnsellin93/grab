@@ -129,6 +129,28 @@ repository context expands incrementally to clipboard
 ```
 
 
+## AI-Assisted Function Replacement
+
+After an assistant proposes a full replacement function or task, `grab` can apply the change safely from the terminal.
+
+```bash
+grab --replace server.py _safe_float
+grab --replace lineflow.js showError
+grab --replace roles/os_settings/tasks/main.yml "Render hardened sshd_config"
+```
+
+`grab` will:
+
+* resolve the current function or task location by symbol;
+* prompt for the replacement implementation;
+* validate syntax where supported;
+* display a colored diff showing the proposed change;
+* require explicit approval before modifying the source file.
+
+This workflow keeps AI-assisted code changes deterministic, review-first, and human-controlled rather than fully autonomous.
+
+
+
 ### Why this workflow works
 
 The workflow is intentionally batch-oriented.
