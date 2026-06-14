@@ -17,12 +17,10 @@
 
 > For larger investigations, assistants propose batches of `grab` commands that developers review and execute to progressively acquire the exact repository context required for a task. See [`prompt.txt`](./prompt.txt) for an example workflow.
 
-grab helps developers work with AI on large repositories by progressively acquiring only the context needed for a task and applying changes through explicit review workflows.
-
 > You are not copying results. You are exporting context.
 
 
-### Example Extraction Batch Emitted by AI
+### Example AI-Generated Extraction Batch
 
 ```
 grab --clear
@@ -153,24 +151,17 @@ server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_ro
 ## AI-Assisted Debugging Workflow
 
 ```
-Problem statement:
-
-"Users occasionally receive duplicate notifications.
-
-We suspect retry handling might be involved,
-but we don't yet know which parts of the codebase to investigate."
-
+Problem statement
+    ↓
 grab --functions .
     ↓
-assistant sees function ranges and name context
-    ↓
-assistant identifies likely investigation targets
-    ↓
-assistant emits batches of grab commands
+assistant proposes batches of grab commands
     ↓
 developer reviews and executes them
     ↓
-repository context expands incrementally to clipboard
+repository context expands incrementally
+
+Assistants guide repository exploration by proposing deterministic extraction commands, while developers retain control over execution, review, and decision-making throughout the investigation process.
 ```
 
 # Install
