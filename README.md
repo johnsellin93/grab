@@ -12,16 +12,42 @@
 | `grab --functions .` | index all functions |
 | `grab --replace FILE FUNCTION` | Replace a function by symbol, validate, show diff, and ask for approval |
 
-Every extraction expands the active repository context and automatically updates the clipboard/tmux buffer with the accumulated result.
 
-For larger investigations, assistants propose batches of `grab` commands that developers review and execute to progressively acquire the exact repository context required for a task. See [`prompt.txt`](./prompt.txt) for an example workflow.
+> Every extraction expands the active repository context and automatically updates the clipboard/tmux buffer with the accumulated result.
+
+> For larger investigations, assistants propose batches of `grab` commands that developers review and execute to progressively acquire the exact repository context required for a task. See [`prompt.txt`](./prompt.txt) for an example workflow.
 
 grab helps developers work with AI on large repositories by progressively acquiring only the context needed for a task and applying changes through explicit review workflows.
-Context is acquired incrementally as the investigation evolves.
 
 > You are not copying results. You are exporting context.
 
-It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic code-context extraction.
+
+
+# What grab Solves
+
+AI-assisted debugging breaks down when:
+
+- Context is incomplete
+- Relevant implementation details are missing
+- Irrelevant files pollute the prompt
+- The model is forced to guess missing code
+
+
+grab fixes this through explicit context selection and incremental context accumulation.
+
+
+Developers often:
+
+- search across many files
+- copy fragmented snippets
+- miss related code
+- lose directory structure
+- paste partial context into AI tools
+
+That causes AI to guess.
+
+grab fixes this by making context explicit, accumulated, and reusable.
+
 
 <!--
 ## Demo
@@ -323,31 +349,6 @@ Accumulated AI context:
 
 The context file maintains a growing repository investigation history, making it easier to build context for large-scale debugging and codebase analysis.
 
-
-# What grab Solves
-
-AI-assisted debugging breaks down when:
-
-- Context is incomplete
-- Relevant implementation details are missing
-- Irrelevant files pollute the prompt
-- The model is forced to guess missing code
-
-
-grab fixes this through explicit context selection and incremental context accumulation.
-
-
-Developers often:
-
-- search across many files
-- copy fragmented snippets
-- miss related code
-- lose directory structure
-- paste partial context into AI tools
-
-That causes AI to guess.
-
-grab fixes this by making context explicit, accumulated, and reusable.
 
 ## Why grab Exists
 
