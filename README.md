@@ -22,7 +22,7 @@ grab helps developers work with AI on large repositories by progressively acquir
 > You are not copying results. You are exporting context.
 
 
-### Example Extraction Batch
+### Example Extraction Batch Emitted by AI
 
 ```
 grab --clear
@@ -59,6 +59,8 @@ grab "duplicate notification" .            # exact text search
 
 # What grab Solves
 
+Large repositories spread logic across multiple files and services.
+
 AI-assisted debugging breaks down when:
 
 - Context is incomplete
@@ -66,13 +68,12 @@ AI-assisted debugging breaks down when:
 - Irrelevant files pollute the prompt
 - The model is forced to guess missing code
 
+Developers debugging with AI tools often paste fragmented snippets, lose surrounding context, and force the model to infer missing implementation details.
 
-grab fixes this through explicit context selection and incremental context accumulation.
+`grab` turns repository exploration into a deterministic context acquisition workflow built around exact search results, function boundaries, and explicit range extraction.
 
+Instead of relying on repository-wide indexing or exporting entire codebases, `grab` progressively acquires only the repository context required to investigate a problem or safely implement a change.
 
-Developers debugging with AI tools often paste fragmented snippets, lose surrounding context, and force the model to guess missing implementation details.
-
-grab fixes this through explicit context selection and incremental context accumulation.
 
 <!--
 ## Demo
@@ -329,14 +330,6 @@ Accumulated AI context:
 
 The context file maintains a growing repository investigation history, making it easier to build context for large-scale debugging and codebase analysis.
 
-
-## Why grab Exists
-
-Large repositories spread logic across multiple files and services.
-
-Developers debugging with AI tools often paste fragmented snippets, lose surrounding context, and force the model to guess missing implementation details.
-
-`grab` turns repository exploration into a deterministic context acquisition workflow built around exact search results, function boundaries, and explicit range extraction.
 
 # Clipboard Integration
 
