@@ -12,6 +12,8 @@
 | `grab --functions .` | index all functions |
 | `grab --replace FILE FUNCTION` | Replace a function by symbol, validate, show diff, and ask for approval |
 
+Every extraction expands the active repository context and automatically updates the clipboard buffer with the accumulated result.
+
 
 Search. Extract. Modify. Review.
 
