@@ -100,14 +100,7 @@ grab --replace roles/os_settings/tasks/main.yml "Render hardened sshd_config"
 
 This workflow keeps AI-assisted code changes deterministic, review-first, and human-controlled rather than fully autonomous.
 
-
-
-For larger investigations, `grab` is designed around deterministic, batch-oriented workflows.
-
-Assistants propose exact extraction commands, developers review and execute them, and repository context expands incrementally without relying on repository-wide indexing or guesswork.
-
 See the included [`prompt.txt`](./prompt.txt) for a complete example AI-assisted debugging workflow.
-
 
 
 ## Supported Languages
@@ -127,24 +120,14 @@ grab --functions server.py   # function index for a single file
 grab --functions .           # search current repository and index all discovered functions
 ```
 
-### Function Index Output
+### Example Function Index
 
 ```
-server.py:38-58 [21L] def _init_logging() -> None:
-server.py:59-95 [37L] def format(self, record: logging.LogRecord) -> str:
-server.py:96-110 [15L] def _get_client() -> str:
-server.py:111-121 [11L] def get_cloudflare_access_email() -> str:
-server.py:122-166 [45L] def _log_request_start():
-server.py:167-211 [45L] def _log_request_end(resp: Response):
-server.py:212-227 [16L] def _log_unhandled_exception(e: Exception):
 server.py:228-246 [19L] def _safe_float(x: Any) -> float:
 server.py:247-264 [18L] def _enqueue_all_trading_commands(bot_to_instance: dict, val: bool) -> int:
-server.py:265-269 [5L] def _line_key(bot_id: str, instance_id: str, line_id: str) -> Tuple[str, str, str]:
 server.py:270-303 [34L] def _coerce_nonneg_float(x: Any) -> float | None:
-server.py:304-357 [54L] def _history_add_event(row: Dict[str, Any], event_type: str) -> bool:
-server.py:358-473 [116L] def _history_update_last_open_event_with_outcome(out_row: Dict[str, Any]) -> bool:
 
-[grab] functions:. +15L → context 489L / 44768B copied to X clipboard via xclip
+[grab] functions:. +3L → context 489L / 44768B copied to X clipboard via xclip
 ```
 
 
@@ -160,9 +143,11 @@ assistant proposes batches of grab commands
 developer reviews and executes them
     ↓
 repository context expands incrementally
+```
 
 Assistants guide repository exploration by proposing deterministic extraction commands, while developers retain control over execution, review, and decision-making throughout the investigation process.
-```
+
+After repository context has been accumulated, developers can paste the resulting clipboard content directly into AI tools for troubleshooting, analysis, and implementation guidance.
 
 # Install
 
