@@ -1,4 +1,4 @@
-# Terminal workflows for AI-assisted debugging and review-first code modification.
+# Terminal workflows for rapid AI-assisted debugging and review-first code modification.
 
 > You are not copying results. You are exporting context.
 
