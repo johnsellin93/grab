@@ -1,17 +1,26 @@
 # Terminal workflows for rapid AI-assisted debugging and review-first code modification.
 
+
+## Basic Workflow
+
+| Command | Purpose |
+|----------|----------|
+| `grab --clear` | Reset previous debugging context |
+| `grab --tree` | Capture repository structure |
+| `grab ExactPattern` | Locate relevant call flows and implementation paths |
+| `grab 500 635 file.cs` | Extract an exact implementation range |
+| `grab --functions .` | index all functions |
+| `grab --replace FILE FUNCTION` | Replace a function by symbol, validate, show diff, and ask for approval |
+
+
+Search. Extract. Modify. Review.
+
+grab helps developers work with AI on large repositories by progressively acquiring only the context needed for a task and applying changes through explicit review workflows.
+Context is acquired incrementally as the investigation evolves.
+
 > You are not copying results. You are exporting context.
 
-grab turns repository exploration into a deterministic workflow for building AI-ready context from large codebases, one extraction at a time.
-
 It combines `ripgrep`, `sed`, and clipboard/tmux workflows into deterministic code-context extraction.
-
-Instead of indexing entire repositories, grab allows developers and AI systems to progressively acquire only the context required for a specific debugging or implementation task.
-
-Unlike repository indexing tools, grab focuses on explicit, user-directed context acquisition.
-
-grab helps developers build explicit repository context for AI systems without relying on repository-wide indexing, embeddings, or fragmented snippets.
-Context is acquired incrementally as the investigation evolves.
 
 <!--
 ## Demo
@@ -31,45 +40,6 @@ It lets you:
 ## Supported Languages
 Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
 
-
-## Basic Workflow
-
-| Command | Purpose |
-|----------|----------|
-| `grab --clear` | Reset previous debugging context |
-| `grab --tree` | Capture repository structure |
-| `grab ExactPattern` | Locate relevant call flows and implementation paths |
-| `grab 500 635 file.cs` | Extract an exact implementation range |
-| `grab --functions .` | index all functions |
-| `grab --replace FILE FUNCTION` | Replace a function by symbol, validate, show diff, and ask for approval |
-
-
-# Install
-
-```
-curl -fsSL https://raw.githubusercontent.com/johnsellin93/grab/main/install.sh | zsh
-```
-
-The installer will:
-
-- install required dependencies such as `ripgrep`
-- install optional utilities such as `tree`
-- clone or update `grab` in `~/grab`
-- make the `grab` executable available in your shell
-- update your `PATH` automatically if required
-
-Restart your shell or run:
-
-```
-source ~/.zshrc
-```
-
-Verify the installation:
-
-```
-grab --help
-grab --functions .
-```
 
 ## Function Indexing and Context Acquisition
 
@@ -194,11 +164,40 @@ grab "duplicate notification" .            # exact text search
 
 ```
 
+
+# Install
+
+```
+curl -fsSL https://raw.githubusercontent.com/johnsellin93/grab/main/install.sh | zsh
+```
+
+The installer will:
+
+- install required dependencies such as `ripgrep`
+- install optional utilities such as `tree`
+- clone or update `grab` in `~/grab`
+- make the `grab` executable available in your shell
+- update your `PATH` automatically if required
+
+Restart your shell or run:
+
+```
+source ~/.zshrc
+```
+
+Verify the installation:
+
+```
+grab --help
+grab --functions .
+```
+
+
+
 ## Infrastructure-as-Code Support (Ansible)
 
 grab indexes Ansible tasks as executable units,
 allowing assistants to progressively acquire infrastructure context in the same way they acquire source-code context.
-
 
 ```
 grab --functions roles
