@@ -12,10 +12,9 @@
 | `grab --functions .` | index all functions |
 | `grab --replace FILE FUNCTION` | Replace a function by symbol, validate, show diff, and ask for approval |
 
-Every extraction expands the active repository context and automatically updates the clipboard buffer with the accumulated result.
+Every extraction expands the active repository context and automatically updates the clipboard/tmux buffer with the accumulated result.
 
-
-Search. Extract. Modify. Review.
+For larger investigations, assistants propose batches of `grab` commands that developers review and execute to progressively acquire the exact repository context required for a task. See [`prompt.txt`](./prompt.txt) for an example workflow.
 
 grab helps developers work with AI on large repositories by progressively acquiring only the context needed for a task and applying changes through explicit review workflows.
 Context is acquired incrementally as the investigation evolves.
