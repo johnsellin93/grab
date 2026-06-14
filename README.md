@@ -22,6 +22,40 @@ grab helps developers work with AI on large repositories by progressively acquir
 > You are not copying results. You are exporting context.
 
 
+### Example Extraction Batch
+
+```
+grab --clear
+grab --functions .
+grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
+grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
+grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
+grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
+grab 188 236 RetryPolicy.cs RetryFailedNotification
+grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
+
+grab NotificationRetryLimit .               # variable / symbol lookup
+grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
+grab "duplicate notification" .            # exact text search
+
+```
+
+### Accumulated Clipboard Context
+
+```
+  +72L  block  ProcessNotificationDelivery(...)
+  +38L  block  ShouldRetryNotification(...)
+  +44L  block  RecordDeliveryAttempt(...)
+  +31L  block  HasRecentSuccessfulDelivery(...)
+  +49L  block  RetryFailedNotification(...)
+  +27L  block  GetRetryBackoffDelay(...)
+  +18L  symbol NotificationRetryLimit
+  +13L  symbol DeliveryDeduplicationWindowMinutes
+  +26L  text   "duplicate notification"
+
+[grab] +11 entries (+337L) → context 826L / 64192B copied to X clipboard via xclip
+
+```
 
 # What grab Solves
 
@@ -36,18 +70,9 @@ AI-assisted debugging breaks down when:
 grab fixes this through explicit context selection and incremental context accumulation.
 
 
-Developers often:
+Developers debugging with AI tools often paste fragmented snippets, lose surrounding context, and force the model to guess missing implementation details.
 
-- search across many files
-- copy fragmented snippets
-- miss related code
-- lose directory structure
-- paste partial context into AI tools
-
-That causes AI to guess.
-
-grab fixes this by making context explicit, accumulated, and reusable.
-
+grab fixes this through explicit context selection and incremental context accumulation.
 
 <!--
 ## Demo
@@ -55,14 +80,36 @@ grab fixes this by making context explicit, accumulated, and reusable.
 <video src="https://github.com/user-attachments/assets/7c451617-e470-4b72-b2e4-d75b3148fe31" controls autoplay loop muted width="100%"></video>
 -->
 
-It lets you:
 
-- search relevant project files
-- extract exact code ranges
-- capture directory structure
-- accumulate debugging context incrementally
-- automatically copy accumulated context to clipboard/tmux
-- paste clean AI-ready context directly into AI tools
+## AI-Assisted Function Replacement
+
+After an assistant proposes a full replacement function or task, `grab` can apply the change safely from the terminal.
+
+```bash
+grab --replace server.py _safe_float
+grab --replace file.js showError
+grab --replace roles/os_settings/tasks/main.yml "Render hardened sshd_config"
+```
+
+`grab` will:
+
+* resolve the current function or task location by symbol;
+* prompt for the replacement implementation;
+* validate syntax where supported;
+* display a colored diff showing the proposed change;
+* require explicit approval before modifying the source file.
+
+This workflow keeps AI-assisted code changes deterministic, review-first, and human-controlled rather than fully autonomous.
+
+
+
+For larger investigations, `grab` is designed around deterministic, batch-oriented workflows.
+
+Assistants propose exact extraction commands, developers review and execute them, and repository context expands incrementally without relying on repository-wide indexing or guesswork.
+
+See the included [`prompt.txt`](./prompt.txt) for a complete example AI-assisted debugging workflow.
+
+
 
 ## Supported Languages
 Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
@@ -124,73 +171,6 @@ developer reviews and executes them
     ↓
 repository context expands incrementally to clipboard
 ```
-
-
-## AI-Assisted Function Replacement
-
-After an assistant proposes a full replacement function or task, `grab` can apply the change safely from the terminal.
-
-```bash
-grab --replace server.py _safe_float
-grab --replace file.js showError
-grab --replace roles/os_settings/tasks/main.yml "Render hardened sshd_config"
-```
-
-`grab` will:
-
-* resolve the current function or task location by symbol;
-* prompt for the replacement implementation;
-* validate syntax where supported;
-* display a colored diff showing the proposed change;
-* require explicit approval before modifying the source file.
-
-This workflow keeps AI-assisted code changes deterministic, review-first, and human-controlled rather than fully autonomous.
-
-
-
-For larger investigations, `grab` is designed around deterministic, batch-oriented workflows.
-
-Assistants propose exact extraction commands, developers review and execute them, and repository context expands incrementally without relying on repository-wide indexing or guesswork.
-
-See the included [`prompt.txt`](./prompt.txt) for a complete example AI-assisted debugging workflow.
-
-
-
-### Example Extraction Batch
-
-```
-grab --clear
-grab --functions .
-grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
-grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
-grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
-grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
-grab 188 236 RetryPolicy.cs RetryFailedNotification
-grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
-
-grab NotificationRetryLimit .               # variable / symbol lookup
-grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
-grab "duplicate notification" .            # exact text search
-
-```
-
-### Accumulated Clipboard Context
-
-```
-  +72L  block  ProcessNotificationDelivery(...)
-  +38L  block  ShouldRetryNotification(...)
-  +44L  block  RecordDeliveryAttempt(...)
-  +31L  block  HasRecentSuccessfulDelivery(...)
-  +49L  block  RetryFailedNotification(...)
-  +27L  block  GetRetryBackoffDelay(...)
-  +18L  symbol NotificationRetryLimit
-  +13L  symbol DeliveryDeduplicationWindowMinutes
-  +26L  text   "duplicate notification"
-
-[grab] +11 entries (+337L) → context 826L / 64192B copied to X clipboard via xclip
-
-```
-
 
 # Install
 
