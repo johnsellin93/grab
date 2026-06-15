@@ -1,31 +1,40 @@
 
+
 #!/usr/bin/env zsh
 set -euo pipefail
 # AI context grab for terminal workflows, search/extract → accumulate context → copy to clipboard.
 
+usage() {
+  cat <<'EOF'
 Usage:
   grab <pattern> [path...]
 #   grab --all <pattern> [path...]
   grab <start> <end> <file> [label...]
   grab --replace <start> <end> <file> <expected-label>
+  grab --snapshot <file-or-dir>
+
   grab --clear
   grab --functions <file> [symbol]
-
 
 Examples:
   grab variable /dir/proj
   grab --all VAR
   grab 500 635 file.cs HandleSetupHotkeys
+  grab --replace 122 166 server.py _log_request_start
   sed -n '500,635p' file.cs | grab HandleSetupHotkeys
   grab --clear
   grab --functions ./app.py
   grab --functions ./UserService.cs SaveUser
 
 Modes:
-  default   Search smart project files only
-  --all     Search all non-ignored files from type_filters
-  range     Extract line range from file
-  stdin     Capture piped input automatically
+  grab --snapshot .
+  grab --snapshot ./src
+  grab --snapshot /full/path/to/file.py
+  default     Search smart project files only
+  --all       Search all non-ignored files from type_filters
+  range       Extract line range from file
+  --replace   Replace exact line range after pasted reviewed code
+  stdin       Capture piped input automatically
 
 Notes:
   - Latest clean output: ~/.cache/grab/buffer.txt
@@ -33,6 +42,7 @@ Notes:
   - Copies to tmux/clipboard when available
 EOF
 }
+
 
 grab_print_footer() {
   local copy_target="$1"
@@ -184,6 +194,418 @@ PY
       ;;
   esac
 }
+
+grab_resolve_python_function_range() {
+  local file="$1"
+  local symbol="$2"
+
+  awk -v sym="$symbol" '
+    function lead(s, t) {
+      t = s
+      sub(/[^ \t].*$/, "", t)
+      return length(t)
+    }
+
+    function blank(s) {
+      return s ~ /^[ \t]*$/
+    }
+
+    {
+      lines[NR] = $0
+    }
+
+    END {
+      def_line = 0
+      pattern = "^[ \t]*(async[ \t]+)?def[ \t]+" sym "[ \t]*\\("
+
+      for (i = 1; i <= NR; i++) {
+        if (lines[i] ~ pattern) {
+          if (def_line != 0) {
+            print "MULTIPLE"
+            exit
+          }
+
+          def_line = i
+        }
+      }
+
+      if (def_line == 0) {
+        print "NONE"
+        exit
+      }
+
+      start = def_line
+
+      for (i = def_line - 1; i >= 1; i--) {
+        if (lines[i] ~ /^[ \t]*@/) {
+          start = i
+        } else {
+          break
+        }
+      }
+
+      base_indent = lead(lines[def_line])
+      end = NR
+
+      for (i = def_line + 1; i <= NR; i++) {
+        if (blank(lines[i]) || lines[i] ~ /^[ \t]*#/) {
+          continue
+        }
+
+        if (lead(lines[i]) <= base_indent) {
+          end = i - 1
+          break
+        }
+      }
+
+      while (end > def_line && blank(lines[end])) {
+        end--
+      }
+
+      print start " " end
+    }
+  ' "$file"
+}
+grab_resolve_js_ts_function_range() {
+  local file="$1"
+  local symbol="$2"
+
+  awk -v sym="$symbol" '
+    function trim(s) {
+      sub(/^[ \t]*/, "", s)
+      sub(/[ \t]*$/, "", s)
+      return s
+    }
+
+    function is_match(line) {
+      t = trim(line)
+
+      if (t ~ "^(async[ \t]+)?function[ \t]+" sym "[ \t]*\\(") return 1
+      if (t ~ "^(export[ \t]+)?(async[ \t]+)?function[ \t]+" sym "[ \t]*\\(") return 1
+      if (t ~ "^(export[ \t]+)?(const|let|var)[ \t]+" sym "[ \t]*=[ \t]*(async[ \t]*)?\\(") return 1
+      if (t ~ "^(export[ \t]+)?(const|let|var)[ \t]+" sym "[ \t]*=[ \t]*(async[ \t]*)?[A-Za-z0-9_$]+[ \t]*=>") return 1
+      if (t ~ "^(export[ \t]+)?(const|let|var)[ \t]+" sym "[ \t]*=[ \t]*(async[ \t]*)?function[ \t]*\\(") return 1
+
+      return 0
+    }
+
+    {
+      lines[NR] = $0
+    }
+
+    END {
+      start = 0
+
+      for (i = 1; i <= NR; i++) {
+        if (is_match(lines[i])) {
+          if (start != 0) {
+            print "MULTIPLE"
+            exit
+          }
+          start = i
+        }
+      }
+
+      if (start == 0) {
+        print "NONE"
+        exit
+      }
+
+      brace_seen = 0
+      depth = 0
+      end = NR
+
+      for (i = start; i <= NR; i++) {
+        line = lines[i]
+
+        for (j = 1; j <= length(line); j++) {
+          ch = substr(line, j, 1)
+
+          if (ch == "{") {
+            depth++
+            brace_seen = 1
+          } else if (ch == "}") {
+            depth--
+          }
+        }
+
+        if (brace_seen && depth <= 0) {
+          end = i
+          break
+        }
+      }
+
+      print start " " end
+    }
+  ' "$file"
+}
+
+grab_resolve_csharp_function_range() {
+  local file="$1"
+  local symbol="$2"
+
+  awk -v sym="$symbol" '
+    function trim(s) {
+      sub(/^[ \t]*/, "", s)
+      sub(/[ \t]*$/, "", s)
+      return s
+    }
+
+    function is_match(line) {
+      t = trim(line)
+
+      if (t ~ "^(public|private|protected|internal|static|virtual|override|sealed|async|partial|extern|new)[ \t]+.*[ \t]+" sym "[ \t]*\\(") return 1
+      if (t ~ "^[A-Za-z0-9_<>,\\[\\]?]+[ \t]+" sym "[ \t]*\\(") return 1
+
+      return 0
+    }
+
+    {
+      lines[NR] = $0
+    }
+
+    END {
+      start = 0
+
+      for (i = 1; i <= NR; i++) {
+        if (is_match(lines[i])) {
+          if (start != 0) {
+            print "MULTIPLE"
+            exit
+          }
+          start = i
+        }
+      }
+
+      if (start == 0) {
+        print "NONE"
+        exit
+      }
+
+      for (i = start - 1; i >= 1; i--) {
+        if (lines[i] ~ /^[ \t]*\[/) {
+          start = i
+        } else if (lines[i] ~ /^[ \t]*$/) {
+          continue
+        } else {
+          break
+        }
+      }
+
+      brace_seen = 0
+      depth = 0
+      end = NR
+
+      for (i = start; i <= NR; i++) {
+        line = lines[i]
+
+        for (j = 1; j <= length(line); j++) {
+          ch = substr(line, j, 1)
+
+          if (ch == "{") {
+            depth++
+            brace_seen = 1
+          } else if (ch == "}") {
+            depth--
+          }
+        }
+
+        if (brace_seen && depth <= 0) {
+          end = i
+          break
+        }
+      }
+
+      print start " " end
+    }
+  ' "$file"
+}
+
+grab_resolve_ansible_task_range() {
+  local file="$1"
+  local symbol="$2"
+
+  awk -v sym="$symbol" '
+    {
+      lines[NR] = $0
+    }
+
+    END {
+      start = 0
+
+      for (i = 1; i <= NR; i++) {
+        line = lines[i]
+
+        if (line ~ /^[ \t]*-[ \t]+name:[ \t]*/) {
+          name = line
+          sub(/^[ \t]*-[ \t]+name:[ \t]*/, "", name)
+          gsub(/^["'\''"]|["'\''"]$/, "", name)
+
+          if (index(tolower(name), tolower(sym)) > 0) {
+            if (start != 0) {
+              print "MULTIPLE"
+              exit
+            }
+            start = i
+          }
+        }
+      }
+
+      if (start == 0) {
+        print "NONE"
+        exit
+      }
+
+      end = NR
+
+      for (i = start + 1; i <= NR; i++) {
+        if (lines[i] ~ /^[ \t]*-[ \t]+name:[ \t]*/) {
+          end = i - 1
+          break
+        }
+      }
+
+      while (end > start && lines[end] ~ /^[ \t]*$/) {
+        end--
+      }
+
+      print start " " end
+    }
+  ' "$file"
+}
+
+
+grab_apply_replace_range() {
+  local start_line="$1"
+  local end_line="$2"
+  local target_file="$3"
+  local expected_label="$4"
+
+  if [[ ! "$start_line" =~ '^[0-9]+$' ]] || [[ ! "$end_line" =~ '^[0-9]+$' ]]; then
+    print -r -- "[grab] replace requires numeric start/end lines" >&2
+    exit 1
+  fi
+
+  if [[ ! -f "$target_file" ]]; then
+    print -r -- "[grab] replace target file not found: $target_file" >&2
+    exit 1
+  fi
+
+  if (( start_line <= 0 || end_line < start_line )); then
+    print -r -- "[grab] invalid range: ${start_line}-${end_line}" >&2
+    exit 1
+  fi
+
+  old_block="$(sed -n "${start_line},${end_line}p" "$target_file")"
+
+  if ! print -r -- "$old_block" | grep -Fq -- "$expected_label"; then
+    print -r -- "[grab] expected label not found in resolved range" >&2
+    print -r -- "  file   : $target_file" >&2
+    print -r -- "  lines  : ${start_line}-${end_line}" >&2
+    print -r -- "  expect : $expected_label" >&2
+    exit 1
+  fi
+
+  tmp_dir="${GRAB_BUFFER_DIR:-$HOME/.cache/grab}"
+  mkdir -p "$tmp_dir"
+
+  replacement_file="${tmp_dir}/replacement.tmp"
+  ext="${target_file:e}"
+  if [[ -n "$ext" ]]; then
+    new_file="${tmp_dir}/replace.$$.${ext}"
+  else
+    new_file="${tmp_dir}/replace.$$"
+  fi
+
+  backup_file="${target_file}.grab.bak.$(date +%Y%m%d%H%M%S)"
+
+  print -r -- "[grab] replacing:"
+  print -r -- "  file   : $target_file"
+  print -r -- "  lines  : ${start_line}-${end_line}"
+  print -r -- "  expect : $expected_label"
+  print -r -- ""
+  print -r -- "Paste replacement now. Press Ctrl-D when finished."
+  print -r -- "------------------------------------------------------------"
+
+  cat > "$replacement_file"
+
+  if [[ ! -s "$replacement_file" ]]; then
+    print -r -- "[grab] replacement was empty; aborting" >&2
+    exit 1
+  fi
+
+  if ! grep -Fq -- "$expected_label" "$replacement_file"; then
+    print -r -- "[grab] expected label not found in pasted replacement" >&2
+    print -r -- "  expect: $expected_label" >&2
+    exit 1
+  fi
+
+  cp "$target_file" "$backup_file"
+
+  awk -v start="$start_line" -v end="$end_line" -v repl="$replacement_file" '
+    NR == start {
+      while ((getline line < repl) > 0) {
+        print line
+      }
+    }
+
+    NR < start || NR > end {
+      print
+    }
+  ' "$target_file" > "$new_file"
+
+  set +e
+  validation_output="$(grab_validate_file_syntax "$new_file" 2>&1)"
+  validation_status=$?
+  set -e
+
+  if (( validation_status != 0 )); then
+    print -r -- "[grab] syntax validation failed; target file unchanged" >&2
+    print -r -- ""
+    print -r -- "$validation_output" >&2
+    print -r -- ""
+    print -r -- "backup: $backup_file" >&2
+    rm -f "$replacement_file" "$new_file"
+    exit 1
+  fi
+
+  if cmp -s "$backup_file" "$new_file"; then
+    print -r -- "[grab] replacement is identical; target file unchanged"
+    rm -f "$replacement_file" "$new_file" "$backup_file"
+    exit 0
+  fi
+
+  print -r -- ""
+  print -r -- "[grab] diff:"
+  print -r -- "------------------------------------------------------------"
+
+  if command -v git >/dev/null 2>&1; then
+    git diff --no-index --color=always "$backup_file" "$new_file" || true
+  else
+    diff -u "$backup_file" "$new_file" || true
+  fi
+
+  print -r -- "------------------------------------------------------------"
+  print -r -- ""
+
+  print -n -- "Apply replacement? [y/N] "
+  read -r answer
+
+  case "$answer" in
+    y|Y|yes|YES)
+      cp "$new_file" "$target_file"
+      print -r -- "[grab] replacement applied"
+      print -r -- "  backup: $backup_file"
+      ;;
+    *)
+      print -r -- "[grab] replacement cancelled; target file unchanged"
+      print -r -- "  backup: $backup_file"
+      ;;
+  esac
+
+  rm -f "$replacement_file" "$new_file"
+}
+
 
 
 
@@ -650,122 +1072,266 @@ if [[ "${1:-}" == "--functions" ]]; then
   exit 0
 fi
 
-# Auto-detect real piped stdin.
 
-if [[ "${1:-}" == "--replace" ]]; then
+if [[ "${1:-}" == "--snapshot" ]]; then
   shift
 
-  if [[ $# -lt 4 ]]; then
-    print -r -- "[grab] usage: grab --replace <start> <end> <file> <expected-label>" >&2
+  snapshot_target="${1:-.}"
+
+  if [[ ! -e "$snapshot_target" ]]; then
+    print -r -- "[grab] snapshot target not found: $snapshot_target" >&2
     exit 1
   fi
 
-  start_line="$1"
-  end_line="$2"
-  target_file="$3"
-  shift 3
+  buffer_dir="${GRAB_BUFFER_DIR:-$HOME/.cache/grab}"
+  buffer_file="${GRAB_BUFFER_FILE:-$buffer_dir/buffer.txt}"
+  context_file="${GRAB_CONTEXT_FILE:-$buffer_dir/context.txt}"
+  counter_file="${GRAB_COUNTER_FILE:-$buffer_dir/counter.txt}"
 
-  expected_parts=("$@")
-  expected_label="${(j: :)expected_parts}"
+  max_file_bytes="${GRAB_SNAPSHOT_MAX_FILE_BYTES:-200000}"
+  max_total_bytes="${GRAB_SNAPSHOT_MAX_TOTAL_BYTES:-2000000}"
 
-  if [[ ! "$start_line" =~ '^[0-9]+$' ]] || [[ ! "$end_line" =~ '^[0-9]+$' ]]; then
-    print -r -- "[grab] replace requires numeric start/end lines" >&2
+  mkdir -p "$buffer_dir"
+  : > "$buffer_file"
+
+  files=()
+
+  if [[ -f "$snapshot_target" ]]; then
+    files=("$snapshot_target")
+  elif [[ -d "$snapshot_target" ]]; then
+    while IFS= read -r file_path; do
+      files+=("$file_path")
+    done < <(
+      find "$snapshot_target" \
+        \( -path '*/node_modules/*' -o \
+           -path '*/.git/*' -o \
+           -path '*/dist/*' -o \
+           -path '*/build/*' -o \
+           -path '*/coverage/*' -o \
+           -path '*/tmp/*' -o \
+           -path '*/vendor/*' -o \
+           -path '*/__pycache__/*' -o \
+           -path '*/.venv/*' -o \
+           -path '*/venv/*' -o \
+           -path '*/bin/*' -o \
+           -path '*/obj/*' \) \
+        -prune -o \
+        -type f \
+        \( -name '*.cs' -o \
+           -name '*.java' -o \
+           -name '*.js' -o \
+           -name '*.jsx' -o \
+           -name '*.ts' -o \
+           -name '*.tsx' -o \
+           -name '*.py' -o \
+           -name '*.sh' -o \
+           -name '*.bash' -o \
+           -name '*.zsh' -o \
+           -name '*.html' -o \
+           -name '*.css' -o \
+           -name '*.scss' -o \
+           -name '*.json' -o \
+           -name '*.yaml' -o \
+           -name '*.yml' -o \
+           -name '*.toml' -o \
+           -name '*.ini' -o \
+           -name '*.conf' -o \
+           -name '*.env' -o \
+           -name '*.sql' -o \
+           -name '*.md' -o \
+           -name '*.txt' -o \
+           -name '*.rst' \) \
+        ! -name '*.min.js' \
+        ! -name '*.min.css' \
+        ! -name '*.map' \
+        ! -name '*.bundle.js' \
+        ! -name '*.chunk.js' \
+        ! -name '*.generated.*' \
+        ! -name '*bak*' \
+        ! -name '*.lock' \
+        -print
+    )
+  else
+    print -r -- "[grab] snapshot target is not a file or directory: $snapshot_target" >&2
     exit 1
   fi
 
-  if [[ ! -f "$target_file" ]]; then
-    print -r -- "[grab] replace target file not found: $target_file" >&2
+  if [[ "${#files[@]}" -eq 0 ]]; then
+    print -r -- "[grab] snapshot found no supported files: $snapshot_target" >&2
     exit 1
   fi
 
-  if (( start_line <= 0 || end_line < start_line )); then
-    print -r -- "[grab] invalid range: ${start_line}-${end_line}" >&2
+  total_bytes=0
+  included_files=0
+  skipped_files=0
+
+  for snapshot_file in "${files[@]}"; do
+    if [[ ! -f "$snapshot_file" ]]; then
+      skipped_files=$((skipped_files + 1))
+      continue
+    fi
+
+    file_bytes=$(wc -c < "$snapshot_file" | tr -d ' ')
+
+    if (( file_bytes > max_file_bytes )); then
+      skipped_files=$((skipped_files + 1))
+      continue
+    fi
+
+    if ! grep -Iq . "$snapshot_file" 2>/dev/null; then
+      skipped_files=$((skipped_files + 1))
+      continue
+    fi
+
+    total_bytes=$((total_bytes + file_bytes))
+
+    if (( total_bytes > max_total_bytes )); then
+      print -r -- "[grab] snapshot too large; aborting" >&2
+      print -r -- "  target     : $snapshot_target" >&2
+      print -r -- "  max total  : ${max_total_bytes} bytes" >&2
+      print -r -- "  override   : GRAB_SNAPSHOT_MAX_TOTAL_BYTES=<bytes>" >&2
+      exit 1
+    fi
+
+    {
+      print -r -- ""
+      print -r -- "==================== FILE SNAPSHOT ===================="
+      print -r -- "file: $snapshot_file"
+      print -r -- "======================================================="
+      cat "$snapshot_file"
+    } >> "$buffer_file"
+
+    included_files=$((included_files + 1))
+  done
+
+  if (( included_files == 0 )); then
+    print -r -- "[grab] snapshot produced no readable files: $snapshot_target" >&2
     exit 1
   fi
 
-  old_block="$(sed -n "${start_line},${end_line}p" "$target_file")"
-
-  if ! print -r -- "$old_block" | grep -Fq -- "$expected_label"; then
-    print -r -- "[grab] expected label not found in target range" >&2
-    print -r -- "  file   : $target_file" >&2
-    print -r -- "  lines  : ${start_line}-${end_line}" >&2
-    print -r -- "  expect : $expected_label" >&2
-    print -r -- "" >&2
-    print -r -- "[grab] refusing replacement to avoid line-drift damage" >&2
-    exit 1
+  if [[ ! -f "$context_file" ]]; then
+    : > "$context_file"
   fi
 
-  tmp_dir="${GRAB_BUFFER_DIR:-$HOME/.cache/grab}"
-  mkdir -p "$tmp_dir"
-
-  replacement_file="${tmp_dir}/replacement.tmp"
-  new_file="${tmp_dir}/replace.new.tmp"
-  backup_file="${target_file}.grab.bak.$(date +%Y%m%d%H%M%S)"
-
-  print -r -- "[grab] replacing:"
-  print -r -- "  file   : $target_file"
-  print -r -- "  lines  : ${start_line}-${end_line}"
-  print -r -- "  expect : $expected_label"
-  print -r -- ""
-  print -r -- "Paste replacement now. Press Ctrl-D when finished."
-  print -r -- "------------------------------------------------------------"
-
-  cat > "$replacement_file"
-
-  if [[ ! -s "$replacement_file" ]]; then
-    print -r -- "[grab] replacement was empty; aborting" >&2
-    exit 1
+  if [[ ! -f "$counter_file" ]]; then
+    print -r -- "0" > "$counter_file"
   fi
 
-  cp "$target_file" "$backup_file"
+  run_no="$(cat "$counter_file" 2>/dev/null || print -r -- 0)"
+  run_no=$((run_no + 1))
+  print -r -- "$run_no" > "$counter_file"
 
-  awk -v start="$start_line" -v end="$end_line" -v repl="$replacement_file" '
-    NR == start {
-      while ((getline line < repl) > 0) {
-        print line
-      }
-    }
+  {
+    print -r -- ""
+    print -r -- "==================== grab copy ${run_no} ===================="
+    print -r -- "source: snapshot"
+    print -r -- "path: $snapshot_target"
+    print -r -- "files: $included_files"
+    print -r -- "skipped: $skipped_files"
+    print -r -- "============================================================="
+    cat "$buffer_file"
+  } >> "$context_file"
 
-    NR < start || NR > end {
-      print
-    }
-  ' "$target_file" > "$new_file"
+  copy_target="none"
 
-  cp "$new_file" "$target_file"
-
-  if ! grab_validate_file_syntax "$target_file"; then
-    cp "$backup_file" "$target_file"
-    print -r -- "[grab] syntax validation failed; restored backup" >&2
-    print -r -- "  backup: $backup_file" >&2
-    exit 1
+  if [[ -n "${TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
+    tmux load-buffer "$context_file"
+    copy_target="tmux buffer"
+  elif command -v wl-copy >/dev/null 2>&1 && [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+    wl-copy < "$context_file"
+    copy_target="Wayland clipboard"
+  elif command -v xclip >/dev/null 2>&1 && [[ -n "${DISPLAY:-}" ]]; then
+    xclip -selection clipboard -in < "$context_file"
+    copy_target="X clipboard via xclip"
+  elif command -v pbcopy >/dev/null 2>&1; then
+    pbcopy < "$context_file"
+    copy_target="macOS clipboard"
   fi
 
-  print -r -- ""
-  print -r -- "[grab] diff:"
-  print -r -- "------------------------------------------------------------"
-  diff -u "$backup_file" "$target_file" || true
-  print -r -- "------------------------------------------------------------"
-  print -r -- ""
+  line_count=$(wc -l < "$buffer_file" | tr -d ' ')
+  byte_count=$(wc -c < "$buffer_file" | tr -d ' ')
 
-  print -n -- "Apply replacement? [y/N] "
-  read -r answer
+  print -r -- "[grab] snapshot:"
+  print -r -- "  path    : $snapshot_target"
+  print -r -- "  files   : $included_files"
+  print -r -- "  skipped : $skipped_files"
+  print -r -- "  lines   : $line_count"
+  print -r -- "  size    : ${byte_count}B"
 
-  case "$answer" in
-    y|Y|yes|YES)
-      print -r -- "[grab] replacement applied"
-      print -r -- "  backup: $backup_file"
-      ;;
-    *)
-      cp "$backup_file" "$target_file"
-      print -r -- "[grab] replacement cancelled; restored original"
-      print -r -- "  backup: $backup_file"
-      ;;
-  esac
+  grab_print_footer "$copy_target" "$context_file" "$line_count" "snapshot:${snapshot_target}"
 
-  rm -f "$replacement_file" "$new_file"
   exit 0
 fi
 
+
+# Auto-detect real piped stdin.
+if [[ "${1:-}" == "--replace" ]]; then
+  shift
+
+  if [[ $# -ge 4 ]] \
+    && [[ "$1" =~ '^[0-9]+$' ]] \
+    && [[ "$2" =~ '^[0-9]+$' ]] \
+    && [[ -f "$3" ]]; then
+
+    start_line="$1"
+    end_line="$2"
+    target_file="$3"
+    shift 3
+    expected_label="${(j: :)@}"
+
+    grab_apply_replace_range "$start_line" "$end_line" "$target_file" "$expected_label"
+    exit 0
+  fi
+
+  if [[ $# -eq 2 ]] && [[ -f "$1" ]]; then
+    target_file="$1"
+    expected_label="$2"
+
+    case "$target_file" in
+      *.py)
+        resolved="$(grab_resolve_python_function_range "$target_file" "$expected_label")"
+        ;;
+      *.js|*.jsx|*.ts|*.tsx)
+        resolved="$(grab_resolve_js_ts_function_range "$target_file" "$expected_label")"
+        ;;
+      *.cs|*.java)
+        resolved="$(grab_resolve_csharp_function_range "$target_file" "$expected_label")"
+        ;;
+      *.yml|*.yaml)
+        resolved="$(grab_resolve_ansible_task_range "$target_file" "$expected_label")"
+        ;;
+      *)
+        print -r -- "[grab] --replace FILE SYMBOL does not support this file type yet: $target_file" >&2
+        print -r -- "[grab] use range mode:" >&2
+        print -r -- "  grab --replace <start> <end> <file> <expected-label>" >&2
+        exit 1
+        ;;
+    esac
+
+    case "$resolved" in
+      NONE)
+        print -r -- "[grab] symbol not found: $expected_label" >&2
+        exit 1
+        ;;
+      MULTIPLE)
+        print -r -- "[grab] multiple matches found: $expected_label" >&2
+        print -r -- "[grab] use range mode or a more specific file/symbol" >&2
+        exit 1
+        ;;
+    esac
+
+    start_line="${resolved%% *}"
+    end_line="${resolved##* }"
+
+    grab_apply_replace_range "$start_line" "$end_line" "$target_file" "$expected_label"
+    exit 0
+  fi
+
+  print -r -- "[grab] usage:" >&2
+  print -r -- "  grab --replace <file> <symbol-or-task-name>" >&2
+  print -r -- "  grab --replace <start> <end> <file> <expected-label>" >&2
+  exit 1
+fi
 
 # This avoids hanging on "cat > buffer_file" when stdin looks non-TTY
 # but no real data arrives.
