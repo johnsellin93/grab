@@ -53,8 +53,6 @@ grab "duplicate notification" .            # exact text search
 
 ```
 
-↓
-
 ### Accumulated Clipboard Context
 
 ```
