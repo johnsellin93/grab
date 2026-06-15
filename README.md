@@ -1,5 +1,6 @@
 # Terminal workflows for rapid AI-assisted debugging and review-first code modification.
 
+`grab` builds on top of tools such as `ripgrep`, `sed`, and clipboard integrations to provide deterministic workflows for AI-assisted debugging and repository analysis.
 
 ## Basic Workflow
 
@@ -16,10 +17,9 @@
 
 > Every extraction expands the active repository context and automatically updates the clipboard/tmux buffer with the accumulated result.
 
-> For larger investigations, assistants propose batches of `grab` commands that developers review and execute to progressively acquire the exact repository context required for a task. See [`prompt.txt`](./prompt.txt) for an example workflow.
+> For larger investigations, assistants propose batches of `grab` commands based on the problem statement and accumulated repository context to progressively acquire the exact repository evidence required for a task. See [`prompt.txt`](./prompt.txt) for an example workflow.
 
 > You are not copying results. You are exporting context.
-
 
 ```
 Small repository?
@@ -47,10 +47,11 @@ grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
 grab 188 236 RetryPolicy.cs RetryFailedNotification
 grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
 
-grab NotificationRetryLimit .               # variable / symbol lookup
-grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
-grab "duplicate notification" .            # exact text search
-
+grab ProcessNotificationDelivery            # identify related call paths
+grab RetryFailedNotification                # locate retry implementation
+grab NotificationRetryLimit                 # inspect retry configuration
+grab DeliveryDeduplicationWindowMinutes     # inspect deduplication settings
+grab "duplicate notification" .             # search for operational clues
 ```
 
 ### Accumulated Clipboard Context
