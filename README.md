@@ -17,7 +17,7 @@
 
 > Every extraction expands the active repository context and automatically updates the clipboard/tmux buffer with the accumulated result.
 
-> For larger investigations, assistants propose batches of `grab` commands based on the problem statement and accumulated repository context to progressively acquire the exact repository evidence required for a task. See [`grab_investigation_protocol.md`](./grab_investigation_protocol.md) for an example workflow.
+> For larger investigations, assistants propose batches of `grab` commands based on the problem statement and accumulated repository context to progressively acquire the exact repository evidence required for a task. See [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for an example workflow.
 
 > You are not copying results. You are exporting context.
 
@@ -151,7 +151,7 @@ grab --replace roles/os_settings/tasks/main.yml "Render hardened sshd_config"
 
 This workflow keeps AI-assisted code changes deterministic, review-first, and human-controlled rather than fully autonomous.
 
-See the included [`grab_investigation_protocol.md`](./grab_investigation_protocol.md) for a complete example AI-assisted debugging workflow.
+See the included [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for a complete example AI-assisted debugging workflow.
 
 
 ## Supported Languages
