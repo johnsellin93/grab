@@ -5,11 +5,12 @@
 
 | Command | Purpose |
 |----------|----------|
-| `grab --clear` | Reset previous debugging context |
-| `grab --tree` | Capture repository structure |
+| `grab --snapshot .` | Export the complete context of a small repository |
+| `grab --functions .` | Index all functions |
 | `grab ExactPattern` | Locate relevant call flows and implementation paths |
 | `grab 500 635 file.cs` | Extract an exact implementation range |
-| `grab --functions .` | index all functions |
+| `grab --clear` | Reset previous debugging context |
+| `grab --tree` | Capture repository structure |
 | `grab --replace FILE FUNCTION` | Replace a function by symbol, validate, show diff, and ask for approval |
 
 
@@ -18,6 +19,53 @@
 > For larger investigations, assistants propose batches of `grab` commands that developers review and execute to progressively acquire the exact repository context required for a task. See [`prompt.txt`](./prompt.txt) for an example workflow.
 
 > You are not copying results. You are exporting context.
+
+
+## Snapshot Mode
+
+
+```
+Small repository?
+→ grab --snapshot .
+
+Large repository?
+→ grab --functions .
+   assistants propose extraction batches,
+   developers review and execute them.
+
+Need to apply AI-generated changes safely?
+→ grab --replace
+```
+
+
+For smaller repositories, examples, demos, and proof-of-concepts, Grab can export the complete local repository context in a single command.
+
+```bash
+grab --snapshot .
+grab --snapshot ./src
+grab --snapshot ~/projects/grab
+grab --snapshot /full/path/to/repository
+grab --snapshot server.py
+```
+
+`grab --snapshot` recursively collects supported project files, appends them to the accumulated context buffer, and automatically updates the clipboard or tmux buffer.
+
+Example:
+
+```
+[grab] snapshot:
+  path    : .
+  files   : 22
+  skipped : 0
+  lines   : 17964
+  size    : 658947B
+
+[grab] snapshot:. +17964L → context 17971L / 659110B copied to X clipboard via xclip
+```
+
+Snapshot mode is intended for compact repositories where exporting the complete local context is more efficient than progressive extraction.
+
+For larger investigations, targeted context acquisition remains the recommended workflow.
 
 
 ### Example AI-Generated Extraction Batch
@@ -70,7 +118,9 @@ Developers debugging with AI tools often paste fragmented snippets, lose surroun
 
 `grab` turns repository exploration into a deterministic context acquisition workflow built around exact search results, function boundaries, and explicit range extraction.
 
-Instead of relying on repository-wide indexing or exporting entire codebases, `grab` progressively acquires only the repository context required to investigate a problem or safely implement a change.
+Instead of relying exclusively on repository-wide indexing or exporting entire codebases, `grab` provides both progressive context acquisition for large investigations and snapshot-based workflows for compact repositories.
+
+Developers can choose the level of context acquisition appropriate for the task.
 
 
 <!--
