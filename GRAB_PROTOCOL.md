@@ -7,8 +7,81 @@ The accumulated `grab` session is the **only source of truth**.
 
 Never assume code that has not been extracted.
 
+Evidence acquisition and modification are separate activities.
+
+Assistants **must establish understanding before proposing changes**.
+
 ---
 
+## Phase Transition Rules
+
+Assistants **MUST NOT** skip phases.
+
+The investigation sequence is:
+
+1. Discovery
+2. Hypothesis Formation
+3. Evidence Validation
+4. Modification
+
+Do not proceed to a later phase until the completion criteria of the current phase have been satisfied.
+
+---
+
+
+## Investigation Initialization
+
+The assistant must determine whether the current request represents a continuation of the active investigation or the beginning of a new investigation.
+
+When beginning a **new investigation**, assistants **MUST** initialize a clean `grab` session.
+
+Use:
+
+```bash
+grab --clear
+grab --functions .
+```
+
+Use `grab --tree` only when repository structure is unclear.
+
+The accumulated `grab` session represents the active investigation state.
+
+Do **NOT** use `grab --clear` when continuing an existing investigation unless:
+
+* the user explicitly requests a reset;
+* the current accumulated context belongs to a different problem statement; or
+* the existing context is no longer relevant to the objective being investigated.
+
+## Command Safety Rules
+
+There are two command classes.
+
+### Evidence Acquisition Commands
+
+Use these when investigating, documenting, explaining, auditing, or understanding repository behavior.
+
+```bash
+grab --functions .
+grab --tree
+grab START END FILE LABEL
+grab EXACT_PATTERN .
+grab --snapshot .
+```
+
+### Modification Commands
+
+Use these only when applying a completed replacement after sufficient evidence has been gathered.
+
+```bash
+grab --replace FILE FUNCTION
+grab --replace START END FILE LABEL
+```
+
+Assistants **MUST NOT** use `grab --replace` to inspect, read, extract, document, search, or gather evidence.
+
+`grab --replace` is a write operation. It is only allowed during **PHASE 4 — MODIFICATION**.
+
+---
 
 ## PHASE 1 — DISCOVERY
 
@@ -20,7 +93,7 @@ Establish repository structure and discover investigation targets.
 
 If function boundaries are unknown, assistants **MUST** request:
 
-```
+```bash
 grab --functions .
 ```
 
@@ -28,7 +101,7 @@ grab --functions .
 
 1. Do not request range extractions before function indexing has been performed.
 2. Use `grab --tree` only when repository structure is unclear.
-3. Respond **ONLY** with a single copy-pasteable batch of `grab` commands.
+3. Respond **ONLY** with a single copy-pasteable batch of evidence acquisition commands.
 
 ### Discovery Completion Criteria
 
@@ -40,8 +113,6 @@ Discovery is considered complete only after:
 Do not proceed to **PHASE 2 — HYPOTHESIS FORMATION** until discovery is complete.
 
 ---
-
-
 
 ## PHASE 2 — HYPOTHESIS FORMATION
 
@@ -69,7 +140,9 @@ After receiving a function index, assistants **MUST** identify:
 * relevant logs or error messages;
 * lifecycle methods relevant to the investigation.
 
-Respond **ONLY** with a single copy-pasteable batch of `grab` commands.
+Respond **ONLY** with a single copy-pasteable batch of evidence acquisition commands.
+
+Do **NOT** include `grab --replace` commands during Phase 2.
 
 ---
 
@@ -139,6 +212,15 @@ grab --replace roles/os_settings/tasks/main.yml "Render hardened sshd_config"
 grab --replace START END FILE LABEL
 ```
 
+Never propose `grab --replace` as a way to fetch code.
+
+Before suggesting `grab --replace`, the assistant must already have:
+
+1. extracted the current target function or section;
+2. shown the full BEFORE code;
+3. produced the full AFTER replacement;
+4. explained why the replacement is safe.
+
 ### Provide
 
 1. File name.
@@ -157,6 +239,29 @@ grab --replace START END FILE LABEL
 
 ---
 
+## Documentation and Auditing Workflows
+
+When the objective is documentation, explanation, auditing, or system understanding:
+
+* do not propose modifications;
+* do not use `grab --replace`;
+* continue evidence acquisition until the requested behavior can be explained comprehensively.
+
+---
+
+## Investigation Completion Criteria
+
+An investigation is considered complete only after the assistant has either:
+
+* gathered sufficient evidence to answer the original question; or
+* determined what additional evidence is required.
+
+Do not terminate an investigation prematurely based on assumptions.
+
+Assistants MUST NOT assume that an investigation is complete based solely on the number of extracted functions or the amount of accumulated context.
+
+---
+
 ## Investigation Output Rules
 
 When asked:
@@ -167,7 +272,7 @@ What should I run next?
 
 respond **ONLY** with:
 
-> A single copy-pasteable batch of `grab` commands designed to acquire the highest-value missing evidence.
+> A single copy-pasteable batch of evidence acquisition commands designed to acquire the highest-value missing evidence.
 
 ### Example
 
@@ -188,4 +293,4 @@ grab "duplicate notification" .
 
 ## Objective
 
-Guide deterministic repository exploration, progressively acquire only the repository evidence necessary to solve the problem, and produce safe modifications based solely on the accumulated `grab` session.
+Guide deterministic repository investigation, progressively acquire only the repository evidence necessary to solve the problem, and produce safe modifications based solely on the accumulated `grab` session.
