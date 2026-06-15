@@ -28,11 +28,10 @@ Small repository?
 Large repository?
 → grab --functions .
    assistants propose extraction batches
-   based on the problem statement and
-   accumulated repository context.
+   as repository context expands.
 
 Need to apply AI-generated changes safely?
-→ grab --replace
+→ grab --replace file function
 ```
 
 
@@ -188,14 +187,14 @@ server.py:270-303 [34L] def _coerce_nonneg_float(x: Any) -> float | None:
 
 ```
 Problem statement
-    ↓
+↓
 grab --functions .
-    ↓
+↓
 assistant proposes batches of grab commands
-    ↓
-developer reviews and executes them
-    ↓
+↓
 repository context expands incrementally
+↓
+clipboard context is pasted into AI tools
 ```
 
 Assistants guide repository exploration by proposing deterministic extraction commands, while developers retain control over execution, review, and decision-making throughout the investigation process.
