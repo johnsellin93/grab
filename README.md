@@ -21,6 +21,43 @@
 > You are not copying results. You are exporting context.
 
 
+### Example AI-Generated Extraction Batch
+
+```
+grab --clear
+grab --functions .
+grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
+grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
+grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
+grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
+grab 188 236 RetryPolicy.cs RetryFailedNotification
+grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
+
+grab NotificationRetryLimit .               # variable / symbol lookup
+grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
+grab "duplicate notification" .            # exact text search
+
+```
+
+↓
+
+### Accumulated Clipboard Context
+
+```
+  +72L  block  ProcessNotificationDelivery(...)
+  +38L  block  ShouldRetryNotification(...)
+  +44L  block  RecordDeliveryAttempt(...)
+  +31L  block  HasRecentSuccessfulDelivery(...)
+  +49L  block  RetryFailedNotification(...)
+  +27L  block  GetRetryBackoffDelay(...)
+  +18L  symbol NotificationRetryLimit
+  +13L  symbol DeliveryDeduplicationWindowMinutes
+  +26L  text   "duplicate notification"
+
+[grab] +11 entries (+337L) → context 826L / 64192B copied to X clipboard via xclip
+```
+
+
 ## Snapshot Mode
 
 
@@ -30,8 +67,9 @@ Small repository?
 
 Large repository?
 → grab --functions .
-   assistants propose extraction batches,
-   developers review and execute them.
+   assistants propose extraction batches
+   based on the problem statement and
+   accumulated repository context.
 
 Need to apply AI-generated changes safely?
 → grab --replace
@@ -69,41 +107,6 @@ For larger investigations, targeted context acquisition remains the recommended 
 
 When repository scale makes full snapshots impractical, `grab` shifts toward deterministic, assistant-guided context acquisition.
 
-### Example AI-Generated Extraction Batch
-
-```
-grab --clear
-grab --functions .
-grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
-grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
-grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
-grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
-grab 188 236 RetryPolicy.cs RetryFailedNotification
-grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
-
-grab NotificationRetryLimit .               # variable / symbol lookup
-grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
-grab "duplicate notification" .            # exact text search
-
-```
-
-↓
-
-### Accumulated Clipboard Context
-
-```
-  +72L  block  ProcessNotificationDelivery(...)
-  +38L  block  ShouldRetryNotification(...)
-  +44L  block  RecordDeliveryAttempt(...)
-  +31L  block  HasRecentSuccessfulDelivery(...)
-  +49L  block  RetryFailedNotification(...)
-  +27L  block  GetRetryBackoffDelay(...)
-  +18L  symbol NotificationRetryLimit
-  +13L  symbol DeliveryDeduplicationWindowMinutes
-  +26L  text   "duplicate notification"
-
-[grab] +11 entries (+337L) → context 826L / 64192B copied to X clipboard via xclip
-```
 
 # What grab Solves
 
