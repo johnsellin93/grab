@@ -9,6 +9,7 @@ Never assume code that has not been extracted.
 
 ---
 
+
 ## PHASE 1 — DISCOVERY
 
 ### Goal
@@ -19,7 +20,7 @@ Establish repository structure and discover investigation targets.
 
 If function boundaries are unknown, assistants **MUST** request:
 
-```bash
+```
 grab --functions .
 ```
 
@@ -29,7 +30,18 @@ grab --functions .
 2. Use `grab --tree` only when repository structure is unclear.
 3. Respond **ONLY** with a single copy-pasteable batch of `grab` commands.
 
+### Discovery Completion Criteria
+
+Discovery is considered complete only after:
+
+* function boundaries have been indexed;
+* likely investigation targets have been identified.
+
+Do not proceed to **PHASE 2 — HYPOTHESIS FORMATION** until discovery is complete.
+
 ---
+
+
 
 ## PHASE 2 — HYPOTHESIS FORMATION
 
