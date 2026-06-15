@@ -21,6 +21,21 @@
 > You are not copying results. You are exporting context.
 
 
+```
+Small repository?
+→ grab --snapshot .
+
+Large repository?
+→ grab --functions .
+   assistants propose extraction batches
+   based on the problem statement and
+   accumulated repository context.
+
+Need to apply AI-generated changes safely?
+→ grab --replace
+```
+
+
 ### Example AI-Generated Extraction Batch
 
 ```
@@ -61,21 +76,6 @@ grab "duplicate notification" .            # exact text search
 ## Snapshot Mode
 
 
-```
-Small repository?
-→ grab --snapshot .
-
-Large repository?
-→ grab --functions .
-   assistants propose extraction batches
-   based on the problem statement and
-   accumulated repository context.
-
-Need to apply AI-generated changes safely?
-→ grab --replace
-```
-
-
 For smaller repositories, examples, demos, and proof-of-concepts, Grab can export the complete local repository context in a single command.
 
 ```bash
@@ -104,8 +104,6 @@ Example:
 Snapshot mode is intended for compact repositories where exporting the complete local context is more efficient than progressive extraction.
 
 For larger investigations, targeted context acquisition remains the recommended workflow.
-
-When repository scale makes full snapshots impractical, `grab` shifts toward deterministic, assistant-guided context acquisition.
 
 
 # What grab Solves
