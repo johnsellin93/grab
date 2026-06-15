@@ -67,6 +67,7 @@ Snapshot mode is intended for compact repositories where exporting the complete 
 
 For larger investigations, targeted context acquisition remains the recommended workflow.
 
+When repository scale makes full snapshots impractical, `grab` shifts toward deterministic, assistant-guided context acquisition.
 
 ### Example AI-Generated Extraction Batch
 
@@ -85,6 +86,7 @@ grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
 grab "duplicate notification" .            # exact text search
 
 ```
+               ↓
 
 ### Accumulated Clipboard Context
 
