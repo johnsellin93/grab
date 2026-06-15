@@ -86,7 +86,8 @@ grab DeliveryDeduplicationWindowMinutes .  # variable / symbol lookup
 grab "duplicate notification" .            # exact text search
 
 ```
-               ↓
+
+↓
 
 ### Accumulated Clipboard Context
 
@@ -102,7 +103,6 @@ grab "duplicate notification" .            # exact text search
   +26L  text   "duplicate notification"
 
 [grab] +11 entries (+337L) → context 826L / 64192B copied to X clipboard via xclip
-
 ```
 
 # What grab Solves
