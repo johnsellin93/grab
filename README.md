@@ -17,7 +17,7 @@
 
 > Every extraction expands the active repository context and automatically updates the clipboard with the accumulated result.
 
-> For larger investigations, assistants propose batches of `grab` commands based on the problem statement and accumulated repository context to progressively acquire the exact repository evidence required for a task. See [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for an example workflow.
+> For larger investigations, assistants propose batches of `grab` commands based on the problem statement and accumulated repository context to progressively acquire the exact repository evidence required for a task.
 
 > You are not copying results. You are exporting context.
 
@@ -29,28 +29,20 @@ Small repository?
 → grab --snapshot .
 
 Large repository?
-→ grab --functions .
-   assistants use the problem statement
-   and function index to propose
-   deterministic extraction batches
-   using the accumulated repository evidence.
+→ grab --clear
+   grab --functions .
+
+   assistants use the problem statement,
+   function index, and accumulated
+   repository evidence to progressively
+   acquire only the context required
+   to solve the task.
 
 Need to apply AI-generated changes safely?
 → grab --replace file function
 ```
 
-### Why not export the entire repository?
-
-Large repositories often exceed practical context limits and contain
-substantial amounts of irrelevant implementation detail.
-
-`grab` allows assistants to acquire only the repository evidence
-necessary to understand a problem, reducing noise and preserving
-deterministic investigation workflows.
-
-Small repositories can use `grab --snapshot`.
-
-Larger repositories benefit from progressive evidence acquisition.
+See [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for the complete investigation workflow.
 
 
 ### Example AI-Generated Extraction Batch
@@ -87,6 +79,18 @@ grab "duplicate notification" .             # search for operational clues
 
 [grab] +11 entries (+337L) → context 826L / 64192B copied to X clipboard via xclip
 ```
+
+
+### Why not export the entire repository?
+
+Large repositories often exceed practical context limits and contain
+substantial amounts of irrelevant implementation detail.
+
+`grab` allows assistants to acquire only the repository evidence
+necessary to understand a problem, reducing noise and preserving
+deterministic investigation workflows.
+
+Larger repositories benefit from progressive evidence acquisition.
 
 
 ## Snapshot Mode
