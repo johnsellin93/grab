@@ -1,6 +1,7 @@
 # Terminal workflows for rapid AI-assisted debugging and review-first code modification.
 
-`grab` builds on top of tools such as `ripgrep`, `sed`, and clipboard integrations to provide deterministic workflows for AI-assisted debugging and repository analysis.
+grab provides deterministic repository investigation workflows
+for AI-assisted debugging, documentation, and safe code modification.
 
 ## Basic Workflow
 
@@ -234,6 +235,7 @@ curl -fsSL https://raw.githubusercontent.com/johnsellin93/grab/main/install.sh |
 The installer will:
 
 - install required dependencies such as `ripgrep`
+- configure the Unix tooling used by Grab's investigation workflows
 - install optional utilities such as `tree`
 - clone or update `grab` in `~/grab`
 - make the `grab` executable available in your shell
@@ -393,6 +395,18 @@ Supported targets:
 - macOS clipboard via pbcopy
 
 
+
+## Built on Proven Tools
+
+Rather than reimplementing mature Unix utilities, `grab`
+composes battle-tested tools into higher-level workflows
+for deterministic repository investigation.
+
+Core components include:
+
+- [`ripgrep`](https://github.com/BurntSushi/ripgrep) for fast repository search
+- [`sed`](https://github.com/mirror/sed) for precise text transformations
+- system clipboard integrations for accumulated context export
 
 # Requirements
 
