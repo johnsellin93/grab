@@ -15,11 +15,14 @@
 | `grab --replace FILE FUNCTION` | Review, validate, diff, and safely apply AI-generated replacements |
 
 
-> Every extraction expands the active repository context and automatically updates the clipboard/tmux buffer with the accumulated result.
+> Every extraction expands the active repository context and automatically updates the clipboard with the accumulated result.
 
 > For larger investigations, assistants propose batches of `grab` commands based on the problem statement and accumulated repository context to progressively acquire the exact repository evidence required for a task. See [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for an example workflow.
 
 > You are not copying results. You are exporting context.
+
+
+## Choosing the Right Workflow
 
 ```
 Small repository?
@@ -30,11 +33,24 @@ Large repository?
    assistants use the problem statement
    and function index to propose
    deterministic extraction batches
-   as repository evidence expands.
+   using the accumulated repository evidence.
 
 Need to apply AI-generated changes safely?
 → grab --replace file function
 ```
+
+### Why not export the entire repository?
+
+Large repositories often exceed practical context limits and contain
+substantial amounts of irrelevant implementation detail.
+
+`grab` allows assistants to acquire only the repository evidence
+necessary to understand a problem, reducing noise and preserving
+deterministic investigation workflows.
+
+Small repositories can use `grab --snapshot`.
+
+Larger repositories benefit from progressive evidence acquisition.
 
 
 ### Example AI-Generated Extraction Batch
