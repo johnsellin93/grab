@@ -27,8 +27,10 @@ Small repository?
 
 Large repository?
 → grab --functions .
-   assistants propose extraction batches
-   as repository context expands.
+   assistants use the problem statement
+   and function index to propose
+   deterministic extraction batches
+   as repository evidence expands.
 
 Need to apply AI-generated changes safely?
 → grab --replace file function
@@ -189,9 +191,12 @@ Problem statement
 ↓
 grab --functions .
 ↓
+assistant uses function boundaries to identify
+likely investigation targets
+↓
 assistant proposes batches of grab commands
 ↓
-repository context expands incrementally
+repository evidence accumulates incrementally
 ↓
 clipboard context is pasted into AI tools
 ```
