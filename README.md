@@ -6,13 +6,13 @@
 
 | Command | Purpose |
 |----------|----------|
-| `grab --snapshot .` | Export the complete context of a small repository |
-| `grab --functions .` | Index all functions |
-| `grab ExactPattern` | Locate relevant call flows and implementation paths |
-| `grab 500 635 file.cs` | Extract an exact implementation range |
-| `grab --clear` | Reset previous debugging context |
-| `grab --tree` | Capture repository structure |
-| `grab --replace FILE FUNCTION` | Replace a function by symbol, validate, show diff, and ask for approval |
+| `grab --snapshot .` | Export the complete context of a small repository for immediate AI analysis  |
+| `grab --functions .` | Discover function boundaries and investigation entry points |
+| `grab ExactPattern` | Locate symbols, logs, configuration values, and related call paths |
+| `grab 500 635 file.cs` | Acquire exact implementation evidence without exporting entire files |
+| `grab --clear` | Start a new investigation with a clean context buffer |
+| `grab --tree` | Capture repository structure when investigation scope is unclear |
+| `grab --replace FILE FUNCTION` | Review, validate, diff, and safely apply AI-generated replacements |
 
 
 > Every extraction expands the active repository context and automatically updates the clipboard/tmux buffer with the accumulated result.
