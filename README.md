@@ -54,12 +54,13 @@ See [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for the complete investigation work
 ```
 grab --clear
 grab --functions .
-grab 312 383 NotificationDispatcher.cs ProcessNotificationDelivery
-grab 448 486 NotificationDispatcher.cs ShouldRetryNotification
-grab 521 564 NotificationDispatcher.cs RecordDeliveryAttempt
-grab 612 642 NotificationDispatcher.cs HasRecentSuccessfulDelivery
-grab 188 236 RetryPolicy.cs RetryFailedNotification
-grab 245 271 RetryPolicy.cs GetRetryBackoffDelay
+grab 312 383 file1.cs ProcessNotificationDelivery
+grab 448 486 file2.cs ShouldRetryNotification
+grab 521 564 file3.cs RecordDeliveryAttempt
+grab 612 642 file3.cs HasRecentSuccessfulDelivery
+grab 188 236 file3.cs RetryFailedNotification
+grab 245 271 file4.py GetRetryBackoffDelay
+
 
 grab ProcessNotificationDelivery            # identify related call paths
 grab RetryFailedNotification                # locate retry implementation
