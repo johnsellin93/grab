@@ -151,6 +151,39 @@ Instead of relying exclusively on repository-wide indexing or exporting entire c
 Developers can choose the level of context acquisition appropriate for the task.
 
 
+
+## From Human-in-the-Loop to Autonomous Context Acquisition
+
+Today, Grab operates as a human-in-the-loop repository investigation workflow.
+
+The developer provides a problem statement, the AI proposes `grab` commands, Grab retrieves the requested repository evidence, and the developer feeds the accumulated context back into the model.
+
+The long-term goal is to expose Grab through an API/MCP interface so AI tools can acquire repository context autonomously.
+
+Future workflow:
+
+```
+Problem statement
+↓
+AI analyzes repository index
+↓
+AI requests functions, symbols, references, or code ranges
+↓
+Grab API returns repository evidence
+↓
+AI continues investigation
+↓
+AI proposes fix, implementation, or explanation
+```
+
+Rather than generating commands for developers to execute manually, AI agents would progressively acquire the exact context they require through direct tool calls.
+
+This would transform Grab from a repository investigation utility into a context acquisition layer for autonomous software engineering agents.
+
+The AI does not need the entire repository.
+
+It needs the right context at the right time.
+
 <!--
 ## Demo
 
