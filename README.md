@@ -1,5 +1,8 @@
-# Terminal workflows for rapid AI-assisted debugging and review-first code modification.
+# Grab 
 
+# Cut repository investigation time by up to 70%.
+
+Extract exact functions, symbols, and execution paths for AI-assisted debugging.
 grab provides deterministic repository investigation workflows
 for AI-assisted debugging, documentation, and safe code modification.
 
