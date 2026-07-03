@@ -15,25 +15,11 @@ Extract functions, symbols, and execution paths for AI-agent debugging.
 | `grab <pattern> <path> <dot>` | Symbol call flow |
 | `grab --replace FILE FUNCTION` | Not supported |
 
-## Choosing the Right Workflow
-
-```
-Large repository?
-→ grab --clear
-   grab --functions .
-
-   assistants use the problem statement,
-   function index, and accumulated
-   repository evidence to progressively
-   acquire only the context required
-   to solve the task.
-
-```
 
 See [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for the complete investigation workflow.
 
 ## Supported Languages
-C# Python Vanilla Java Yaml 
+Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
 
 ### Why not export the entire repository?
 
@@ -75,11 +61,6 @@ Developers can choose the level of context acquisition appropriate for the task.
 -->
 
 See the included [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for a complete example AI-assisted debugging workflow.
-
-
-## Supported Languages
-Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
-
 
 ## Function Indexing and Context Acquisition
 
