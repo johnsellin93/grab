@@ -1,32 +1,24 @@
-
-
 #!/usr/bin/env zsh
 set -euo pipefail
-# AI context grab for terminal workflows, search/extract → accumulate context → copy to clipboard.
+# → copy to clipboard.
 
 usage() {
   cat <<'EOF'
 Usage:
-  grab <pattern> [path...]
-#   grab --all <pattern> [path...]
-  grab <start> <end> <file> [label...]
-  grab --replace <start> <end> <file> <expected-label>
-  grab --snapshot <file-or-dir>
+  grab <pattern> <path> <dot>
+  grab --symbol <file> <symbol> <function_name> # All major languages supported.
+  grab <lineid_start> <lineid_end> <file> <function_name>
+  grab --replace <lineid_start> <lineid_end> <file> 
+  grab --snapshot <file> or <dot>
 
-  grab --clear
+  grab --clear <context>
   grab --functions <file> [symbol]
 
-Examples:
-  grab variable /dir/proj
-  grab --all VAR
-  grab 500 635 file.cs HandleSetupHotkeys
-  grab --replace 122 166 server.py _log_request_start
-  sed -n '500,635p' file.cs | grab HandleSetupHotkeys
-  grab --clear
-  grab --functions ./app.py
-  grab --functions ./UserService.cs SaveUser
+
 
 Modes:
+  grab --context  Extract around matches with rg -C and append to context
+  grab --symbol   Extract a whole function/task by symbol without editing
   grab --snapshot .
   grab --snapshot ./src
   grab --snapshot /full/path/to/file.py
@@ -35,7 +27,6 @@ Modes:
   range       Extract line range from file
   --replace   Replace exact line range after pasted reviewed code
   stdin       Capture piped input automatically
-
 Notes:
   - Latest clean output: ~/.cache/grab/buffer.txt
   - AI context history:   ~/.cache/grab/context.txt
@@ -210,6 +201,14 @@ grab_resolve_python_function_range() {
       return s ~ /^[ \t]*$/
     }
 
+    function comment(s) {
+      return s ~ /^[ \t]*#/
+    }
+
+    function header_complete(s) {
+      return s ~ /:[ \t]*(#.*)?$/
+    }
+
     {
       lines[NR] = $0
     }
@@ -246,16 +245,31 @@ grab_resolve_python_function_range() {
 
       base_indent = lead(lines[def_line])
       end = NR
+      in_header = !header_complete(lines[def_line])
+      body_seen = 0
 
       for (i = def_line + 1; i <= NR; i++) {
-        if (blank(lines[i]) || lines[i] ~ /^[ \t]*#/) {
+        if (in_header) {
+          if (header_complete(lines[i])) {
+            in_header = 0
+          }
+          continue
+        }
+
+        if (blank(lines[i]) || comment(lines[i])) {
           continue
         }
 
         if (lead(lines[i]) <= base_indent) {
-          end = i - 1
-          break
+          if (body_seen) {
+            end = i - 1
+            break
+          }
+
+          continue
         }
+
+        body_seen = 1
       }
 
       while (end > def_line && blank(lines[end])) {
@@ -266,6 +280,7 @@ grab_resolve_python_function_range() {
     }
   ' "$file"
 }
+
 grab_resolve_js_ts_function_range() {
   local file="$1"
   local symbol="$2"
@@ -421,6 +436,9 @@ grab_resolve_csharp_function_range() {
   ' "$file"
 }
 
+
+
+
 grab_resolve_ansible_task_range() {
   local file="$1"
   local symbol="$2"
@@ -475,6 +493,87 @@ grab_resolve_ansible_task_range() {
 }
 
 
+grab_resolve_shell_function_range() {
+  local file="$1"
+  local symbol="$2"
+
+  awk -v sym="$symbol" '
+    function trim(s) {
+      sub(/^[ \t]*/, "", s)
+      sub(/[ \t]*$/, "", s)
+      return s
+    }
+
+    function blank(s) {
+      return s ~ /^[ \t]*$/
+    }
+
+    function is_target_def(line) {
+      t = trim(line)
+
+      if (t ~ "^" sym "[ \t]*\\(\\)[ \t]*(\\{|$)") return 1
+      if (t ~ "^function[ \t]+" sym "([ \t]*\\(\\))?[ \t]*(\\{|$)") return 1
+
+      return 0
+    }
+
+    function is_any_shell_def(line) {
+      t = trim(line)
+
+      if (t ~ "^[A-Za-z_][A-Za-z0-9_]*[ \t]*\\(\\)[ \t]*(\\{|$)") return 1
+      if (t ~ "^function[ \t]+[A-Za-z_][A-Za-z0-9_]*([ \t]*\\(\\))?[ \t]*(\\{|$)") return 1
+
+      return 0
+    }
+
+    {
+      lines[NR] = $0
+    }
+
+    END {
+      start = 0
+
+      for (i = 1; i <= NR; i++) {
+        if (is_target_def(lines[i])) {
+          if (start != 0) {
+            print "MULTIPLE"
+            exit
+          }
+
+          start = i
+        }
+      }
+
+      if (start == 0) {
+        print "NONE"
+        exit
+      }
+
+      end = NR
+
+      for (i = start + 1; i <= NR; i++) {
+        if (lines[i] ~ /^}[ \t]*(#.*)?$/) {
+          end = i
+          break
+        }
+
+        if (is_any_shell_def(lines[i])) {
+          end = i - 1
+          break
+        }
+      }
+
+      while (end > start && blank(lines[end])) {
+        end--
+      }
+
+      print start " " end
+    }
+  ' "$file"
+}
+
+
+
 grab_apply_replace_range() {
   local start_line="$1"
   local end_line="$2"
@@ -495,6 +594,7 @@ grab_apply_replace_range() {
     print -r -- "[grab] invalid range: ${start_line}-${end_line}" >&2
     exit 1
   fi
+
 
   old_block="$(sed -n "${start_line},${end_line}p" "$target_file")"
 
@@ -783,6 +883,279 @@ if [[ "${1:-}" == "--tree" ]]; then
 #   exit 0
 fi
 
+
+if [[ "${1:-}" == "--context" ]]; then
+  shift
+
+  if [[ $# -lt 2 ]] || [[ ! "${1:-}" =~ '^[0-9]+$' ]]; then
+    print -r -- "[grab] usage:" >&2
+    print -r -- "  grab --context <N> <pattern> [path...]" >&2
+    exit 1
+  fi
+
+  context_radius="$1"
+  shift
+
+  pattern="${1:-}"
+  shift || true
+
+  if [[ -z "$pattern" ]]; then
+    print -r -- "[grab] --context requires a pattern" >&2
+    exit 1
+  fi
+
+  if [[ $# -gt 0 ]]; then
+    paths=("$@")
+  else
+    paths=(.)
+  fi
+
+  buffer_dir="${GRAB_BUFFER_DIR:-$HOME/.cache/grab}"
+  buffer_file="${GRAB_BUFFER_FILE:-$buffer_dir/buffer.txt}"
+  context_file="${GRAB_CONTEXT_FILE:-$buffer_dir/context.txt}"
+  counter_file="${GRAB_COUNTER_FILE:-$buffer_dir/counter.txt}"
+  tmp_color_file="${buffer_file}.color.tmp"
+
+  mkdir -p "$buffer_dir"
+  : > "$buffer_file"
+  : > "$tmp_color_file"
+
+  if [[ ! -f "$context_file" ]]; then
+    : > "$context_file"
+  fi
+
+  if [[ ! -f "$counter_file" ]]; then
+    print -r -- "0" > "$counter_file"
+  fi
+  type_filters=(
+    --glob '**/*.{cs,js,jsx,ts,tsx,py,sh,bash,zsh}'
+    --glob '**/grab'
+    --glob '**/*.{html,css,scss}'
+    --glob '**/*.{json,yaml,yml,toml,ini,conf,env,sql}'
+    --glob '**/*.{md,txt,rst}'
+  )
+
+  common_args=(
+    -n
+    -C "$context_radius"
+    --color always
+    --max-columns 300
+    --max-columns-preview
+    --max-filesize 2M
+
+    "${type_filters[@]}"
+
+    --glob '!**/node_modules/**'
+    --glob '!**/.git/**'
+    --glob '!**/dist/**'
+    --glob '!**/build/**'
+    --glob '!**/coverage/**'
+    --glob '!**/tmp/**'
+    --glob '!**/vendor/**'
+    --glob '!**/__pycache__/**'
+    --glob '!**/.venv/**'
+    --glob '!**/venv/**'
+    --glob '!**/bin/**'
+    --glob '!**/obj/**'
+    --glob '!**/runs/**'
+    --glob '!**/repos/**'
+
+    --glob '!**/*.min.js'
+    --glob '!**/*.min.css'
+    --glob '!**/*.map'
+    --glob '!**/*.bundle.js'
+    --glob '!**/*.chunk.js'
+    --glob '!**/*.generated.*'
+    --glob '!**/*bak*'
+    --glob '!**/*.grab.bak.*'
+    --glob '!**/agent.log'
+    --glob '!**/events.jsonl'
+    --glob '!**/meta.json'
+    --glob '!**/final.json'
+    --glob '!**/deoplete.log'
+    --glob '!**/state.json'
+    --glob '!**/state.json.bak'
+    --glob '!**/*.lock'
+  )
+
+  set +e
+  rg "${common_args[@]}" "$pattern" "${paths[@]}" | tee "$tmp_color_file"
+  pipe_status=("${pipestatus[@]}")
+  set -e
+
+  rg_status="${pipe_status[1]:-${pipe_status[0]:-0}}"
+  perl -pe 's/\e\[[0-9;]*m//g' "$tmp_color_file" > "$buffer_file"
+
+  run_no="$(cat "$counter_file" 2>/dev/null || print -r -- 0)"
+  run_no=$((run_no + 1))
+  print -r -- "$run_no" > "$counter_file"
+
+  {
+    print -r -- ""
+    print -r -- "==================== grab copy ${run_no} ===================="
+    print -r -- "source: context"
+    print -r -- "pattern: $pattern"
+    print -r -- "context: ${context_radius}"
+    print -r -- "path: ${paths[*]}"
+    print -r -- "============================================================="
+    cat "$buffer_file"
+  } >> "$context_file"
+
+  if [[ "$rg_status" -eq 1 ]]; then
+    print -r -- "[grab] no matches. clean buffer saved: $buffer_file" >&2
+    exit 1
+  elif [[ "$rg_status" -ne 0 ]]; then
+    print -r -- "[grab] rg failed with status $rg_status. clean buffer saved: $buffer_file" >&2
+    exit "$rg_status"
+  fi
+
+  copy_target="none"
+
+  if [[ -n "${TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
+    tmux load-buffer "$context_file"
+    copy_target="tmux buffer"
+  elif command -v wl-copy >/dev/null 2>&1 && [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+    wl-copy < "$context_file"
+    copy_target="Wayland clipboard"
+  elif command -v xclip >/dev/null 2>&1 && [[ -n "${DISPLAY:-}" ]]; then
+    xclip -selection clipboard -in < "$context_file"
+    copy_target="X clipboard via xclip"
+  elif command -v pbcopy >/dev/null 2>&1; then
+    pbcopy < "$context_file"
+    copy_target="macOS clipboard"
+  fi
+
+  line_count=$(wc -l < "$buffer_file" | tr -d ' ')
+  grab_print_footer "$copy_target" "$context_file" "$line_count" "context:${pattern}"
+  rm -f "$tmp_color_file"
+  exit 0
+fi
+
+if [[ "${1:-}" == "--symbol" ]]; then
+  shift
+
+  if [[ $# -ne 2 ]] || [[ ! -f "${1:-}" ]]; then
+    print -r -- "[grab] usage:" >&2
+    print -r -- "  grab --symbol <file> <symbol>" >&2
+    exit 1
+  fi
+
+  target_file="$1"
+  symbol="$2"
+
+  case "$target_file" in
+    *.py)
+      resolved="$(grab_resolve_python_function_range "$target_file" "$symbol")"
+      ;;
+    *.js|*.jsx|*.ts|*.tsx|*.html)
+      resolved="$(grab_resolve_js_ts_function_range "$target_file" "$symbol")"
+      ;;
+    *.cs|*.java)
+      resolved="$(grab_resolve_csharp_function_range "$target_file" "$symbol")"
+      ;;
+    *.yml|*.yaml)
+      resolved="$(grab_resolve_ansible_task_range "$target_file" "$symbol")"
+      ;;
+    *.sh|*.bash|*.zsh|*/grab|grab)
+      resolved="$(grab_resolve_shell_function_range "$target_file" "$symbol")"
+      ;;
+    *)
+      print -r -- "[grab] --symbol does not support this file type yet: $target_file" >&2
+      exit 1
+      ;;
+  esac
+  case "$resolved" in
+    NONE)
+      print -r -- "[grab] symbol not found: $symbol" >&2
+      exit 1
+      ;;
+    MULTIPLE)
+      print -r -- "[grab] multiple matches found: $symbol" >&2
+      print -r -- "[grab] use range mode or a more specific symbol" >&2
+      exit 1
+      ;;
+  esac
+
+  start_line="${resolved%% *}"
+  end_line="${resolved##* }"
+
+  buffer_dir="${GRAB_BUFFER_DIR:-$HOME/.cache/grab}"
+  buffer_file="${GRAB_BUFFER_FILE:-$buffer_dir/buffer.txt}"
+  context_file="${GRAB_CONTEXT_FILE:-$buffer_dir/context.txt}"
+  counter_file="${GRAB_COUNTER_FILE:-$buffer_dir/counter.txt}"
+  tmp_color_file="${buffer_file}.color.tmp"
+
+  mkdir -p "$buffer_dir"
+  : > "$buffer_file"
+  : > "$tmp_color_file"
+
+  bat_cmd=""
+  if command -v bat >/dev/null 2>&1; then
+    bat_cmd="bat"
+  elif command -v batcat >/dev/null 2>&1; then
+    bat_cmd="batcat"
+  fi
+
+  if [[ -n "$bat_cmd" ]]; then
+    "$bat_cmd" \
+      --color=always \
+      --style=plain \
+      --paging=never \
+      --line-range "${start_line}:${end_line}" \
+      "$target_file" | tee "$tmp_color_file"
+
+    perl -pe 's/\e\[[0-9;]*m//g' "$tmp_color_file" > "$buffer_file"
+  else
+    sed -n "${start_line},${end_line}p" "$target_file" | tee "$buffer_file"
+  fi
+
+  if [[ ! -f "$context_file" ]]; then
+    : > "$context_file"
+  fi
+
+  if [[ ! -f "$counter_file" ]]; then
+    print -r -- "0" > "$counter_file"
+  fi
+
+  run_no="$(cat "$counter_file" 2>/dev/null || print -r -- 0)"
+  run_no=$((run_no + 1))
+  print -r -- "$run_no" > "$counter_file"
+
+  {
+    print -r -- ""
+    print -r -- "==================== grab copy ${run_no} ===================="
+    print -r -- "source: symbol"
+    print -r -- "file: $target_file"
+    print -r -- "symbol: $symbol"
+    print -r -- "lines: ${start_line}-${end_line}"
+    print -r -- "============================================================="
+    cat "$buffer_file"
+  } >> "$context_file"
+
+  copy_target="none"
+
+  if [[ -n "${TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
+    tmux load-buffer "$context_file"
+    copy_target="tmux buffer"
+  elif command -v wl-copy >/dev/null 2>&1 && [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+    wl-copy < "$context_file"
+    copy_target="Wayland clipboard"
+  elif command -v xclip >/dev/null 2>&1 && [[ -n "${DISPLAY:-}" ]]; then
+    xclip -selection clipboard -in < "$context_file"
+    copy_target="X clipboard via xclip"
+  elif command -v pbcopy >/dev/null 2>&1; then
+    pbcopy < "$context_file"
+    copy_target="macOS clipboard"
+  fi
+
+  line_count=$(wc -l < "$buffer_file" | tr -d ' ')
+  grab_print_footer "$copy_target" "$context_file" "$line_count" "symbol:${symbol}"
+  rm -f "$tmp_color_file"
+  exit 0
+fi
+
+
+
 if [[ "${1:-}" == "--functions" ]]; then
   shift
 
@@ -945,7 +1318,6 @@ if [[ "${1:-}" == "--functions" ]]; then
 
       next
     }
-
     start > 0 && symbol != "" && $0 ~ symbol {
       add_hit(NR, "")
     }
@@ -954,6 +1326,77 @@ if [[ "${1:-}" == "--functions" ]]; then
       flush(NR)
     }
   '
+
+  shell_outline_awk='
+    function trim(s) {
+      sub(/^[ \t]*/, "", s)
+      sub(/[ \t]*$/, "", s)
+      return s
+    }
+
+    function flush(end_line) {
+      if (start > 0) {
+        len = end_line - start + 1
+
+        extra = ""
+        if (symbol != "" && hits != "") {
+          extra = " [" symbol ": " hits "]"
+        }
+
+        print file ":" start "-" end_line " [" len "L] " sig extra
+      }
+
+      start = 0
+      sig = ""
+      hits = ""
+    }
+
+    function add_hit(line_no, where) {
+      if (symbol == "") return
+
+      hit = where != "" ? where : line_no
+
+      if (hits == "") hits = hit
+      else hits = hits "," hit
+    }
+
+    function is_shell_function(line) {
+      t = trim(line)
+
+      if (t ~ /^[A-Za-z_][A-Za-z0-9_]*[ \t]*\(\)[ \t]*(\{|$)/) return 1
+      if (t ~ /^function[ \t]+[A-Za-z_][A-Za-z0-9_]*([ \t]*\(\))?[ \t]*(\{|$)/) return 1
+
+      return 0
+    }
+
+    is_shell_function($0) {
+      flush(NR - 1)
+
+      start = NR
+      sig = trim($0)
+      sub(/[ \t]*\{[ \t]*$/, "", sig)
+
+      if (symbol != "" && sig ~ symbol) {
+        add_hit(NR, "signature")
+      }
+
+      next
+    }
+
+    start > 0 && symbol != "" && $0 ~ symbol {
+      add_hit(NR, "")
+    }
+
+    start > 0 && $0 ~ /^}[ \t]*(#.*)?$/ {
+      flush(NR)
+      next
+    }
+
+    END {
+      flush(NR)
+    }
+  '
+
   files=()
 
   if [[ -f "$target" ]]; then
@@ -991,7 +1434,12 @@ if [[ "${1:-}" == "--functions" ]]; then
            -name '*.jsx' -o \
            -name '*.ts' -o \
            -name '*.tsx' -o \
+           -name '*.html' -o \
            -name '*.py' -o \
+           -name '*.sh' -o \
+           -name '*.bash' -o \
+           -name '*.zsh' -o \
+           -name 'grab' -o \
            -name '*.yml' -o \
            -name '*.yaml' \) \
         -print
@@ -1004,11 +1452,13 @@ if [[ "${1:-}" == "--functions" ]]; then
     print -r -- "[grab] no function-capable files found for: $target" >&2
     exit 1
   fi
-
   for function_file in "${files[@]}"; do
     case "$function_file" in
       *.yml|*.yaml)
         awk -v file="$function_file" -v symbol="$symbol" "$ansible_outline_awk" "$function_file" >> "$buffer_file"
+        ;;
+      *.sh|*.bash|*.zsh|*/grab|grab)
+        awk -v file="$function_file" -v symbol="$symbol" "$shell_outline_awk" "$function_file" >> "$buffer_file"
         ;;
       *)
         awk -v file="$function_file" -v symbol="$symbol" "$function_outline_awk" "$function_file" >> "$buffer_file"
@@ -1127,6 +1577,7 @@ if [[ "${1:-}" == "--snapshot" ]]; then
            -name '*.sh' -o \
            -name '*.bash' -o \
            -name '*.zsh' -o \
+           -name 'grab' -o \
            -name '*.html' -o \
            -name '*.css' -o \
            -name '*.scss' -o \
@@ -1562,12 +2013,13 @@ fi
 type_filters=()
 
 if [[ "$mode" == "smart" ]]; then
-  type_filters=(
-    --glob '**/*.{cs,js,jsx,ts,tsx,py,sh,bash,zsh}'
-    --glob '**/*.{html,css,scss}'
-    --glob '**/*.{json,yaml,yml,toml,ini,conf,env,sql}'
-    --glob '**/*.{md,txt,rst}'
-  )
+     type_filters=(
+       --glob '**/*.{cs,js,jsx,ts,tsx,py,sh,bash,zsh}'
+       --glob '**/grab'
+       --glob '**/*.{html,css,scss}'
+       --glob '**/*.{json,yaml,yml,toml,ini,conf,env,sql}'
+       --glob '**/*.{md,txt,rst}'
+     )
 fi
 
 
@@ -1623,7 +2075,8 @@ common_args=(
   --glob '!**/venv/**'
   --glob '!**/bin/**'
   --glob '!**/obj/**'
-
+  --glob '!**/runs/**'
+  --glob '!**/repos/**'
   # files
   --glob '!**/*.min.js'
   --glob '!**/*.min.css'
@@ -1632,6 +2085,11 @@ common_args=(
   --glob '!**/*.chunk.js'
   --glob '!**/*.generated.*'
   --glob '!**/*bak*'
+  --glob '!**/*.grab.bak.*'
+  --glob '!**/agent.log'
+  --glob '!**/events.jsonl'
+  --glob '!**/meta.json'
+  --glob '!**/final.json'
   --glob '!**/deoplete.log'
   --glob '!**/state.json'
   --glob '!**/state.json.bak'
