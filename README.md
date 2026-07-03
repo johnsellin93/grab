@@ -15,11 +15,6 @@ Extract functions, symbols, and execution paths for AI-agent debugging.
 | `grab <pattern> <path> <dot>` | Symbol call flow |
 | `grab --replace FILE FUNCTION` | Not supported |
 
-
-## Supported Languages
-C# Python Vanilla Java Yaml 
-
-
 ## Choosing the Right Workflow
 
 ```
@@ -36,6 +31,9 @@ Large repository?
 ```
 
 See [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for the complete investigation workflow.
+
+## Supported Languages
+C# Python Vanilla Java Yaml 
 
 ### Why not export the entire repository?
 
