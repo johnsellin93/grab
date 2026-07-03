@@ -1,6 +1,5 @@
 # Grab
 
-## Cut repository investigation time by up to 70%.
 
 Extract exact functions, symbols, and execution paths for AI-assisted debugging.
 
@@ -10,28 +9,17 @@ grab provides deterministic repository investigation workflows for AI-assisted d
 
 | Command | Purpose |
 |----------|----------|
-| `grab --snapshot .` | Export the complete context of a small repository for immediate AI analysis  |
-| `grab --functions .` | Discover function boundaries and investigation entry points |
-| `grab ExactPattern` | Locate symbols, logs, configuration values, and related call paths |
-| `grab 500 635 file.cs` | Acquire exact implementation evidence without exporting entire files |
-| `grab --clear` | Start a new investigation with a clean context buffer |
-| `grab --tree` | Capture repository structure when investigation scope is unclear |
-| `grab --replace FILE FUNCTION` | Review, validate, diff, and safely apply AI-generated replacements |
-
-
-> Every extraction expands the active repository context and automatically updates the clipboard with the accumulated result.
-
-> For larger investigations, assistants propose batches of `grab` commands based on the problem statement and accumulated repository context to progressively acquire the exact repository evidence required for a task.
-
-> You are not copying results. You are exporting context.
+| `grab --symbol <file> <symbol> <function_name>` |  Extract any function from any major language|
+| `grab <pattern> <path> <dot>` | Discover the symbol flow |
+| `grab <lineid_start> <lineid_end> <file> <function_name>` | Acquire implementation evidence without exporting entire files |
+| `grab --clear` | Start investigation |
+| `grab --tree` | when investigation scope is unclear |
+| `grab --replace FILE FUNCTION` | Not supported |
 
 
 ## Choosing the Right Workflow
 
 ```
-Small repository?
-→ grab --snapshot .
-
 Large repository?
 → grab --clear
    grab --functions .
@@ -42,8 +30,6 @@ Large repository?
    acquire only the context required
    to solve the task.
 
-Need to apply AI-generated changes safely?
-→ grab --replace file function
 ```
 
 See [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for the complete investigation workflow.
