@@ -1,4 +1,4 @@
-# Workflow for Context Management 
+# Function based Context Management 
 
 
 Extract functions, symbols, and execution paths for AI-agent debugging.
@@ -8,11 +8,11 @@ Extract functions, symbols, and execution paths for AI-agent debugging.
 
 | Command | Purpose |
 |----------|----------|
-| `grab --symbol <file> <symbol> <function_name>` |  Extract any function from any major language|
-| `grab <pattern> <path> <dot>` | Discover the symbol flow |
-| `grab <lineid_start> <lineid_end> <file> <function_name>` | Implementation evidence without exporting entire files |
 | `grab --clear` | Start investigation |
 | `grab --tree` | when investigation scope is unclear |
+| `grab --symbol <file> <symbol> <function_name>` |  Extract function START LINE / END LINE | 
+| `grab <lineid_start> <lineid_end> <file> <function_name>` | Extract function START LINE / END LINE |
+| `grab <pattern> <path> <dot>` | Symbol call flow |
 | `grab --replace FILE FUNCTION` | Not supported |
 
 
