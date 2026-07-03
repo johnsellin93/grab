@@ -10,10 +10,14 @@ Extract functions, symbols, and execution paths for AI-agent debugging.
 |----------|----------|
 | `grab --clear` | Start investigation |
 | `grab --tree` | when investigation scope is unclear |
-| `grab --symbol <file> <symbol> <function_name>` |  Extract function START LINE / END LINE | 
-| `grab <lineid_start> <lineid_end> <file> <function_name>` | Extract function START LINE / END LINE |
+| `grab --symbol <file> <function_name>` |  Extract function from file | 
+| `grab <lineid_start> <lineid_end> <file> <function_name>` | Extract function by START LINE / END LINE |
 | `grab <pattern> <path> <dot>` | Symbol call flow |
 | `grab --replace FILE FUNCTION` | Not supported |
+
+
+## Supported Languages
+C# Python Vanilla Java Yaml 
 
 
 ## Choosing the Right Workflow
