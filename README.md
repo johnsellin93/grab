@@ -16,7 +16,7 @@ Extract functions, symbols, and execution paths for AI-agent debugging.
 | `grab --replace FILE FUNCTION` | Not supported |
 
 
-See [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for the complete investigation workflow.
+See [`GRAB_PROTOCOL.md`](./PROTOCOL.md) for the complete investigation workflow.
 
 ## Supported Languages
 Python, C#, JavaScript, TypeScript, shell scripts, YAML/Ansible.
