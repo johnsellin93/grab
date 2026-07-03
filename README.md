@@ -44,7 +44,7 @@ deterministic investigation workflows.
 
 Larger repositories benefit from progressive evidence acquisition.
 
-# What grab Solves
+# What this Solves
 
 Large repositories spread logic across multiple files and services.
 
@@ -65,64 +65,12 @@ Developers can choose the level of context acquisition appropriate for the task.
 
 
 
-## From Human-in-the-Loop to Autonomous Context Acquisition
-
-Today, Grab operates as a human-in-the-loop repository investigation workflow.
-
-The developer provides a problem statement, the AI proposes `grab` commands, Grab retrieves the requested repository evidence, and the developer feeds the accumulated context back into the model.
-
-The long-term goal is to expose Grab through an API/MCP interface so AI tools can acquire repository context autonomously.
-
-Future workflow:
-
-```
-Problem statement
-↓
-AI analyzes repository index
-↓
-AI requests functions, symbols, references, or code ranges
-↓
-Grab API returns repository evidence
-↓
-AI continues investigation
-↓
-AI proposes fix, implementation, or explanation
-```
-
-Rather than generating commands for developers to execute manually, AI agents would progressively acquire the exact context they require through direct tool calls.
-
-This would transform Grab from a repository investigation utility into a context acquisition layer for autonomous software engineering agents.
-
-The AI does not need the entire repository.
-
-It needs the right context at the right time.
 
 <!--
 ## Demo
 
 <video src="https://github.com/user-attachments/assets/7c451617-e470-4b72-b2e4-d75b3148fe31" controls autoplay loop muted width="100%"></video>
 -->
-
-
-## AI-Assisted Function Replacement
-
-After an assistant proposes a full replacement function or task, `grab` can apply the change safely from the terminal.
-
-```bash
-grab --replace server.py _safe_float
-grab --replace file.js showError
-grab --replace roles/os_settings/tasks/main.yml "Render hardened sshd_config"
-```
-
-`grab` will:
-
-* resolve the current function or task location by symbol;
-* prompt for the replacement implementation;
-* validate syntax where supported;
-* display a colored diff showing the proposed change;
-* require explicit approval before modifying the source file.
-
-This workflow keeps AI-assisted code changes deterministic, review-first, and human-controlled rather than fully autonomous.
 
 See the included [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for a complete example AI-assisted debugging workflow.
 
