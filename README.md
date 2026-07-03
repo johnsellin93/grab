@@ -1,4 +1,4 @@
-# Function Based Context Management 
+# Function Based Context Handling/Management 
 
 
 Extract functions, symbols, and execution paths for AI-agent debugging.
