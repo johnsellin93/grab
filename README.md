@@ -34,44 +34,6 @@ Large repository?
 
 See [`GRAB_PROTOCOL.md`](./GRAB_PROTOCOL.md) for the complete investigation workflow.
 
-
-### Example AI-Generated Extraction Batch
-
-```
-grab --clear
-grab --functions .
-grab 312 383 file1.cs ProcessNotificationDelivery
-grab 448 486 file2.cs ShouldRetryNotification
-grab 521 564 file3.cs RecordDeliveryAttempt
-grab 612 642 file3.cs HasRecentSuccessfulDelivery
-grab 188 236 file3.cs RetryFailedNotification
-grab 245 271 file4.py GetRetryBackoffDelay
-
-
-grab ProcessNotificationDelivery            # identify related call paths
-grab RetryFailedNotification                # locate retry implementation
-grab NotificationRetryLimit                 # inspect retry configuration
-grab DeliveryDeduplicationWindowMinutes     # inspect deduplication settings
-grab "duplicate notification" .             # search for operational clues
-```
-
-### Accumulated Clipboard Context
-
-```
-  +72L  block  ProcessNotificationDelivery(...)
-  +38L  block  ShouldRetryNotification(...)
-  +44L  block  RecordDeliveryAttempt(...)
-  +31L  block  HasRecentSuccessfulDelivery(...)
-  +49L  block  RetryFailedNotification(...)
-  +27L  block  GetRetryBackoffDelay(...)
-  +18L  symbol NotificationRetryLimit
-  +13L  symbol DeliveryDeduplicationWindowMinutes
-  +26L  text   "duplicate notification"
-
-[grab] +11 entries (+337L) → context 826L / 64192B copied to X clipboard via xclip
-```
-
-
 ### Why not export the entire repository?
 
 Large repositories often exceed practical context limits and contain
@@ -82,40 +44,6 @@ necessary to understand a problem, reducing noise and preserving
 deterministic investigation workflows.
 
 Larger repositories benefit from progressive evidence acquisition.
-
-
-## Snapshot Mode
-
-
-For smaller repositories, examples, demos, and proof-of-concepts, Grab can export the complete local repository context in a single command.
-
-```bash
-grab --snapshot .
-grab --snapshot ./src
-grab --snapshot ~/projects/grab
-grab --snapshot /full/path/to/repository
-grab --snapshot server.py
-```
-
-`grab --snapshot` recursively collects supported project files, appends them to the accumulated context buffer, and automatically updates the clipboard or tmux buffer.
-
-Example:
-
-```
-[grab] snapshot:
-  path    : .
-  files   : 22
-  skipped : 0
-  lines   : 17964
-  size    : 658947B
-
-[grab] snapshot:. +17964L → context 17971L / 659110B copied to X clipboard via xclip
-```
-
-Snapshot mode is intended for compact repositories where exporting the complete local context is more efficient than progressive extraction.
-
-For larger investigations, targeted context acquisition remains the recommended workflow.
-
 
 # What grab Solves
 
