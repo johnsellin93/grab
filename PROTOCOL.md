@@ -1,5 +1,5 @@
 
-# Grab Prompt Protocol
+# Protocol
 
 Repository context is provided strictly through `grab`.
 
