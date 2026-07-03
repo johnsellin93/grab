@@ -1,9 +1,8 @@
-# Grab
+# Workflow for Context Management 
 
 
-Extract exact functions, symbols, and execution paths for AI-assisted debugging.
+Extract functions, symbols, and execution paths for AI-agent debugging.
 
-grab provides deterministic repository investigation workflows for AI-assisted debugging, documentation, and safe code modification.
 
 ## Basic Workflow
 
@@ -11,7 +10,7 @@ grab provides deterministic repository investigation workflows for AI-assisted d
 |----------|----------|
 | `grab --symbol <file> <symbol> <function_name>` |  Extract any function from any major language|
 | `grab <pattern> <path> <dot>` | Discover the symbol flow |
-| `grab <lineid_start> <lineid_end> <file> <function_name>` | Acquire implementation evidence without exporting entire files |
+| `grab <lineid_start> <lineid_end> <file> <function_name>` | Implementation evidence without exporting entire files |
 | `grab --clear` | Start investigation |
 | `grab --tree` | when investigation scope is unclear |
 | `grab --replace FILE FUNCTION` | Not supported |
