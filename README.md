@@ -8,6 +8,7 @@ Extract functions, symbols, and execution paths for AI-agent debugging.
 
 | Command | Purpose |
 |----------|----------|
+| `grab --functions .` | Gather the Function index |
 | `grab --clear` | Start investigation |
 | `grab --tree` | when investigation scope is unclear |
 | `grab --symbol <file> <function_name>` |  Extract function to clipboard | 
